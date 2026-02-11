@@ -1,3 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=New+Rocker&family=Noto+Serif:ital,wght@0,100..900;1,100..900&family=TASA+Orbiter:wght@400..800&display=swap');
+
+body {
+  background-color: rgb(45, 45, 45);
+}
+
 h1 {
+  font-family: New Rocker, sans-serif;
   text-align: center;
+  color: red;
+  font-size: 60px;
 }

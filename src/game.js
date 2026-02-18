@@ -9,19 +9,19 @@ import Phaser from 'phaser';
  */
 let config = {
     type: Phaser.AUTO,
-    width: 1000,
-    height: 500,
+    width: 1280,
+    height: 720,
     parent: 'juego',
     scale: {
         //mode: Phaser.Scale.FIT,  
-        autoCenter: Phaser.Scale.CENTER_HORIZONTALLY
+        autoCenter: Phaser.Scale.CENTER_BOTH
     },
     pixelArt: true,
     scene: [Boot, Level, End],
     physics: {
         default: 'arcade',
         arcade: {
-            gravity: { y: 400 },
+            gravity: { x:0, y: 0 },
             debug: false
         }
     }

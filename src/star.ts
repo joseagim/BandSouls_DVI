@@ -12,7 +12,7 @@ import Level from './level.js'
 export default class Star extends Phaser.GameObjects.Sprite {
 
     base: Base
-    scene: Level
+    declare scene: Level
 
     /**
      * Constructor de Star

@@ -12,19 +12,36 @@ export default class Player extends Phaser.GameObjects.Sprite {
      * @param {number} x Coordenada X
      * @param {number} y Coordenada Y
      */
+
     constructor(scene, x, y) {
-        super(scene, x, y, 'player');	
+        super(scene, x, y, 'player');
         this.score = 0;
-	
+                 
         this.scene.add.existing(this);
         this.scene.physics.add.existing(this);
+
         // Queremos que el jugador no se salga de los límites del mundo
         this.body.setCollideWorldBounds();
+
+        // Velocidades
         this.speed = 300;
-        this.jumpSpeed = -400;
+        this.dashSpeed = 2000;
+        this.dashDuration = 25;
+        this.dashCooldown = 300;
+
+        // Estados
+        this.isDashing = false;
+        this.canDash = true;
+
         // Esta label es la UI en la que pondremos la puntuación del jugador
         this.label = this.scene.add.text(10, 10, "", {fontSize: 20});
-        this.cursors = this.scene.input.keyboard.createCursorKeys();
+        // this.cursors = this.scene.input.keyboard.createCursorKeys();
+        this.keyA = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+        this.keyS = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+        this.keyD = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+        this.keyW = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+        this.keySpace = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
         this.updateScore();
     }
 
@@ -44,6 +61,16 @@ export default class Player extends Phaser.GameObjects.Sprite {
         this.label.text = 'Score: ' + this.score;
     }
 
+    dash(isHorizontal,speed) {
+        if (isHorizontal) {
+            this.body.setVelocityX(2*speed);
+        }
+        else{
+            this.body.setVelocityY(2*speed);
+        }
+    }
+
+
     /**
      * Métodos preUpdate de Phaser. En este caso solo se encarga del movimiento del jugador.
      * Como se puede ver, no se tratan las colisiones con las estrellas, ya que estas colisiones 
@@ -52,18 +79,53 @@ export default class Player extends Phaser.GameObjects.Sprite {
      */
     preUpdate(t, dt) {
         super.preUpdate(t, dt);
-        if (this.cursors.up.isDown && this.body.onFloor()) {
-            this.body.setVelocityY(this.jumpSpeed);
-        }
-        if (this.cursors.left.isDown) {
+        let isHorizontal = false;
+
+        if (this.isDashing) return;
+       
+        this.body.setVelocity(0);
+        
+        if (this.keyA.isDown) {
+            isHorizontal = true;
             this.body.setVelocityX(-this.speed);
-        }
-        else if (this.cursors.right.isDown) {
+
+        } else if (this.keyD.isDown) {
+            isHorizontal = true;
             this.body.setVelocityX(this.speed);
         }
-        else {
-            this.body.setVelocityX(0);
+
+        
+        if (this.keyW.isDown) {
+            isHorizontal = false;
+            this.body.setVelocityY(-this.speed);
+        } else if (this.keyS.isDown) {
+            isHorizontal = false;
+            this.body.setVelocityY(this.speed);;
         }
+
+        this.body.velocity.normalize().scale(this.speed);
+
+        if (this.keySpace.isDown && this.canDash && this.body.velocity.length() > 0) {
+            //this.dash(isHorizontal,this.speed);
+            this.doDash();
+        }
+        
+    }
+    
+    doDash() {
+        this.isDashing = true;
+        this.canDash = false;
+        
+        this.body.velocity.normalize().scale(this.dashSpeed);
+
+        this.scene.time.delayedCall(this.dashDuration, () => {
+            this.isDashing = false;
+        });
+
+        // 2. Volvemos a permitir el dash después de un cooldown (ej. 1 segundo)
+        this.scene.time.delayedCall(this.dashCooldown, () => {
+            this.canDash = true;
+        });
     }
 
 }

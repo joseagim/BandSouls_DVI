@@ -61,16 +61,6 @@ export default class Player extends Phaser.GameObjects.Sprite {
         this.label.text = 'Score: ' + this.score;
     }
 
-    dash(isHorizontal,speed) {
-        if (isHorizontal) {
-            this.body.setVelocityX(2*speed);
-        }
-        else{
-            this.body.setVelocityY(2*speed);
-        }
-    }
-
-
     /**
      * Métodos preUpdate de Phaser. En este caso solo se encarga del movimiento del jugador.
      * Como se puede ver, no se tratan las colisiones con las estrellas, ya que estas colisiones 
@@ -106,7 +96,6 @@ export default class Player extends Phaser.GameObjects.Sprite {
         this.body.velocity.normalize().scale(this.speed);
 
         if (this.keySpace.isDown && this.canDash && this.body.velocity.length() > 0) {
-            //this.dash(isHorizontal,this.speed);
             this.doDash();
         }
         

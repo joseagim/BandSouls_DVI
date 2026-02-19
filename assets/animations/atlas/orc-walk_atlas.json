@@ -1,0 +1,86 @@
+{
+    "frames": [
+        {
+            "filename": "orc-walk-2",
+            "frame": {
+                "w": 100,
+                "h": 75,
+                "x": 0,
+                "y": 0
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "orc-walk-1",
+            "frame": {
+                "w": 100,
+                "h": 75,
+                "x": 0,
+                "y": 75
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "orc-walk-3",
+            "frame": {
+                "w": 100,
+                "h": 75,
+                "x": 100,
+                "y": 0
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "orc-walk-4",
+            "frame": {
+                "w": 100,
+                "h": 75,
+                "x": 100,
+                "y": 75
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "orc-walk-5",
+            "frame": {
+                "w": 100,
+                "h": 75,
+                "x": 0,
+                "y": 150
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "orc-walk-6",
+            "frame": {
+                "w": 100,
+                "h": 75,
+                "x": 100,
+                "y": 150
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        }
+    ],
+    "meta": {
+        "description": "Atlas generado con Atlas Packer Gamma V2",
+        "web": "https://gammafp.github.io/atlas-packer-phaser/"
+    }
+}

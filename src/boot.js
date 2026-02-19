@@ -5,6 +5,8 @@ import platform from '../assets/sprites/platform.png'
 import base from '../assets/sprites/base.png'
 import star from '../assets/sprites/star.png'
 import player from '../assets/sprites/player.png'
+import enemyWalk from '../assets/animations/orc-walk.png'
+import enemyWalkJSON from '../assets/animations/orc-walk_atlas.json'
 /**
  * Escena para la precarga de los assets que se usarán en el juego.
  * Esta escena se puede mejorar añadiendo una imagen del juego y una 
@@ -30,6 +32,7 @@ export default class Boot extends Phaser.Scene {
     this.load.image('base', base);
     this.load.image('star', star);
     this.load.image('player', player);
+    this.load.atlas('enemy',enemyWalk,enemyWalkJSON);
   }
 
   /**

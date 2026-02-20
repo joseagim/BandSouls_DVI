@@ -1,5 +1,5 @@
-import Star from './star.ts';
 import Phaser from 'phaser'
+import Star from './star.ts';
 
 /**
  * Clase que representa la base sobre la que se sitúan las estrellas que aparecen en el juego

@@ -1,9 +1,7 @@
-import Player from './player.js'
 import Phaser from 'phaser';
 
 /**
- * Clase que representa el jugador del juego. El jugador se mueve por el mundo usando los cursores.
- * También almacena la puntuación o número de estrellas que ha recogido hasta el momento.
+ * Clase que representa el primer enemigo del juego. Es un enemigo de prueba que persigue al jugador.
  */
 export default class Enemy extends Phaser.GameObjects.Sprite {
 

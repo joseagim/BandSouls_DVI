@@ -1,7 +1,7 @@
 import Phaser from 'phaser'
 import Base from './base.js'
 import Player from './player.js'
-import Level from './level.js'
+import Level from '../scenes/level.js'
 
 /**
  * Clase para los objetos estrella que el jugador ha de recoger

@@ -40,6 +40,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
         this.keyS = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
         this.keyD = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
         this.keyW = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+        this.keyF = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
         this.keySpace = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
         this.updateScore();
@@ -99,6 +100,18 @@ export default class Player extends Phaser.GameObjects.Sprite {
             this.doDash();
         }
         
+        if (this.keyF.isDown && this.scene.enemy !== null && this.canDash) {
+            this.isDashing = true;
+            this.canDash = false;
+            this.scene.enemy.getDamage(10);
+            this.scene.time.delayedCall(this.dashDuration, () => {
+                this.isDashing = false;
+            });
+            this.scene.time.delayedCall(this.dashCooldown, () => {
+                this.canDash = true;
+            });
+        }
+
     }
     
     doDash() {

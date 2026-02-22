@@ -27,6 +27,7 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
         this.attackDamage = 10;
         this.attackRange = 20000;
         this.state;
+        this.hurtbox = new Phaser.GameObjects.Sprite(scene, x, y, 'hurtbox');
 
         // Animaciones
         this.scene.anims.create({
@@ -37,13 +38,31 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
         });
 
         // bs escalado extraño para los colliders
+        this.scene.add.existing(this.hurtbox);
+        this.scene.physics.add.existing(this.hurtbox);
+
         this.setScale(4);
         this.body.setSize(8, 16);
         this.body.setOffset(45, 42);
+        this.hurtbox.body.setSize(16, 8)
 
         this.play('walk',true);
     }
+    
+    die() {
+        this.scene.enemy = null;
+        this.destroy();
+    }
+    
+    getDamage(dmg) {
+        this.life -= dmg;
+        if (this.life <= 0) this.die();
+        console.log('HP left: %d', this.life);
+    }
 
+    attack(player) {
+
+    }
 
     /**
      * Métodos preUpdate de Phaser. En este caso solo se encarga del movimiento del jugador.
@@ -57,8 +76,10 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
             this.setFlip(true, false);
         }
         this.scene.physics.moveToObject(this,this.scene.player,this.speed);
+        this.hurtbox.setPosition(this.x, this.y);
         if (Phaser.Math.Distance.Squared(this.x, this.y, this.scene.player.x, this.scene.player.y) <= this.attackRange) {
             console.log("FUNCIONA");
+            this.attack(this.scene.player);
         }
     }
 

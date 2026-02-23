@@ -27,7 +27,7 @@ export default class Level extends Phaser.Scene {
         this.stars = 10;
         this.bases = this.add.group();
         this.player = new Player(this, 400, 400);
-        this.enemy = new Enemy(this,1000,10);
+        this.enemy = new Enemy(this,450,400);
 
         new Platform(this, this.player,this.enemy, this.bases, 150, 350);
         new Platform(this, this.player,this.enemy, this.bases, 850, 350);

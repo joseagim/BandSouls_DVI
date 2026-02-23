@@ -22,10 +22,12 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
         // Estadísticas
         this.life = 50;
         this.speed = 100;
-        this.attackSpeed = 1;
         this.defenseMod = 1;
         this.attackDamage = 10;
-        this.attackRange = 20000;
+        this.attackRange = 80;
+        this.attackRadius = 20;
+        this.attackCooldown = 1000;
+        this.canAttack = true;
         this.state;
         this.hurtbox = new Phaser.GameObjects.Sprite(scene, x, y, 'hurtbox');
 
@@ -37,20 +39,25 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
             repeat : -1
         });
 
-        // bs escalado extraño para los colliders
+        // Cosas para el ataque 
+        this.hurtbox.setVisible(false);
+        this.hurtbox.active = false;
+
         this.scene.add.existing(this.hurtbox);
         this.scene.physics.add.existing(this.hurtbox);
-
+        // bs escalado extraño para los colliders
         this.setScale(4);
         this.body.setSize(8, 16);
         this.body.setOffset(45, 42);
-        this.hurtbox.body.setSize(16, 8)
-
+        this.hurtbox.body.setCircle(this.attackRadius);
+        this.hurtbox.body.setCollideWorldBounds();
         this.play('walk',true);
     }
     
     die() {
         this.scene.enemy = null;
+        this.hurtbox.destroy();
+        this.hurtbox = null;
         this.destroy();
     }
     
@@ -61,7 +68,13 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
     }
 
     attack(player) {
+        this.hurtbox.setPosition(this.scene.player.x, this.scene.player.y);
 
+        this.hurtbox.setVisible(true);
+        this.hurtbox.active = true;
+
+        this.scene.time.delayedCall(this.attackDuration, () => {this.hurtbox.active = false; this.hurtbox.setVisible(false);});
+        this.scene.time.delayedCall(this.attackCooldown, () => {this.hurtbox.active = false; this.hurtbox.setVisible(false); this.canAttack = true;});
     }
 
     /**
@@ -75,10 +88,14 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
         if (this.scene.player.x <= this.x) {
             this.setFlip(true, false);
         }
-        this.scene.physics.moveToObject(this,this.scene.player,this.speed);
-        this.hurtbox.setPosition(this.x, this.y);
-        if (Phaser.Math.Distance.Squared(this.x, this.y, this.scene.player.x, this.scene.player.y) <= this.attackRange) {
+        if (!this.scene.physics.overlap(this, this.scene.player)) {
+            this.scene.physics.moveToObject(this,this.scene.player,this.speed);
+        } else {this.body.setVelocity(0);}
+        
+        
+        if (this.canAttack && Phaser.Math.Distance.Between(this.x, this.y + 42, this.scene.player.x, this.scene.player.y) <= this.attackRange) {
             console.log("FUNCIONA");
+            this.canAttack = false;
             this.attack(this.scene.player);
         }
     }

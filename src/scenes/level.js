@@ -35,6 +35,19 @@ export default class Level extends Phaser.Scene {
         new Platform(this, this.player,this.enemy, this.bases, 150, 100);
         new Platform(this, this.player,this.enemy, this.bases, 850, 100);
         this.spawn();
+        /*
+        this.heroActionCollider = createInteractiveObject(
+            this,
+            32,
+            32,
+            this.player.arma.getHitBox_X().
+            this.player.arma.getHitBox_Y(),
+            'attack',
+            true
+        );
+        */
+
+        this.physics.add.overlap();
 
     }
 

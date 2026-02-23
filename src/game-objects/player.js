@@ -1,4 +1,6 @@
 import Phaser from 'phaser';
+import Arma from './arma'
+import Guitar from './guitar';
 
 /**
  * Clase que representa el jugador del juego. El jugador se mueve por el mundo usando los cursores.
@@ -35,6 +37,10 @@ export default class Player extends Phaser.GameObjects.Sprite {
 
         // Esta label es la UI en la que pondremos la puntuación del jugador
         this.label = this.scene.add.text(10, 10, "", {fontSize: 20});
+        
+        //Seccion de armas
+        this.arma = new Guitar();
+
         // this.cursors = this.scene.input.keyboard.createCursorKeys();
         this.keyA = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
         this.keyS = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
@@ -42,6 +48,12 @@ export default class Player extends Phaser.GameObjects.Sprite {
         this.keyW = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
         this.keyF = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
         this.keySpace = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.mouseClick = this.scene.input.on('pointerdown', (pointer) => {
+            if(pointer.leftButtondDown()){
+                this.attack();
+            }
+        });
+
 
         this.updateScore();
     }
@@ -129,5 +141,12 @@ export default class Player extends Phaser.GameObjects.Sprite {
             this.canDash = true;
         });
     }
+
+    attack() {
+        if(!this.arma.attacking){
+            
+        }
+    }
+    
 
 }

@@ -9,17 +9,24 @@ export default class actor extends Phaser.GameObjects.Sprite {
         // Queremos que el enemigo no se salga de los límites del mundo
         this.body.setCollideWorldBounds();
 
+        this.tag = tag;
+
         // Estadísticas
+        this.maxHP = stats.life;
         this.life = stats.life;
         this.speed = stats.speed;
         this.defenseMod = stats.defenseMod;
         this.attackMod = stats.attackMod;
     }
 
+    updateScore() {
+        this.label.text = this.tag + ' HP: ' + this.life + '/' + this.maxHP;
+    }
+
     getDamage(dmg) {
         this.life -= dmg;
         if (this.life <= 0) this.die();
-        console.log('HP left: %d', this.life);
+        this.updateScore();
     }
 
     die() {

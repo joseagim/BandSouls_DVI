@@ -1,12 +1,13 @@
 import Phaser from 'phaser';
-import Arma from './arma'
+import Arma from './arma';
+import actor from './actor';
 import Guitar from './guitar';
 
 /**
  * Clase que representa el jugador del juego. El jugador se mueve por el mundo usando los cursores.
  * También almacena la puntuación o número de estrellas que ha recogido hasta el momento.
  */
-export default class Player extends Phaser.GameObjects.Sprite {
+export default class Player extends actor {
 
     /**
      * Constructor del jugador
@@ -16,17 +17,14 @@ export default class Player extends Phaser.GameObjects.Sprite {
      */
 
     constructor(scene, x, y) {
-        super(scene, x, y, 'player');
+        super(scene, x, y, 'player', {  life        : 100,
+                                        speed       : 300,
+                                        defenseMod  : 1, 
+                                        attackMod   : 1});
         this.score = 0;
         this.x = x;
         this.y = y;
                  
-        this.scene.add.existing(this);
-        this.scene.physics.add.existing(this);
-
-        // Queremos que el jugador no se salga de los límites del mundo
-        this.body.setCollideWorldBounds();
-
         // Velocidades
         this.speed = 300;
         this.dashSpeed = 2000;
@@ -63,22 +61,6 @@ export default class Player extends Phaser.GameObjects.Sprite {
 
 
         this.updateScore();
-    }
-
-    /**
-     * El jugador ha recogido una estrella por lo que este método añade un punto y
-     * actualiza la UI con la puntuación actual.
-     */
-    point() {
-        this.score++;
-        this.updateScore();
-    }
-
-    /**
-     * Actualiza la UI con la puntuación actual
-     */
-    updateScore() {
-        this.label.text = 'Score: ' + this.score;
     }
 
     /**

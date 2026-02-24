@@ -19,17 +19,13 @@ export default class Enemy extends actor {
                                         attackMod   : 1   
         });	
 
-        this.scene.add.existing(this);
-        this.scene.physics.add.existing(this);
-        // Queremos que el enemigo no se salga de los límites del mundo
-        this.body.setCollideWorldBounds();
-
         // Estadísticas propias del enemigo
         this.attackDamage = 10;
         this.attackRange = 80;
         this.attackRadius = 20;
         this.attackCooldown = 1000;
         this.canAttack = true;
+        this.hasDamaged = false
         this.state;
         this.hurtbox = new Phaser.GameObjects.Sprite(scene, x, y, 'hurtbox');
 
@@ -54,7 +50,13 @@ export default class Enemy extends actor {
         this.hurtbox.body.setCircle(this.attackRadius);
         this.hurtbox.body.setCollideWorldBounds();
         this.play('walk',true);
+    
+        // debug
+        this.label = this.scene.add.text(1080, 10, "", {fontSize: 20});
+        this.updateScore();
     }
+
+    
     
     die() {
         this.scene.enemy = null;
@@ -69,7 +71,7 @@ export default class Enemy extends actor {
         this.hurtbox.setVisible(true);
         this.hurtbox.active = true;
 
-        this.scene.time.delayedCall(this.attackDuration, () => {if (this.hurtbox !== null) {this.hurtbox.active = false; this.hurtbox.setVisible(false);}});
+        this.scene.time.delayedCall(this.attackDuration, () => {if (this.hurtbox !== null) {this.hurtbox.active = false; this.hurtbox.setVisible(false); this.hasDamaged = false;}});
         this.scene.time.delayedCall(this.attackCooldown, () => {if (this.hurtbox !== null) {this.hurtbox.active = false; this.hurtbox.setVisible(false); this.canAttack = true;}});
     }
 
@@ -92,6 +94,12 @@ export default class Enemy extends actor {
         if (this.canAttack && Phaser.Math.Distance.Between(this.x, this.y + 42, this.scene.player.x, this.scene.player.y) <= this.attackRange && this.hurtbox !== null) {
             this.canAttack = false;
             this.attack(this.scene.player);
+        }
+
+        // quick hack, refactor laater
+        if (this.hurtbox !== null && !this.hasDamaged && this.scene.physics.overlap(this.hurtbox, this.scene.player)) {
+            this.scene.player.getDamage(this.attackDamage);
+            this.hasDamaged = true;
         }
     }
 

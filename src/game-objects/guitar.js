@@ -4,8 +4,10 @@ import Arma from './arma.js'
 export default class Guitar extends Arma{
     constructor(scene){
         super(scene,false,10,10,16,16);
+        this.scene = scene;
         this.hurtbox = this.scene.add.rectangle(0,0,50,40,0xff0000,0);
         this.hurtbox.visible = false;
+        this.scene.add.existing(this);
         this.scene.physics.add.existing(this.hurtbox, false);
         this.hurtbox.body.enable = false;
 
@@ -24,12 +26,20 @@ export default class Guitar extends Arma{
 
         this.comprobarGolpe();
 
+       if(this.scene.physics.overlap(this.hurtbox,this.enemigoActual)){
+            this.hacerDaño(this.enemigoActual);
+       }
+
         //Hacer overlap de phaser para si hay varios enemigos (leer documentacion)
-        this.scene.time.delayedCall(this.atk_speed, () => {this.hurtbox.active = false; this.hurtbox.visible = false, this.attacking=false,this.hurtbox.body.enable=false;});
+        this.scene.time.delayedCall(this.atk_speed, () => {
+            this.hurtbox.active = false; 
+            this.hurtbox.visible = false, 
+            this.attacking=false,
+            this.hurtbox.body.enable=false;});
     }
 
     posicionarHitBox(playerX,playerY,direction){
-        const offset = 50;
+        const offset = 100;
         this.hurtbox.x = playerX + direction.x * offset;
         this.hurtbox.y = playerY + direction.y * offset;
     }
@@ -41,7 +51,9 @@ export default class Guitar extends Arma{
     }
 
     hacerDaño(enemigo){
-        enemigo.getDamage(this.getAtk());
-        this.scene.cameras.main.shake(50,0.01);
+        if(enemigo && enemigo.active){
+            enemigo.getDamage(this.getAtk());
+            this.scene.cameras.main.shake(50,0.01);
+        }
     }
 }

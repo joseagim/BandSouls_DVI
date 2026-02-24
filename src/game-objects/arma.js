@@ -17,17 +17,6 @@ export default class Arma{
         this.atk = atk;
         this.atk_speed = atk_speed;
 
-        this.scene.add.existing(this);
-        this.scene.physics.add.existing(this);
-
-        //Sacado de enemy
-        this.hurtbox = new Phaser.GameObjects.Sprite(scene, x, y, 'hurtbox');
-          // Cosas para el ataque 
-        this.hurtbox.setVisible(false);
-        this.hurtbox.active = false;
-
-        this.scene.add.existing(this.hurtbox);
-        this.scene.physics.add.existing(this.hurtbox);
         // bs escalado extraño para los colliders
         /*
         this.setScale(4);

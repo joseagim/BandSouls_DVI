@@ -18,6 +18,8 @@ export default class Player extends Phaser.GameObjects.Sprite {
     constructor(scene, x, y) {
         super(scene, x, y, 'player');
         this.score = 0;
+        this.x = x;
+        this.y = y;
                  
         this.scene.add.existing(this);
         this.scene.physics.add.existing(this);
@@ -49,8 +51,9 @@ export default class Player extends Phaser.GameObjects.Sprite {
         this.keyF = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
         this.keySpace = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.mouseClick = this.scene.input.on('pointerdown', (pointer) => {
-            if(pointer.leftButtondDown()){
-                this.attack();
+            if(pointer.button == 2){    //segun documentación 2 es el botón derechp
+                console.log("Presionando ratón");
+                this.attack(this.x,this.y,this.getDirection(),this.scene.enemy);
             }
         });
 

@@ -24,7 +24,7 @@ export default class Level extends Phaser.Scene {
      * Creación de los elementos de la escena principal de juego
      */
     create() {
-        this.stars = 10;
+        //this.stars = 10;
         this.bases = this.add.group();
         this.player = new Player(this, 400, 400);
         this.enemy = new Enemy(this,450,400);
@@ -34,18 +34,6 @@ export default class Level extends Phaser.Scene {
         new Platform(this, this.player,this.enemy, this.bases, 500, 200);
         new Platform(this, this.player,this.enemy, this.bases, 150, 100);
         new Platform(this, this.player,this.enemy, this.bases, 850, 100);
-        this.spawn();
-        /*
-        this.heroActionCollider = createInteractiveObject(
-            this,
-            32,
-            32,
-            this.player.arma.getHitBox_X().
-            this.player.arma.getHitBox_Y(),
-            'attack',
-            true
-        );
-        */
 
         this.physics.add.overlap();
 
@@ -56,9 +44,6 @@ export default class Level extends Phaser.Scene {
      * @param {Array<Base>} from Lista de bases sobre las que se puede crear una estrella
      * Si es null, entonces se crea aleatoriamente sobre cualquiera de las bases existentes
      */
-    spawn(from = null) {
-        Phaser.Math.RND.pick(from || this.bases.children.entries).spawn();
-    }
 
     /**
      * Método que se ejecuta al coger una estrella. Se pasa la base

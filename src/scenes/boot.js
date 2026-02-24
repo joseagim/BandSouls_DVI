@@ -2,7 +2,6 @@ import Phaser from 'phaser'
 
 import platform from '../../assets/sprites/platform.png'
 import base from '../../assets/sprites/base.png'
-import star from '../../assets/sprites/star.png'
 import player from '../../assets/sprites/player.png'
 import enemyWalk from '../../assets/animations/orc-walk.png'
 import enemyWalkJSON from '../../assets/animations/orc-walk_atlas.json'
@@ -29,7 +28,6 @@ export default class Boot extends Phaser.Scene {
     //this.load.setPath('assets/sprites/');
     this.load.image('platform', platform);
     this.load.image('base', base);
-    this.load.image('star', star);
     this.load.image('player', player);
     this.load.atlas('enemy',enemyWalk,enemyWalkJSON);
   }

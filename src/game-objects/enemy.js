@@ -97,9 +97,10 @@ export default class Enemy extends actor {
         }
 
         // quick hack, refactor laater
-        if (this.hurtbox !== null && !this.hasDamaged && this.scene.physics.overlap(this.hurtbox, this.scene.player)) {
+        if (!this.hasDamaged && this.hurtbox !== null && this.scene.physics.overlap(this.hurtbox, this.scene.player)) {
             this.scene.player.getDamage(this.attackDamage);
             this.hasDamaged = true;
+            console.log("blablabla")
         }
     }
 

@@ -1,9 +1,10 @@
 import Phaser from 'phaser';
+import actor from './actor';
 
 /**
  * Clase que representa el primer enemigo del juego. Es un enemigo de prueba que persigue al jugador.
  */
-export default class Enemy extends Phaser.GameObjects.Sprite {
+export default class Enemy extends actor {
 
     /**
      * Constructor del jugador
@@ -12,17 +13,18 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
      * @param {number} y Coordenada Y
      */
     constructor(scene, x, y) {
-        super(scene, x, y, 'enemy');	
+        super(scene, x, y, 'enemy', {   life        : 50,
+                                        speed       : 100,
+                                        defenseMod  : 1, 
+                                        attackMod   : 1   
+        });	
 
         this.scene.add.existing(this);
         this.scene.physics.add.existing(this);
         // Queremos que el enemigo no se salga de los límites del mundo
         this.body.setCollideWorldBounds();
 
-        // Estadísticas
-        this.life = 50;
-        this.speed = 100;
-        this.defenseMod = 1;
+        // Estadísticas propias del enemigo
         this.attackDamage = 10;
         this.attackRange = 80;
         this.attackRadius = 20;
@@ -59,12 +61,6 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
         this.hurtbox.destroy();
         this.hurtbox = null;
         this.destroy();
-    }
-    
-    getDamage(dmg) {
-        this.life -= dmg;
-        if (this.life <= 0) this.die();
-        console.log('HP left: %d', this.life);
     }
 
     attack(player) {

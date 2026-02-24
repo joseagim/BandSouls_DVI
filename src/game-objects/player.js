@@ -47,7 +47,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
         this.keyS = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
         this.keyD = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
         this.keyW = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
-        this.keyF = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
+        // this.keyF = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F); DEBUG FOR DAMAGE
         this.keySpace = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.mouseClick = this.scene.input.on('pointerdown', (pointer) => {
             if(pointer.button == 0){    //segun documentación 0 es el botón derechp
@@ -119,7 +119,8 @@ export default class Player extends Phaser.GameObjects.Sprite {
             this.doDash();
         }
         
-        if (this.keyF.isDown && this.scene.enemy !== null && this.canDash) {
+        /* DEBUG ENEMY TAKING DAMAGE
+            if (this.keyF.isDown && this.scene.enemy !== null && this.canDash) {
             this.isDashing = true;
             this.canDash = false;
             this.scene.enemy.getDamage(10);
@@ -129,7 +130,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
             this.scene.time.delayedCall(this.dashCooldown, () => {
                 this.canDash = true;
             });
-        }
+        } */
 
     }
     

@@ -41,7 +41,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
         this.label = this.scene.add.text(10, 10, "", {fontSize: 20});
         
         //Seccion de armas
-        this.arma = new Guitar(this.scene);
+        this.arma = new Guitar(this.scene,this.x,this.y);
 
         // this.cursors = this.scene.input.keyboard.createCursorKeys();
         this.keyA = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);

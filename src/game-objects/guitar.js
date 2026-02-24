@@ -1,9 +1,9 @@
 import Phaser from 'phaser';
 import Arma from './arma.js'
 
-export default class Guitar extends Arma{
-    constructor(scene){
-        super(scene,false,10,10,16,16);
+export default class Guitar extends Phaser.GameObjects.Sprite{
+    constructor(scene,x,y){
+        super(scene,x,y);
         this.scene = scene;
         this.hurtbox = this.scene.add.rectangle(0,0,50,40,0xff0000,0);
         this.hurtbox.visible = false;
@@ -24,11 +24,13 @@ export default class Guitar extends Arma{
         this.hurtbox.visible = true;
         this.hurtbox.body.enable = true;
 
-        this.comprobarGolpe();
+        //this.comprobarGolpe();
 
-       if(this.scene.physics.overlap(this.hurtbox,this.enemigoActual)){
+        /*
+        if(this.scene.physics.overlap(this.hurtbox,this.enemigoActual)){
             this.hacerDaño(this.enemigoActual);
-       }
+        }
+        */
 
         //Hacer overlap de phaser para si hay varios enemigos (leer documentacion)
         this.scene.time.delayedCall(this.atk_speed, () => {
@@ -44,11 +46,13 @@ export default class Guitar extends Arma{
         this.hurtbox.y = playerY + direction.y * offset;
     }
 
+    /*
     comprobarGolpe(){
         if(this.enemigoActual && this.scene.physics.overlap(this.hurtbox,this.enemigoActual)){
             this.hacerDaño(this.enemigoActual);
         }
     }
+    */
 
     hacerDaño(enemigo){
         if(enemigo && enemigo.active){

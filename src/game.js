@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import Boot from './scenes/boot.js';
 import End from './scenes/end.js';
-import Level from './scenes/level.js';
+import Level from './scenes/level-ataque-guitar.js';
 
 /**
  * Inicio del juego en Phaser. Creamos el archivo de configuración del juego y creamos

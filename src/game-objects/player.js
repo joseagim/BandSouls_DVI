@@ -39,7 +39,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
         this.label = this.scene.add.text(10, 10, "", {fontSize: 20});
         
         //Seccion de armas
-        this.arma = new Guitar();
+        this.arma = new Guitar(this.scene);
 
         // this.cursors = this.scene.input.keyboard.createCursorKeys();
         this.keyA = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
@@ -144,9 +144,28 @@ export default class Player extends Phaser.GameObjects.Sprite {
 
     attack() {
         if(!this.arma.attacking){
-            
+            this.arma.attack();
         }
     }
+
+    getDirection() {
+    const direction = { x: 0, y: 0 };
+    
+    // Ejemplo con cursores (asumiendo que tienes cursores configurados)
+    if (this.keyA.isDown) direction.x = -1;
+    if (this.keyD.isDown) direction.x = 1;
+    if (this.keyW.isDown) direction.y = -1;
+    if (this.keyS.isDown) direction.y = 1;
+    
+    // Normalizar para diagonales (evitar velocidad extra)
+    if (direction.x !== 0 && direction.y !== 0) {
+        const length = Math.sqrt(direction.x * direction.x + direction.y * direction.y);
+        direction.x /= length;
+        direction.y /= length;
+    }
+    
+    return direction;
+}
     
 
 }

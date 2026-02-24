@@ -73,8 +73,8 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
         this.hurtbox.setVisible(true);
         this.hurtbox.active = true;
 
-        this.scene.time.delayedCall(this.attackDuration, () => {this.hurtbox.active = false; this.hurtbox.setVisible(false);});
-        this.scene.time.delayedCall(this.attackCooldown, () => {this.hurtbox.active = false; this.hurtbox.setVisible(false); this.canAttack = true;});
+        this.scene.time.delayedCall(this.attackDuration, () => {if (this.hurtbox !== null) {this.hurtbox.active = false; this.hurtbox.setVisible(false);}});
+        this.scene.time.delayedCall(this.attackCooldown, () => {if (this.hurtbox !== null) {this.hurtbox.active = false; this.hurtbox.setVisible(false); this.canAttack = true;}});
     }
 
     /**
@@ -93,8 +93,7 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
         } else {this.body.setVelocity(0);}
         
         
-        if (this.canAttack && Phaser.Math.Distance.Between(this.x, this.y + 42, this.scene.player.x, this.scene.player.y) <= this.attackRange) {
-            console.log("FUNCIONA");
+        if (this.canAttack && Phaser.Math.Distance.Between(this.x, this.y + 42, this.scene.player.x, this.scene.player.y) <= this.attackRange && this.hurtbox !== null) {
             this.canAttack = false;
             this.attack(this.scene.player);
         }

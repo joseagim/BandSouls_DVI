@@ -8,7 +8,7 @@ export default class Guitar extends Phaser.GameObjects.Sprite{
         this.player = player;
 
         this.scene = scene;
-        this.hurtbox = this.scene.add.rectangle(0,0,40,100,0xff0000,0);
+        this.hurtbox = this.scene.add.circle(0,0,40,0xff0000);
         this.hurtbox.visible = true;
         this.scene.add.existing(this);
         this.scene.physics.add.existing(this.hurtbox, false);
@@ -31,8 +31,6 @@ export default class Guitar extends Phaser.GameObjects.Sprite{
             this.hurtbox.visible = true;
             this.hurtbox.body.enable = true;
 
-            //this.comprobarGolpe();
-
             
             if(this.scene.physics.overlap(this.hurtbox,this.enemigoActual)){
                 this.hacerDaño(this.enemigoActual);
@@ -53,7 +51,7 @@ export default class Guitar extends Phaser.GameObjects.Sprite{
     }
 
     posicionarHitBox(direction){
-        const offset = 50; // Distancia desde el personaje
+        const offset = 25; // Distancia desde el personaje
         
         // Normalizar dirección por si acaso
         const length = Math.sqrt(direction.x * direction.x + direction.y * direction.y);
@@ -64,7 +62,7 @@ export default class Guitar extends Phaser.GameObjects.Sprite{
         
         // Posicionar el hurtbox
         // La mitad del largo (100/2 = 50) más el offset
-        const distance = offset + 50; // 50 (offset) + 50 (mitad del largo)
+        const distance = offset + 50; 
         
         this.hurtbox.x = this.x + normX * distance;
         this.hurtbox.y = this.y + normY * distance;
@@ -74,14 +72,6 @@ export default class Guitar extends Phaser.GameObjects.Sprite{
         
         console.log("Dirección:", direction, "Rotación:", this.hurtbox.rotation); // Debug
     }
-
-    /*
-    comprobarGolpe(){
-        if(this.enemigoActual && this.scene.physics.overlap(this.hurtbox,this.enemigoActual)){
-            this.hacerDaño(this.enemigoActual);
-        }
-    }
-    */
 
     hacerDaño(enemigo){
         if(enemigo && enemigo.active){

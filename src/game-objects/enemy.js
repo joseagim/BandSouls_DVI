@@ -39,8 +39,8 @@ export default class Enemy extends actor {
 
         this.scene.anims.create({
             key : 'enemy_walk',
-            frames: this.anims.generateFrameNames('enemy_walk',{ prefix: 'walk-', start: 1, end: 9 } ),
-            frameRate: 2,
+            frames: this.anims.generateFrameNames('enemy_walk',{ prefix: 'walk-', start: 0, end: 9 } ),
+            frameRate: 4,
             repeat : -1
         });
 
@@ -56,16 +56,8 @@ export default class Enemy extends actor {
         this.body.setOffset(9, 15);
         this.hurtbox.body.setCircle(this.attackRadius);
         this.hurtbox.body.setCollideWorldBounds();
-<<<<<<< HEAD
-        this.play('walk',true);
-    
-        // debug
-        this.label = this.scene.add.text(1080, 10, "", {fontSize: 20});
-        this.updateScore();
-=======
         this.play('enemy_idle',true);
         this.is_moving = false;
->>>>>>> ataque-guitarra
     }
 
     

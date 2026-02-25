@@ -3,8 +3,10 @@ import Phaser from 'phaser'
 import platform from '../../assets/sprites/platform.png'
 import base from '../../assets/sprites/base.png'
 import player from '../../assets/sprites/player.png'
-import enemyWalk from '../../assets/animations/orc-walk.png'
-import enemyWalkJSON from '../../assets/animations/orc-walk_atlas.json'
+import enemyIdle from '../../assets/animations/basic-enemy/idle.png'
+import enemyIdleJSON from '../../assets/animations/basic-enemy/enemy_idle_atlas.json'
+import enemyWalk from '../../assets/animations/basic-enemy/move.png'
+import enemyWalkJSON from '../../assets/animations/basic-enemy/enemy_walk_atlas.json'
 /**
  * Escena para la precarga de los assets que se usarán en el juego.
  * Esta escena se puede mejorar añadiendo una imagen del juego y una 
@@ -29,7 +31,8 @@ export default class Boot extends Phaser.Scene {
     this.load.image('platform', platform);
     this.load.image('base', base);
     this.load.image('player', player);
-    this.load.atlas('enemy',enemyWalk,enemyWalkJSON);
+    this.load.atlas('enemy_idle',enemyIdle,enemyIdleJSON);
+    this.load.atlas('enemy_walk',enemyWalk,enemyWalkJSON)
   }
 
   /**

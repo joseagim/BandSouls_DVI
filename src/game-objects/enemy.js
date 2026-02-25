@@ -33,9 +33,16 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
 
         // Animaciones
         this.scene.anims.create({
-            key : 'walk',
-            frames: this.anims.generateFrameNames('enemy',{ prefix: 'orc-walk-', start: 1, end: 6 } ),
-            frameRate: 10,
+            key : 'enemy_idle',
+            frames: this.anims.generateFrameNames('enemy_idle',{ prefix: 'idle-', start: 1, end: 2 } ),
+            frameRate: 5,
+            repeat : -1
+        });
+
+        this.scene.anims.create({
+            key : 'enemy_walk',
+            frames: this.anims.generateFrameNames('enemy_walk',{ prefix: 'walk-', start: 1, end: 9 } ),
+            frameRate: 2,
             repeat : -1
         });
 
@@ -47,11 +54,12 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
         this.scene.physics.add.existing(this.hurtbox);
         // bs escalado extraño para los colliders
         this.setScale(4);
-        this.body.setSize(8, 16);
-        this.body.setOffset(45, 42);
+        this.body.setSize(16, 16);
+        this.body.setOffset(9, 15);
         this.hurtbox.body.setCircle(this.attackRadius);
         this.hurtbox.body.setCollideWorldBounds();
-        this.play('walk',true);
+        this.play('enemy_idle',true);
+        this.is_moving = false;
     }
     
     die() {
@@ -90,7 +98,10 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
         }
         if (!this.scene.physics.overlap(this, this.scene.player)) {
             this.scene.physics.moveToObject(this,this.scene.player,this.speed);
-        } else {this.body.setVelocity(0);}
+            this.play('enemy_walk',true);
+        } else {this.body.setVelocity(0);
+            this.is_moving=false;
+        }
         
         
         if (this.canAttack && Phaser.Math.Distance.Between(this.x, this.y + 42, this.scene.player.x, this.scene.player.y) <= this.attackRange && this.hurtbox !== null) {

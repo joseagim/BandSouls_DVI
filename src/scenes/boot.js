@@ -4,7 +4,7 @@ import platform from '../../assets/sprites/platform.png'
 import base from '../../assets/sprites/base.png'
 import player from '../../assets/sprites/player.png'
 import enemyIdle from '../../assets/animations/basic-enemy/idle.png'
-import enemyIdleJSON from '../../assets/animations/orc-walk_atlas.json'
+import enemyIdleJSON from '../../assets/animations/basic-enemy/enemy_idle_atlas.json'
 import enemyWalk from '../../assets/animations/basic-enemy/move.png'
 import enemyWalkJSON from '../../assets/animations/basic-enemy/enemy_walk_atlas.json'
 /**
@@ -32,7 +32,7 @@ export default class Boot extends Phaser.Scene {
     this.load.image('base', base);
     this.load.image('player', player);
     this.load.atlas('enemy_idle',enemyIdle,enemyIdleJSON);
-    this.load.atlas('enemy_walk',enemyIdle,enemyWalk,enemyWalkJSON)
+    this.load.atlas('enemy_walk',enemyWalk,enemyWalkJSON)
   }
 
   /**

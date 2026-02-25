@@ -1,4 +1,6 @@
 import Phaser from 'phaser';
+import Arma from './arma'
+import Guitar from './guitar';
 
 /**
  * Clase que representa el jugador del juego. El jugador se mueve por el mundo usando los cursores.
@@ -16,6 +18,8 @@ export default class Player extends Phaser.GameObjects.Sprite {
     constructor(scene, x, y) {
         super(scene, x, y, 'player');
         this.score = 0;
+        this.x = x;
+        this.y = y;
                  
         this.scene.add.existing(this);
         this.scene.physics.add.existing(this);
@@ -35,6 +39,9 @@ export default class Player extends Phaser.GameObjects.Sprite {
 
         // Esta label es la UI en la que pondremos la puntuación del jugador
         this.label = this.scene.add.text(10, 10, "", {fontSize: 20});
+        
+
+
         // this.cursors = this.scene.input.keyboard.createCursorKeys();
         this.keyA = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
         this.keyS = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
@@ -42,6 +49,18 @@ export default class Player extends Phaser.GameObjects.Sprite {
         this.keyW = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
         this.keyF = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
         this.keySpace = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.mouseClick = this.scene.input.on('pointerdown', (pointer) => {
+            if(pointer.button == 0){    //segun documentación 0 es el botón derechp
+                console.log("Presionando ratón");
+                this.attack();
+            }
+        });
+
+                //Seccion de armas
+        this.arma = new Guitar(this.scene,this.x,this.y,this);
+
+        this.enemigo = null;
+
 
         this.updateScore();
     }
@@ -129,5 +148,37 @@ export default class Player extends Phaser.GameObjects.Sprite {
             this.canDash = true;
         });
     }
+
+    attack() {
+        if(!this.arma.attacking){
+            this.arma.attacking = true;
+
+            this.arma.enemigoActual = this.enemigo;
+        }
+    }
+
+    getDirection() {
+        const direction = { x: 0, y: 0 };
+        
+        // Ejemplo con cursores (asumiendo que tienes cursores configurados)
+        if (this.keyA.isDown) direction.x = -1;
+        if (this.keyD.isDown) direction.x = 1;
+        if (this.keyW.isDown) direction.y = -1;
+        if (this.keyS.isDown) direction.y = 1;
+        
+        // Normalizar para diagonales (evitar velocidad extra)
+        if (direction.x !== 0 && direction.y !== 0) {
+            const length = Math.sqrt(direction.x * direction.x + direction.y * direction.y);
+            direction.x /= length;
+            direction.y /= length;
+        }
+        
+        return direction;
+    }
+
+    setEnemigo(enemigo){
+        this.enemigo = enemigo;
+    }
+    
 
 }

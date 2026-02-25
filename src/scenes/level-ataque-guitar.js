@@ -12,7 +12,7 @@ import Enemy from '../game-objects/enemy.js'
  * El juego termina cuando el jugador ha recogido 10 estrellas.
  * @extends Phaser.Scene
  */
-export default class Level extends Phaser.Scene {
+export default class Level_Guitar extends Phaser.Scene {
     /**
      * Constructor de la escena
      */
@@ -27,7 +27,9 @@ export default class Level extends Phaser.Scene {
         //this.stars = 10;
         this.bases = this.add.group();
         this.player = new Player(this, 400, 400);
-        this.enemy = new Enemy(this,450,400);
+        this.enemy = new Enemy(this,600,700);
+
+        this.player.setEnemigo(this.enemy);
 
         new Platform(this, this.player,this.enemy, this.bases, 150, 350);
         new Platform(this, this.player,this.enemy, this.bases, 850, 350);
@@ -35,7 +37,7 @@ export default class Level extends Phaser.Scene {
         new Platform(this, this.player,this.enemy, this.bases, 150, 100);
         new Platform(this, this.player,this.enemy, this.bases, 850, 100);
 
-        this.physics.add.overlap();
+        //this.physics.add.overlap(); <----- Esto da problemas de colliders
 
     }
 
@@ -50,6 +52,8 @@ export default class Level extends Phaser.Scene {
      * sobre la que estaba la estrella cogida para evitar repeticiones
      * @param {Base} base La base sobre la que estaba la estrella que se ha cogido
      */
+
+    /*
     starPickt(base) {
         this.player.point();
         if (this.player.score == this.stars) {
@@ -61,4 +65,5 @@ export default class Level extends Phaser.Scene {
 
         }
     }
+        */
 }

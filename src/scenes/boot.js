@@ -42,6 +42,9 @@ export default class Boot extends Phaser.Scene {
   create() {
     let ancho = 960;
     let alto = 720;
-    this.add.rectangle(644, 360, ancho, alto, 0xffffff);
+    this.add.rectangle(640, 360, ancho, alto, 0xffffff);
+    const st=String("Start");
+    this.add.text(585,490,st,{fontSize:"48px", color: "Black"});
+    this.add.text(550,560,"Opciones",{fontSize:"48px", color: "Black"});
   }
 }

@@ -3,6 +3,8 @@ import Phaser from 'phaser'
 import platform from '../../assets/sprites/platform.png'
 import base from '../../assets/sprites/base.png'
 import player from '../../assets/sprites/player.png'
+import laudeSpritesheet from '../../assets/animations/laude/sprite.png'
+import laudeAtlas from '../../assets/animations/laude/atlas.json'
 import enemyIdle from '../../assets/animations/basic-enemy/Idle.png'
 import enemyIdleJSON from '../../assets/animations/basic-enemy/enemy_idle_atlas.json'
 import enemyWalk from '../../assets/animations/basic-enemy/move.png'
@@ -31,6 +33,7 @@ export default class Boot extends Phaser.Scene {
     this.load.image('platform', platform);
     this.load.image('base', base);
     this.load.image('player', player);
+    this.load.atlas('laude', laudeSpritesheet, laudeAtlas);
     this.load.atlas('enemy_idle',enemyIdle,enemyIdleJSON);
     this.load.atlas('enemy_walk',enemyWalk,enemyWalkJSON)
   }

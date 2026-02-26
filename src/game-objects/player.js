@@ -34,6 +34,15 @@ export default class Player extends actor {
         // Estados
         this.isDashing = false;
         this.canDash = true;
+        this.lastDirection = 'down';
+
+        // Sprites
+        this.createAnimations();
+
+        this.body.setSize(12, 24);
+        this.body.setOffset(10, 8);
+        this.setScale(4);
+        this.play('idle-down', true);
 
         // Esta label es la UI en la que pondremos la puntuación del jugador
         this.label = this.scene.add.text(10, 10, "", {fontSize: 20});
@@ -54,7 +63,7 @@ export default class Player extends actor {
             }
         });
 
-                //Seccion de armas
+        // Seccion de armas
         this.arma = new Guitar(this.scene,this.x,this.y,this);
 
         this.enemigo = null;
@@ -71,6 +80,7 @@ export default class Player extends actor {
      */
     preUpdate(t, dt) {
         super.preUpdate(t, dt);
+
         let isHorizontal = false;
 
         if (this.isDashing) return;
@@ -79,23 +89,29 @@ export default class Player extends actor {
         
         if (this.keyA.isDown) {
             isHorizontal = true;
+            this.lastDirection = 'left';
             this.body.setVelocityX(-this.speed);
 
         } else if (this.keyD.isDown) {
             isHorizontal = true;
+            this.lastDirection = 'right';
             this.body.setVelocityX(this.speed);
         }
 
         
         if (this.keyW.isDown) {
             isHorizontal = false;
+            this.lastDirection = 'up';
             this.body.setVelocityY(-this.speed);
         } else if (this.keyS.isDown) {
             isHorizontal = false;
+            this.lastDirection = 'down';
             this.body.setVelocityY(this.speed);;
         }
 
         this.body.velocity.normalize().scale(this.speed);
+
+        this.updateAnimation();
 
         if (this.keySpace.isDown && this.canDash && this.body.velocity.length() > 0) {
             this.doDash();
@@ -117,16 +133,19 @@ export default class Player extends actor {
     }
     
     doDash() {
+        // el jugador hace dash
         this.isDashing = true;
         this.canDash = false;
         
+        // velocidad en función del vector dirección del jugador
         this.body.velocity.normalize().scale(this.dashSpeed);
-
+        
+        // cuando termine el dash
         this.scene.time.delayedCall(this.dashDuration, () => {
             this.isDashing = false;
         });
 
-        // 2. Volvemos a permitir el dash después de un cooldown (ej. 1 segundo)
+        // cuando termine el cooldown del dash
         this.scene.time.delayedCall(this.dashCooldown, () => {
             this.canDash = true;
         });
@@ -161,6 +180,108 @@ export default class Player extends actor {
 
     setEnemigo(enemigo){
         this.enemigo = enemigo;
+    }
+
+    updateAnimation() {
+        // para evitar todo el rato this.body.velocity
+        const vel = this.body.velocity;
+
+        // si se está moviendo
+        if (vel.length() > 0) {
+            if (Math.abs(vel.x) > Math.abs(vel.y)) {
+                this.flipX = (vel.x < 0);
+                this.play('run-right', true);
+            } else {
+                this.flipX = false;
+                if (vel.y < 0) this.play('run-up', true);
+                else this.play('run-down', true);
+            }
+        } 
+        // si está quieto
+        else {
+            // miramos la última dirección
+            switch (this.lastDirection) {
+                case 'left':
+                    this.flipX = true;
+                    this.play('idle-right', true);
+                    break;
+                case 'right':
+                    this.flipX = false;
+                    this.play('idle-right', true);
+                    break;
+                case 'up':
+                    this.flipX = false;
+                    this.play('idle-up', true);
+                    break;
+                case 'down':
+                    this.flipX = false;
+                    this.play('idle-down', true);
+                    break;
+            }
+        }
+    }
+
+    createAnimations() {
+        this.scene.anims.create({
+            key: 'idle-down',
+            frames: this.anims.generateFrameNames('laude', {
+                prefix: 'idle_down_',
+                start: 1,
+                end: 4
+            }),
+            frameRate: 4,
+            repeat: -1
+        });
+        this.scene.anims.create({
+            key: 'idle-up',
+            frames: this.anims.generateFrameNames('laude', {
+                prefix: 'idle_up_',
+                start: 1,
+                end: 4
+            }),
+            frameRate: 4,
+            repeat: -1
+        });
+        this.scene.anims.create({
+            key: 'idle-right',
+            frames: this.anims.generateFrameNames('laude', {
+                prefix: 'idle_right_',
+                start: 1,
+                end: 4
+            }),
+            frameRate: 4,
+            repeat: -1
+        });
+        this.scene.anims.create({
+            key: 'run-down',
+            frames: this.anims.generateFrameNames('laude', {
+                prefix: 'run_down_',
+                start: 1,
+                end: 4
+            }),
+            frameRate: 8,
+            repeat: -1
+        });
+        this.scene.anims.create({
+            key: 'run-up',
+            frames: this.anims.generateFrameNames('laude', {
+                prefix: 'run_up_',
+                start: 1,
+                end: 4
+            }),
+            frameRate: 8,
+            repeat: -1
+        });
+        this.scene.anims.create({
+            key: 'run-right',
+            frames: this.anims.generateFrameNames('laude', {
+                prefix: 'run_right_',
+                start: 1,
+                end: 4
+            }),
+            frameRate: 8,
+            repeat: -1
+        });
     }
     
 

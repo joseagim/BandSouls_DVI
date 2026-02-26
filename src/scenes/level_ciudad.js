@@ -3,6 +3,7 @@ import Platform from '../game-objects/platform.js';
 import Player from '../game-objects/player.js';
 import Enemy from '../game-objects/enemy.js';
 import actor from  '../game-objects/actor.js';
+import Level from './level.js';
 
 
 /**
@@ -13,12 +14,12 @@ import actor from  '../game-objects/actor.js';
  * El juego termina cuando el jugador ha recogido 10 estrellas.
  * @extends Phaser.Scene
  */
-export default class Level extends Phaser.Scene {
+export default class Level_Ciudad extends Level {
     /**
      * Constructor de la escena
      */
-    constructor(key_nombre) {
-        super({ key: key_nombre });
+    constructor() {
+        super('level_ciudad');
     }
 
     /**
@@ -27,18 +28,14 @@ export default class Level extends Phaser.Scene {
     create() {
         //this.stars = 10;
         this.bases = this.add.group();
-        this.player = new Player(this, 400, 400);
-        this.enemyGroup = this.physics.add.group({
-            classType : actor,
-            active : true,
-            maxSize : -1
-        });
-        let enemy = new Enemy(this,450,400);
-        this.enemyGroup.add(enemy);
 
-        this.physics.add.overlap(this.player,this.enemyGroup,function(player,enemy){
-            enemy.attack(player);
-        },null,this);
+        super.create();
+
+        new Platform(this, this.player,this.enemy, this.bases, 150, 350);
+        new Platform(this, this.player,this.enemy, this.bases, 850, 350);
+        new Platform(this, this.player,this.enemy, this.bases, 500, 200);
+        new Platform(this, this.player,this.enemy, this.bases, 150, 100);
+        new Platform(this, this.player,this.enemy, this.bases, 850, 100);
 
     }
 }

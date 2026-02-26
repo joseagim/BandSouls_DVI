@@ -27,6 +27,7 @@ export default class actor extends Phaser.GameObjects.Sprite {
         this.life -= dmg;
         if (this.life <= 0) this.die();
         this.updateScore();
+        console.log("RECOBE DAÑO");
     }
 
     die() {

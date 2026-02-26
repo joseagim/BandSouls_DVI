@@ -3,6 +3,7 @@ import Phaser from 'phaser'
 import platform from '../../assets/sprites/platform.png'
 import base from '../../assets/sprites/base.png'
 import player from '../../assets/sprites/player.png'
+import prueba from '../../assets/sprites/title-screen/letraprueba.png'
 import enemyIdle from '../../assets/animations/basic-enemy/Idle.png'
 import enemyIdleJSON from '../../assets/animations/basic-enemy/enemy_idle_atlas.json'
 import enemyWalk from '../../assets/animations/basic-enemy/move.png'
@@ -28,11 +29,13 @@ export default class Boot extends Phaser.Scene {
   preload() {
     // Con setPath podemos establecer el prefijo que se añadirá a todos los load que aparecen a continuación
     //this.load.setPath('assets/sprites/');
+    this.load.image('prueba', prueba);
+
     this.load.image('platform', platform);
     this.load.image('base', base);
     this.load.image('player', player);
-    this.load.atlas('enemy_idle',enemyIdle,enemyIdleJSON);
-    this.load.atlas('enemy_walk',enemyWalk,enemyWalkJSON)
+    this.load.atlas('enemy_idle', enemyIdle, enemyIdleJSON);
+    this.load.atlas('enemy_walk', enemyWalk, enemyWalkJSON)
   }
 
   /**
@@ -42,9 +45,25 @@ export default class Boot extends Phaser.Scene {
   create() {
     let ancho = 960;
     let alto = 720;
-    this.add.rectangle(640, 360, ancho, alto, 0xffffff);
-    const st=String("Start");
-    this.add.text(585,490,st,{fontSize:"48px", color: "Black"});
-    this.add.text(550,560,"Opciones",{fontSize:"48px", color: "Black"});
+    this.add.rectangle(640, 368, ancho, alto, 0xffffff);
+    const st = String("Start");
+    let startText = this.add.image(570,490,"prueba");
+    //let startText = this.add.text(570, 490, st, { fontSize: "48px", color: "Black" });
+    let optionsText = this.add.text(527, 560, "Opciones", { fontSize: "48px", color: "Black" });
+    let activeOption = null;
+    console.log("anchura: "+startText.width);  // Ancho total del texto en píxeles
+    console.log("altura: "+startText.height);
+    if (activeOption == null) {
+
+      this.input.keyboard.on("keydown-DOWN", () => {
+
+      });
+
+    } else if (activeOption == startText) {
+
+    } else {
+
+    }
+
   }
 }

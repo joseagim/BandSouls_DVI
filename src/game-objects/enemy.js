@@ -60,6 +60,7 @@ export default class Enemy extends actor {
         this.is_moving = false;
         this.label = this.scene.add.text(1080,10,"",{fontSize: 20});
         this.updateScore();
+        
     }
 
     

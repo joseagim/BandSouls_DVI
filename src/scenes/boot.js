@@ -40,6 +40,8 @@ export default class Boot extends Phaser.Scene {
    * nivel del juego
    */
   create() {
-    this.scene.start('level');
+    let ancho = 960;
+    let alto = 720;
+    this.add.rectangle(644, 360, ancho, alto, 0xffffff);
   }
 }

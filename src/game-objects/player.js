@@ -49,7 +49,7 @@ export default class Player extends actor {
         this.keySpace = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.mouseClick = this.scene.input.on('pointerdown', (pointer) => {
             if(pointer.button == 0){    //segun documentación 0 es el botón derechp
-                console.log("Presionando ratón");
+                //console.log("Presionando ratón");
                 this.attack();
             }
         });

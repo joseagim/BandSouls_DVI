@@ -60,6 +60,7 @@ export default class Enemy extends actor {
         this.is_moving = false;
         this.label = this.scene.add.text(1080,10,"",{fontSize: 20});
         this.updateScore();
+        
     }
 
     
@@ -106,9 +107,10 @@ export default class Enemy extends actor {
         }
 
         // quick hack, refactor laater
-        if (this.hurtbox !== null && !this.hasDamaged && this.scene.physics.overlap(this.hurtbox, this.scene.player)) {
+        if (!this.hasDamaged && this.hurtbox !== null && this.scene.physics.overlap(this.hurtbox, this.scene.player)) {
             this.scene.player.getDamage(this.attackDamage);
             this.hasDamaged = true;
+            console.log("blablabla")
         }
     }
 

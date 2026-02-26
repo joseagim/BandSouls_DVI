@@ -9,6 +9,7 @@ import start from '../../assets/sprites/title-screen/start-text.png'
 import options from '../../assets/sprites/title-screen/options-text.png'
 import optionsSelected from '../../assets/sprites/title-screen/options-selected.png'
 import startSelected from '../../assets/sprites/title-screen/start-selected.png'
+import selectionPick from '../../assets/sprites/title-screen/selection-pick.png'
 import enemyIdle from '../../assets/animations/basic-enemy/Idle.png'
 import enemyIdleJSON from '../../assets/animations/basic-enemy/enemy_idle_atlas.json'
 import enemyWalk from '../../assets/animations/basic-enemy/move.png'
@@ -35,8 +36,10 @@ export default class Boot extends Phaser.Scene {
     // Con setPath podemos establecer el prefijo que se añadirá a todos los load que aparecen a continuación
     //this.load.setPath('assets/sprites/');
     this.load.image('start', start);
-    this.load.image('options',options)
-
+    this.load.image('options',options);
+    this.load.image('startSelected', startSelected);
+    this.load.image('optionsSelected',optionsSelected);
+    this.load.image('selectionPick',selectionPick);
     this.load.image('platform', platform);
     this.load.image('base', base);
     this.load.image('player', player);
@@ -53,8 +56,9 @@ export default class Boot extends Phaser.Scene {
     let ancho = 960;
     let alto = 720;
     this.add.rectangle(640, 368, ancho, alto, 0xffffff);
-    let startText = this.add.image(644,490,"start");
-    let optionsText = this.add.image(644, 560, "options");
+    const startText = this.add.image(644,490,"start");
+    const select = this.add.image(850,490,"selectionPick");
+    const optionsText = this.add.image(644, 560, "options");
     let activeOption = null;
     console.log("anchura: "+startText.width);  // Ancho total del texto en píxeles
     console.log("altura: "+startText.height);
@@ -64,11 +68,20 @@ export default class Boot extends Phaser.Scene {
         activeOption=startText;
       });
 
-    } else if (activeOption == startText) {
-
-    } else {
+      this.input.keyboard.on("keydown-UP", () => {
+        activeOption=startText;
+      });
 
     }
 
   }
+
+  changeButton(){
+    if(activeOption==options){
+
+    }else{
+
+    }
+  }
 }
+

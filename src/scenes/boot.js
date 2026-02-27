@@ -57,7 +57,7 @@ export default class Boot extends Phaser.Scene {
     let alto = 720;
     this.add.rectangle(640, 368, ancho, alto, 0xffffff);
     const startText = this.add.image(644,490,"start");
-    const select = this.add.image(850,490,"selectionPick");
+    const select = this.add.image(910,490,"selectionPick");
     const optionsText = this.add.image(644, 560, "options");
     let activeOption = null;
     console.log("anchura: "+startText.width);  // Ancho total del texto en píxeles

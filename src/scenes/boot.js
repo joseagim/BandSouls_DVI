@@ -90,7 +90,7 @@ export default class Boot extends Phaser.Scene {
 
     this.input.keyboard.on("keydown-ENTER",()=>{
       if(this.activeOption==this.startText){
-        this.scene.start('level');ss
+        this.scene.start('level');
       }else if(this.activeOption==this.optionsText){
         alert("se mostraria menu de opciones: audio, brillo, etc...")
       }else{

@@ -36,10 +36,10 @@ export default class Boot extends Phaser.Scene {
     // Con setPath podemos establecer el prefijo que se añadirá a todos los load que aparecen a continuación
     //this.load.setPath('assets/sprites/');
     this.load.image('start', start);
-    this.load.image('options',options);
+    this.load.image('options', options);
     this.load.image('startSelected', startSelected);
-    this.load.image('optionsSelected',optionsSelected);
-    this.load.image('selectionPick',selectionPick);
+    this.load.image('optionsSelected', optionsSelected);
+    this.load.image('selectionPick', selectionPick);
     this.load.image('platform', platform);
     this.load.image('base', base);
     this.load.image('player', player);
@@ -55,33 +55,54 @@ export default class Boot extends Phaser.Scene {
   create() {
     let ancho = 960;
     let alto = 720;
-    this.add.rectangle(640, 368, ancho, alto, 0xffffff);
-    const startText = this.add.image(644,490,"start");
-    const select = this.add.image(910,490,"selectionPick");
-    const optionsText = this.add.image(644, 560, "options");
-    let activeOption = null;
-    console.log("anchura: "+startText.width);  // Ancho total del texto en píxeles
-    console.log("altura: "+startText.height);
-    if (activeOption == null) {
+    this.add.rectangle(640, 368, ancho, alto, 0xffffffff);
+    this.startText = this.add.image(596, 490, "start");
+    this.select = this.add.image(405, 490, "selectionPick");
+    this.select.setVisible(false);
+    this.optionsText = this.add.image(644, 570, "options");
+    this.activeOption = null;
+    this.padebug();
 
-      this.input.keyboard.on("keydown-DOWN", () => {
-        activeOption=startText;
-      });
+    this.input.keyboard.on("keydown-W", () => {
+      if (this.activeOption == null){
+        this.activeOption=this.startText;
+        this.select.setVisible(true);
+      }else if (this.activeOption == this.optionsText) {
+        this.activeOption = this.startText;
+        this.moveSelect(this.select, this.activeOption);
+      } else {
+        this.activeOption=this.optionsText;
+        this.moveSelect(this.select, this.activeOption);
+      }
+    });
 
-      this.input.keyboard.on("keydown-UP", () => {
-        activeOption=startText;
-      });
+    this.input.keyboard.on("keydown-S", () => {
+      if (this.activeOption == null){
+        this.activeOption=this.startText;
+        this.select.setVisible(true);
+      }else if (this.activeOption == this.optionsText) {
+        this.activeOption = this.startText;
+        this.moveSelect(this.select, this.activeOption);
+      } else {
+        this.activeOption=this.optionsText;
+        this.moveSelect(this.select, this.activeOption);
+      }
+    });
 
-    }
+    this.input.keyboard.on("keydown-ENTER",()=>{
+      if(this.activeOption==this.startText){
+        
+      }else if(this.activeOption==this.optionsText){
+
+      }else{
+
+      }
+    });
 
   }
 
-  changeButton(){
-    if(activeOption==options){
-
-    }else{
-
-    }
+  moveSelect(select, active) {
+    select.y = active.y;
   }
 }
 

@@ -49,14 +49,16 @@ export default class Player extends actor {
         this.keySpace = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.mouseClick = this.scene.input.on('pointerdown', (pointer) => {
             if(pointer.button == 0){    //segun documentación 0 es el botón derechp
-                //console.log("Presionando ratón");
-                this.attack();
+                this.arma.active = true;
+                this.scene.time.delayedCall(this.arma.attk_timer)
             }
         });
 
                 //Seccion de armas
         this.arma = new Guitar(this.scene,this.x,this.y,this);
-
+        this.setWeaponCollision();
+        this.arma.active = false;
+        
         this.enemigo = null;
 
 
@@ -132,12 +134,16 @@ export default class Player extends actor {
         });
     }
 
-    attack() {
+    attack(enemy) {
         if(!this.arma.attacking){
             this.arma.attacking = true;
-
-            this.arma.enemigoActual = this.enemigo;
+            this.arma.attack(enemy, this.attackMod);
         }
+    }
+
+    // funcion para pasarle el arma seleccionada al nivel y enganchar su hurtbox con los enemigos
+    setWeaponCollision() {
+        this.scene.setWeaponCollision(this.arma);
     }
 
     getDirection() {

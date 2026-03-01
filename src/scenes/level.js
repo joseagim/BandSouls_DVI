@@ -33,12 +33,20 @@ export default class Level extends Phaser.Scene {
             active : true,
             maxSize : -1
         });
-        let enemy = new Enemy(this,450,400);
-        this.enemyGroup.add(enemy);
+        let enemy1 = new Enemy(this,450,400);
+        this.enemyGroup.add(new Enemy(this, 450, 450));
+        this.enemyGroup.add(enemy1);
 
         this.physics.add.overlap(this.player,this.enemyGroup,function(player,enemy){
             enemy.attack(player);
         },null,this);
+    }
 
+    setWeaponCollision(weapon) {
+        for (let hurtbox in weapon.getHurtboxes()) {
+            this.physics.add.overlap(hurtbox, this.enemyGroup, (hurtbox, enemy) => {
+                this.player.attack(enemy);
+            }, null, this);
+        }
     }
 }

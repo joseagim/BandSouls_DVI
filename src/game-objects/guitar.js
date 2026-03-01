@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import Arma from './arma.js'
+import Enemy from './enemy.js';
 
 export default class Guitar extends Phaser.GameObjects.Sprite{
     constructor(scene,x,y,player){
@@ -19,6 +20,32 @@ export default class Guitar extends Phaser.GameObjects.Sprite{
         this.enemigoActual = null;
     }
 
+    attack(enemy, attackMod) {
+        this.hurtbox.visible = true;
+        this.hurtbox.body.enable = true;
+
+            
+        if(this.scene.physics.overlap(this.hurtbox,this.enemigoActual)){
+            this.hacerDaño(this.enemigoActual);
+        }
+        
+
+        //Hacer overlap de phaser para si hay varios enemigos (leer documentacion)
+        if(!this.attk_timer){
+            this.attk_timer = this.scene.time.delayedCall(this.atk_speed, () => {
+            this.hurtbox.active = true; //poner a falase
+            this.hurtbox.visible = true, //poner a falase
+            this.attacking=false,
+            this.hurtbox.body.enable=true, //poner a falase
+            this.attk_timer = null;});
+                
+            }
+    }
+
+    getHurtboxes() {
+        return [this.hurtbox];
+    }
+
     preUpdate(t,dt){
         
         //posicionar el vhitbox (la funcion de abajo) : como sabe el juego donde se pinta la hurtbox si no extiende de Phaser.GameObject y no se le pasa ni x ni y????
@@ -28,25 +55,7 @@ export default class Guitar extends Phaser.GameObjects.Sprite{
         this.posicionarHitBox(this.playerDir);
 
         if(this.attacking){
-            this.hurtbox.visible = true;
-            this.hurtbox.body.enable = true;
 
-            
-            if(this.scene.physics.overlap(this.hurtbox,this.enemigoActual)){
-                this.hacerDaño(this.enemigoActual);
-            }
-            
-
-            //Hacer overlap de phaser para si hay varios enemigos (leer documentacion)
-            if(!this.attk_timer){
-                this.attk_timer = this.scene.time.delayedCall(this.atk_speed, () => {
-                    this.hurtbox.active = true; //poner a falase
-                    this.hurtbox.visible = true, //poner a falase
-                    this.attacking=false,
-                    this.hurtbox.body.enable=true, //poner a falase
-                    this.attk_timer = null;});
-                    
-                }
         }
     }
 

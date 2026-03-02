@@ -41,7 +41,7 @@ export default class Player extends actor {
 
         this.body.setSize(12, 24);
         this.body.setOffset(10, 8);
-        this.setScale(4);
+        this.setScale(1.5);
         this.play('idle-down', true);
 
         // Esta label es la UI en la que pondremos la puntuación del jugador

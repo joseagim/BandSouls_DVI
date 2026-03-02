@@ -17,7 +17,7 @@ export default class Level_Fondo extends Phaser.Scene {
      * Constructor de la escena
      */
     constructor() {
-        super({ key: 'level' });
+        super({ key: 'level_fondo' });
     }
 
     /**
@@ -34,6 +34,7 @@ export default class Level_Fondo extends Phaser.Scene {
         layer_edif.setCollisionByExclusion([-1],true);
         layer_deco.setCollisionByExclusion([-1],true);
         layer_obj.setCollisionByExclusion([-1],true);
+
         
         this.bases = this.add.group();
         this.player = new Player(this, 400, 400);
@@ -43,19 +44,14 @@ export default class Level_Fondo extends Phaser.Scene {
 
         // Configurar cámara
         this.cameras.main.setBounds(0, 0, 1280, 720);
-        this.cameras.main.setSize(400, 300); // Ventana de visualización
+        this.cameras.main.setZoom(3); // Ventana de visualización
         this.cameras.main.startFollow(this.player, true, 0.05, 0.05);
         
         // Opcional: agregar bordes para visualizar la cámara
         this.cameras.main.setBackgroundColor(0x000000);
 
-        new Platform(this, this.player,this.enemy, this.bases, 150, 350);
-        new Platform(this, this.player,this.enemy, this.bases, 850, 350);
-        new Platform(this, this.player,this.enemy, this.bases, 500, 200);
-        new Platform(this, this.player,this.enemy, this.bases, 150, 100);
-        new Platform(this, this.player,this.enemy, this.bases, 850, 100);
+        this.scene.launch('hud');
 
-        //this.physics.add.overlap(); <----- Esto da problemas de colliders
 
     }
 

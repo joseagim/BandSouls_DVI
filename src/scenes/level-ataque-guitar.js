@@ -17,7 +17,7 @@ export default class Level_Guitar extends Phaser.Scene {
      * Constructor de la escena
      */
     constructor() {
-        super({ key: 'level' });
+        super({ key: 'level_guitar' });
     }
 
     /**

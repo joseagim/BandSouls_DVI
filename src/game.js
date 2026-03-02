@@ -11,7 +11,7 @@ import HUD from './scenes/hud.js';
 let config = {
     type: Phaser.AUTO,
     width: 1280,
-    height: 720,
+    height: 736,
     parent: 'juego',
     scale: {
         mode: Phaser.Scale.FIT,  

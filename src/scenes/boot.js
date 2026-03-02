@@ -3,6 +3,7 @@ import Phaser from 'phaser'
 import platform from '../../assets/sprites/platform.png'
 import base from '../../assets/sprites/base.png'
 import player from '../../assets/sprites/player.png'
+import titleScreen from '../../assets/sprites/title-screen/lopk.png'
 import laudeSpritesheet from '../../assets/animations/laude/sprite.png'
 import laudeAtlas from '../../assets/animations/laude/atlas.json'
 import start from '../../assets/sprites/title-screen/start-text.png'
@@ -41,6 +42,7 @@ export default class Boot extends Phaser.Scene {
     // Con setPath podemos establecer el prefijo que se añadirá a todos los load que aparecen a continuación
     //this.load.setPath('assets/sprites/');
     this.load.image('start', start);
+    this.load.image('title', titleScreen);
     this.load.image('options', options);
     this.load.image('selectionPick', selectionPick);
     this.load.image('platform', platform);
@@ -60,10 +62,7 @@ export default class Boot extends Phaser.Scene {
    * nivel del juego
    */
   create() {
-    let ancho = 960;
-    let alto = 720;
-    this.add.rectangle(640, 368, ancho, alto, 0xffffffff);
-
+    this.add.image(640, 368, "title");
     this.startText = this.add.sprite(596, 490, "start");
     this.anims.create({
         key: 'startAnim',

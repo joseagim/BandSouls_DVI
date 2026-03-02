@@ -51,7 +51,7 @@ export default class Enemy extends actor {
         this.scene.add.existing(this.hurtbox);
         this.scene.physics.add.existing(this.hurtbox);
         // bs escalado extraño para los colliders
-        this.setScale(4);
+        this.setScale(2);
         this.body.setSize(16, 16);
         this.body.setOffset(9, 15);
         this.hurtbox.body.setCircle(this.attackRadius);

@@ -20,6 +20,8 @@ import enemyWalkJSON from '../../assets/animations/basic-enemy/enemy_walk_atlas.
 import HUDhealthBorder from '../../assets/animations/hud/health-bar/border.png'
 import HUDhealthBar from '../../assets/animations/hud/health-bar/bar.png'
 
+import city_tileset from '../../assets/map/city_tileset.png';
+import city_json from '../../assets/map/ciudad-mapa.json'
 /**
  * Escena para la precarga de los assets que se usarán en el juego.
  * Esta escena se puede mejorar añadiendo una imagen del juego y una 
@@ -45,6 +47,8 @@ export default class Boot extends Phaser.Scene {
     this.load.image('title', titleScreen);
     this.load.image('options', options);
     this.load.image('selectionPick', selectionPick);
+    this.load.image('city_tiles',city_tileset);
+    this.load.tilemapTiledJSON('map',city_json);
     this.load.image('platform', platform);
     this.load.image('base', base);
     this.load.image('player', player);

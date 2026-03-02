@@ -3,6 +3,7 @@ import Boot from './scenes/boot.js';
 import End from './scenes/end.js';
 import Level from './scenes/level-ataque-guitar.js';
 import HUD from './scenes/hud.js';
+import Level from './scenes/level_fondo.js';
 
 /**
  * Inicio del juego en Phaser. Creamos el archivo de configuración del juego y creamos

@@ -110,7 +110,10 @@ export default class Enemy extends actor {
         if (!this.hasDamaged && this.hurtbox !== null && this.scene.physics.overlap(this.hurtbox, this.scene.player)) {
             this.scene.player.getDamage(this.attackDamage);
             this.hasDamaged = true;
-            console.log("blablabla")
+            this.scene.events.emit('updateHealth', { 
+                current: this.scene.player.life, 
+                max: this.scene.player.maxHP
+            });
         }
     }
 

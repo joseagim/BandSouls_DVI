@@ -37,6 +37,9 @@ export default class Level_Guitar extends Phaser.Scene {
         new Platform(this, this.player,this.enemy, this.bases, 150, 100);
         new Platform(this, this.player,this.enemy, this.bases, 850, 100);
 
+        console.log("Lanzar el HUD");
+        this.scene.launch('hud');
+
         //this.physics.add.overlap(); <----- Esto da problemas de colliders
 
     }

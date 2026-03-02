@@ -29,11 +29,14 @@ export default class Level extends Phaser.Scene {
         this.player = new Player(this, 400, 400);
         this.enemy = new Enemy(this,450,400);
 
-        new Platform(this, this.player,this.enemy, this.bases, 150, 350);
-        new Platform(this, this.player,this.enemy, this.bases, 850, 350);
-        new Platform(this, this.player,this.enemy, this.bases, 500, 200);
-        new Platform(this, this.player,this.enemy, this.bases, 150, 100);
-        new Platform(this, this.player,this.enemy, this.bases, 850, 100);
+        //new Platform(this, this.player,this.enemy, this.bases, 150, 350);
+        //new Platform(this, this.player,this.enemy, this.bases, 850, 350);
+        //new Platform(this, this.player,this.enemy, this.bases, 500, 200);
+        //new Platform(this, this.player,this.enemy, this.bases, 150, 100);
+        //new Platform(this, this.player,this.enemy, this.bases, 850, 100);
+        
+        console.log("Lanzar el HUD");
+        this.scene.launch('hud');
 
         this.physics.add.overlap();
 

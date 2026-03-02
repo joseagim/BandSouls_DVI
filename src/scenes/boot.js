@@ -6,9 +6,11 @@ import player from '../../assets/sprites/player.png'
 import laudeSpritesheet from '../../assets/animations/laude/sprite.png'
 import laudeAtlas from '../../assets/animations/laude/atlas.json'
 import start from '../../assets/sprites/title-screen/start-text.png'
+import startJSON from '../../assets/sprites/title-screen/start-selected-atlas.json'
 import options from '../../assets/sprites/title-screen/options-text.png'
-import optionsSelected from '../../assets/sprites/title-screen/options-selected.png'
-import startSelected from '../../assets/sprites/title-screen/start-selected.png'
+import optionsJSON from '../../assets/sprites/title-screen/options-selected-atlas.json'
+import optionsSelected from '../../assets/sprites/title-screen/options-selected-sheet.png'
+import startSelected from '../../assets/sprites/title-screen/start-selected-sheet.png'
 import selectionPick from '../../assets/sprites/title-screen/selection-pick.png'
 import enemyIdle from '../../assets/animations/basic-enemy/Idle.png'
 import enemyIdleJSON from '../../assets/animations/basic-enemy/enemy_idle_atlas.json'
@@ -37,12 +39,12 @@ export default class Boot extends Phaser.Scene {
     //this.load.setPath('assets/sprites/');
     this.load.image('start', start);
     this.load.image('options', options);
-    this.load.image('startSelected', startSelected);
-    this.load.image('optionsSelected', optionsSelected);
     this.load.image('selectionPick', selectionPick);
     this.load.image('platform', platform);
     this.load.image('base', base);
     this.load.image('player', player);
+    this.load.atlas('optionsSelected',optionsSelected,optionsJSON);
+    this.load.atlas('startSelected', startSelected, startJSON);
     this.load.atlas('laude', laudeSpritesheet, laudeAtlas);
     this.load.atlas('enemy_idle', enemyIdle, enemyIdleJSON);
     this.load.atlas('enemy_walk', enemyWalk, enemyWalkJSON)
@@ -56,21 +58,43 @@ export default class Boot extends Phaser.Scene {
     let ancho = 960;
     let alto = 720;
     this.add.rectangle(640, 368, ancho, alto, 0xffffffff);
-    this.startText = this.add.image(596, 490, "start");
+
+    this.startText = this.add.sprite(596, 490, "start");
+    this.anims.create({
+        key: 'startAnim',
+        frames: this.anims.generateFrameNames('startSelected'), 
+        frameRate: 10,
+        repeat: -1
+    });
+
+    this.anims.create({
+        key: 'optionsAnim',
+        frames: this.anims.generateFrameNames('optionsSelected'), 
+        frameRate: 10,
+        repeat: -1
+    });
+
     this.select = this.add.image(405, 490, "selectionPick");
     this.select.setVisible(false);
-    this.optionsText = this.add.image(644, 570, "options");
+    this.optionsText = this.add.sprite(644, 570, "options");
     this.activeOption = null;
 
     this.input.keyboard.on("keydown-W", () => {
       if (this.activeOption == null){
         this.activeOption=this.startText;
+        this.startText.play('startAnim');
         this.select.setVisible(true);
       }else if (this.activeOption == this.optionsText) {
+        this.startText.play('startAnim');
+        this.optionsText.stop();
+        this.optionsText.setTexture('options');
         this.activeOption = this.startText;
         this.moveSelect(this.select, this.activeOption);
       } else {
+        this.startText.stop();
         this.activeOption=this.optionsText;
+        this.startText.setTexture('start');
+        this.optionsText.play('optionsAnim')
         this.moveSelect(this.select, this.activeOption);
       }
     });
@@ -78,12 +102,19 @@ export default class Boot extends Phaser.Scene {
     this.input.keyboard.on("keydown-S", () => {
       if (this.activeOption == null){
         this.activeOption=this.startText;
+        this.startText.play('startAnim');
         this.select.setVisible(true);
       }else if (this.activeOption == this.optionsText) {
+        this.startText.play('startAnim');
+        this.optionsText.stop();
+        this.optionsText.setTexture('options');
         this.activeOption = this.startText;
         this.moveSelect(this.select, this.activeOption);
       } else {
+        this.startText.stop();
         this.activeOption=this.optionsText;
+        this.startText.setTexture('start');
+        this.optionsText.play('optionsAnim')
         this.moveSelect(this.select, this.activeOption);
       }
     });

@@ -1,0 +1,190 @@
+{
+    "frames": [
+        {
+            "filename": "start-selected-sheet1",
+            "frame": {
+                "w": 240,
+                "h": 48,
+                "x": 0,
+                "y": 0
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "start-selected-sheet2",
+            "frame": {
+                "w": 240,
+                "h": 48,
+                "x": 240,
+                "y": 0
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "start-selected-sheet3",
+            "frame": {
+                "w": 240,
+                "h": 48,
+                "x": 480,
+                "y": 0
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "start-selected-sheet4",
+            "frame": {
+                "w": 240,
+                "h": 48,
+                "x": 720,
+                "y": 0
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "start-selected-sheet5",
+            "frame": {
+                "w": 240,
+                "h": 48,
+                "x": 960,
+                "y": 0
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "start-selected-sheet6",
+            "frame": {
+                "w": 240,
+                "h": 48,
+                "x": 1200,
+                "y": 0
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "start-selected-sheet7",
+            "frame": {
+                "w": 240,
+                "h": 48,
+                "x": 1440,
+                "y": 0
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "start-selected-sheet8",
+            "frame": {
+                "w": 240,
+                "h": 48,
+                "x": 1680,
+                "y": 0
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "start-selected-sheet9",
+            "frame": {
+                "w": 240,
+                "h": 48,
+                "x": 1920,
+                "y": 0
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "start-selected-sheet10",
+            "frame": {
+                "w": 240,
+                "h": 48,
+                "x": 2160,
+                "y": 0
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "start-selected-sheet11",
+            "frame": {
+                "w": 240,
+                "h": 48,
+                "x": 2400,
+                "y": 0
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "start-selected-sheet12",
+            "frame": {
+                "w": 240,
+                "h": 48,
+                "x": 2640,
+                "y": 0
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "start-selected-sheet13",
+            "frame": {
+                "w": 240,
+                "h": 48,
+                "x": 2880,
+                "y": 0
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "start-selected-sheet14",
+            "frame": {
+                "w": 240,
+                "h": 48,
+                "x": 3120,
+                "y": 0
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        }
+    ],
+    "meta": {
+        "description": "Atlas generado con Atlas Packer Gamma V2",
+        "web": "https://gammafp.github.io/atlas-packer-phaser/"
+    }
+}

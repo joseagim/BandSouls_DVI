@@ -1,0 +1,129 @@
+{ "frames": {
+   "options-selected-sheet 0.png": {
+    "frame": { "x": 0, "y": 0, "w": 336, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 336, "h": 64 },
+    "sourceSize": { "w": 336, "h": 64 },
+    "duration": 100
+   },
+   "options-selected-sheet 1.png": {
+    "frame": { "x": 336, "y": 0, "w": 336, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 336, "h": 64 },
+    "sourceSize": { "w": 336, "h": 64 },
+    "duration": 100
+   },
+   "options-selected-sheet 2.png": {
+    "frame": { "x": 672, "y": 0, "w": 336, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 336, "h": 64 },
+    "sourceSize": { "w": 336, "h": 64 },
+    "duration": 100
+   },
+   "options-selected-sheet 3.png": {
+    "frame": { "x": 1008, "y": 0, "w": 336, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 336, "h": 64 },
+    "sourceSize": { "w": 336, "h": 64 },
+    "duration": 100
+   },
+   "options-selected-sheet 4.png": {
+    "frame": { "x": 1344, "y": 0, "w": 336, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 336, "h": 64 },
+    "sourceSize": { "w": 336, "h": 64 },
+    "duration": 100
+   },
+   "options-selected-sheet 5.png": {
+    "frame": { "x": 1680, "y": 0, "w": 336, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 336, "h": 64 },
+    "sourceSize": { "w": 336, "h": 64 },
+    "duration": 100
+   },
+   "options-selected-sheet 6.png": {
+    "frame": { "x": 2016, "y": 0, "w": 336, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 336, "h": 64 },
+    "sourceSize": { "w": 336, "h": 64 },
+    "duration": 100
+   },
+   "options-selected-sheet 7.png": {
+    "frame": { "x": 2352, "y": 0, "w": 336, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 336, "h": 64 },
+    "sourceSize": { "w": 336, "h": 64 },
+    "duration": 100
+   },
+   "options-selected-sheet 8.png": {
+    "frame": { "x": 2688, "y": 0, "w": 336, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 336, "h": 64 },
+    "sourceSize": { "w": 336, "h": 64 },
+    "duration": 100
+   },
+   "options-selected-sheet 9.png": {
+    "frame": { "x": 3024, "y": 0, "w": 336, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 336, "h": 64 },
+    "sourceSize": { "w": 336, "h": 64 },
+    "duration": 100
+   },
+   "options-selected-sheet 10.png": {
+    "frame": { "x": 3360, "y": 0, "w": 336, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 336, "h": 64 },
+    "sourceSize": { "w": 336, "h": 64 },
+    "duration": 100
+   },
+   "options-selected-sheet 11.png": {
+    "frame": { "x": 3696, "y": 0, "w": 336, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 336, "h": 64 },
+    "sourceSize": { "w": 336, "h": 64 },
+    "duration": 100
+   },
+   "options-selected-sheet 12.png": {
+    "frame": { "x": 4032, "y": 0, "w": 336, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 336, "h": 64 },
+    "sourceSize": { "w": 336, "h": 64 },
+    "duration": 100
+   },
+   "options-selected-sheet 13.png": {
+    "frame": { "x": 4368, "y": 0, "w": 336, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 336, "h": 64 },
+    "sourceSize": { "w": 336, "h": 64 },
+    "duration": 100
+   }
+ },
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.x-dev",
+  "format": "I8",
+  "size": { "w": 4704, "h": 64 },
+  "scale": "1",
+  "frameTags": [
+  ],
+  "layers": [
+   { "name": "Sprite Sheet", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+  ]
+ }
+}

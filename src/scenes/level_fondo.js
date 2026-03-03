@@ -44,7 +44,7 @@ export default class Level_Fondo extends Level {
         // Configurar cámara
         this.cameras.main.setBounds(0, 0, 1280, 720);
         this.cameras.main.setZoom(3); // Ventana de visualización
-        this.cameras.main.startFollow(this.player, true, 0.05, 0.05);
+        this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
         
         // Opcional: agregar bordes para visualizar la cámara
         this.cameras.main.setBackgroundColor(0x000000);

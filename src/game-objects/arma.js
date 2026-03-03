@@ -20,15 +20,33 @@ export default class Arma extends Phaser.GameObjects.Sprite {
         this.enemiesHit = new Set();
 
         this.scene.physics.add.existing(this);
+    }
 
-        // bs escalado extraño para los colliders
-        /*
-        this.setScale(4);
-        this.body.setSize(8, 16);
-        this.body.setOffset(45, 42);
-        this.hurtbox.body.setCircle(this.attackRadius);
-        this.hurtbox.body.setCollideWorldBounds();
-        */
+    posicionarHitBox(pointer) {
+
+        const offset = -5;
+        const hitboxLength = 100;
+        const distance = offset + hitboxLength / 2;
+
+        const worldPoint = pointer.positionToCamera(this.scene.cameras.main);
+
+        const angle = Phaser.Math.Angle.Between(
+            this.x,
+            this.y,
+            worldPoint.x,
+            worldPoint.y
+        );
+
+        const dir = new Phaser.Math.Vector2();
+        dir.setToPolar(angle, 1);
+
+        const targetX = this.x + dir.x * distance;
+        const targetY = this.y + dir.y * distance;
+
+        this.hurtbox.body.reset(targetX, targetY);
+        this.hurtbox.setPosition(targetX, targetY);
+
+        this.hurtbox.setRotation(angle);
     }
 
     activateWeapon() {

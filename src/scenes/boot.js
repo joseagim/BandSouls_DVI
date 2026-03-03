@@ -13,6 +13,7 @@ import optionsJSON from '../../assets/sprites/title-screen/options-selected-atla
 import optionsSelected from '../../assets/sprites/title-screen/options-selected-sheet.png'
 import startSelected from '../../assets/sprites/title-screen/start-selected-sheet.png'
 import selectionPick from '../../assets/sprites/title-screen/selection-pick.png'
+import deathScreen from '../../assets/sprites/title-screen/death-screen.png'
 import enemyIdle from '../../assets/animations/basic-enemy/Idle.png'
 import enemyIdleJSON from '../../assets/animations/basic-enemy/enemy_idle_atlas.json'
 import enemyWalk from '../../assets/animations/basic-enemy/move.png'
@@ -45,6 +46,7 @@ export default class Boot extends Phaser.Scene {
     //this.load.setPath('assets/sprites/');
     this.load.image('start', start);
     this.load.image('title', titleScreen);
+    this.load.image('death',deathScreen);
     this.load.image('options', options);
     this.load.image('selectionPick', selectionPick);
     this.load.image('city_tiles',city_tileset);
@@ -129,8 +131,10 @@ export default class Boot extends Phaser.Scene {
 
     this.input.keyboard.on("keydown-ENTER",()=>{
       if(this.activeOption==this.startText){
+        this.activeOption=null;
         this.scene.start('level_fondo');
       }else if(this.activeOption==this.optionsText){
+        this.activeOption=null;
         alert("se mostraria menu de opciones: audio, brillo, etc...")
       }else{
 

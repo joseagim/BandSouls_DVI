@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 
-export default class Arma{
+export default class Arma extends Phaser.GameObjects.Sprite {
 //ESTO ES UNA CLASE ABSTRACTA COMO BASE PARA CADA ARMA
 
     /*
@@ -11,11 +11,15 @@ export default class Arma{
     * @param {number} hitbox_y: elemento Y para hitbox de la arma
     */
 
-    contructor(scene,attacking,atk,atk_speed){
+    constructor(scene, x, y, tag, stats){
+        super(scene,x,y, tag);
         this.scene = scene;
-        this.attacking = attacking;
-        this.atk = atk;
-        this.atk_speed = atk_speed;
+        this.damage = stats.damage;
+        this.cooldown = stats.cooldown;
+        this.duration = stats.duration;
+        this.enemiesHit = new Set();
+
+        this.scene.physics.add.existing(this);
 
         // bs escalado extraño para los colliders
         /*
@@ -27,9 +31,24 @@ export default class Arma{
         */
     }
 
-    attack(){
-        console.error("ESTAS LLAMANDO A ATAQUE DE CLASE ABSTRACTA");
-        
+    activateWeapon() {
+        this.hurtbox.visible = true;
+        this.hurtbox.body.enable = true;
+        this.hurtbox.active = true;
+        this.enemiesHit.clear();
+    }
+
+    deactivateWeapon() {
+        this.hurtbox.visible = false;
+        this.hurtbox.body.enable = false;
+        this.hurtbox.active = false;
+        this.enemiesHit.clear();
+    }
+
+    attack(enemy, attackMod){
+        if (this.enemiesHit.has(enemy)) return; 
+        enemy.getDamage(this.damage * attackMod);
+        this.enemiesHit.add(enemy);
     }
 
     ability(){

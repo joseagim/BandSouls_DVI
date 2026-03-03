@@ -1,7 +1,8 @@
 import Phaser from 'phaser';
 import Platform from '../game-objects/platform.js';
 import Player from '../game-objects/player.js';
-import Enemy from '../game-objects/enemy.js'
+import Enemy from '../game-objects/enemy.js';
+import actor from  '../game-objects/actor.js';
 
 
 /**
@@ -16,8 +17,8 @@ export default class Level extends Phaser.Scene {
     /**
      * Constructor de la escena
      */
-    constructor() {
-        super({ key: 'level' });
+    constructor(key_nombre) {
+        super({ key: key_nombre });
     }
 
     /**
@@ -27,41 +28,30 @@ export default class Level extends Phaser.Scene {
         //this.stars = 10;
         this.bases = this.add.group();
         this.player = new Player(this, 400, 400);
-        this.enemy = new Enemy(this,450,400);
+        this.enemyGroup = this.physics.add.group({
+            classType : actor,
+            active : true,
+            maxSize : -1
+        });
+        let enemy1 = new Enemy(this,450,400);
+        //this.enemyGroup.add(new Enemy(this, 450, 450));
+        this.enemyGroup.add(enemy1);
 
-        //new Platform(this, this.player,this.enemy, this.bases, 150, 350);
-        //new Platform(this, this.player,this.enemy, this.bases, 850, 350);
-        //new Platform(this, this.player,this.enemy, this.bases, 500, 200);
-        //new Platform(this, this.player,this.enemy, this.bases, 150, 100);
-        //new Platform(this, this.player,this.enemy, this.bases, 850, 100);
-        
         console.log("Lanzar el HUD");
         this.scene.launch('hud');
+        this.physics.add.overlap(this.player,this.enemyGroup,function(player,enemy){
+            enemy.attack(player);
+        },null,this);
 
-        this.physics.add.overlap();
+        this.setWeaponCollision(this.player.arma)
 
     }
 
-    /**
-     * Genera una estrella en una de las bases del escenario
-     * @param {Array<Base>} from Lista de bases sobre las que se puede crear una estrella
-     * Si es null, entonces se crea aleatoriamente sobre cualquiera de las bases existentes
-     */
-
-    /**
-     * Método que se ejecuta al coger una estrella. Se pasa la base
-     * sobre la que estaba la estrella cogida para evitar repeticiones
-     * @param {Base} base La base sobre la que estaba la estrella que se ha cogido
-     */
-    starPickt(base) {
-        this.player.point();
-        if (this.player.score == this.stars) {
-            this.scene.start('end');
-        }
-        else {
-            let s = this.bases.children.entries;
-            this.spawn(s.filter(o => o !== base));
-
+    setWeaponCollision(weapon) {
+        for (let hurtBox of weapon.getHurtboxes()) {
+            this.physics.add.overlap(hurtBox, this.enemyGroup, (hurtbox, enemy) => {
+                weapon.attack(enemy, this.player.attackMod);
+            }, null, this);
         }
     }
 }

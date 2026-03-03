@@ -3,6 +3,7 @@ import Platform from '../game-objects/platform.js';
 import Player from '../game-objects/player.js';
 import Enemy from '../game-objects/enemy.js'
 import Level from './level.js';
+import EasyStar from 'easystarjs';
 
 
 /**
@@ -32,14 +33,18 @@ export default class Level_Fondo extends Level {
         var layer_edif = map.createLayer('edificios',tiles,0,0);
         var layer_deco = map.createLayer('decorado',tiles,0,0);
         var layer_obj = map.createLayer('objetos',tiles,0,0);
+
         layer_edif.setCollisionByExclusion([-1],true);
         layer_deco.setCollisionByExclusion([-1],true);
         layer_obj.setCollisionByExclusion([-1],true);
         
         
         this.bases = this.add.group();
-        
         super.create();
+
+        // Pathfinding
+        this.easystar = new EasyStar.js();
+        this._setupPathfinding(map, [layer_edif, layer_deco, layer_obj]);
         
         // Configurar cámara
         this.cameras.main.setBounds(0, 0, 1280, 720);
@@ -49,8 +54,74 @@ export default class Level_Fondo extends Level {
         // Opcional: agregar bordes para visualizar la cámara
         this.cameras.main.setBackgroundColor(0x000000);
 
+    }
 
+    _setupPathfinding(map, collisionLayers) {
+    const tileW = map.tileWidth;
+    const tileH = map.tileHeight;
+    const cols  = map.width;
+    const rows  = map.height;
 
+    // Grid base
+    const grid = [];
+    for (let r = 0; r < rows; r++) {
+        const row = [];
+        for (let c = 0; c < cols; c++) {
+            let blocked = false;
+            for (const layer of collisionLayers) {
+                const tile = layer.getTileAt(c, r);
+                if (tile && tile.collides) { blocked = true; break; }
+            }
+            row.push(blocked ? 1 : 0);
+        }
+        grid.push(row);
+    }
+
+    // IMPORTANTE: engordar obstáculos 1 tile en todas direcciones
+    // para que el enemigo no intente pasar por huecos de 1 tile
+    const inflated = grid.map(row => [...row]);
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+            if (grid[r][c] === 1) {
+                for (let dr = -1; dr <= 1; dr++) {
+                    for (let dc = -1; dc <= 1; dc++) {
+                        const nr = r + dr, nc = c + dc;
+                        if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
+                            inflated[nr][nc] = 1;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    this.easystar.setGrid(inflated);
+    this.easystar.setAcceptableTiles([0]);
+    this.easystar.enableDiagonals();
+    this.easystar.disableCornerCutting();
+
+    this.tileW = tileW;
+    this.tileH = tileH;
+}
+
+     // Método público para que el enemigo pida un camino
+    findPath(fromX, fromY, toX, toY, callback) {
+        const sc = Math.floor(fromX / this.tileW);
+        const sr = Math.floor(fromY / this.tileH);
+        const ec = Math.floor(toX   / this.tileW);
+        const er = Math.floor(toY   / this.tileH);
+
+        this.easystar.findPath(sc, sr, ec, er, (path) => {
+            if (!path) { callback([]); return; }
+
+            // Convertir tiles a coordenadas mundo (centro del tile)
+            callback(path.map(p => ({
+                x: p.x * this.tileW + this.tileW / 2,
+                y: p.y * this.tileH + this.tileH / 2
+            })));
+        });
+
+        this.easystar.calculate(); // importante: dispara el cálculo
     }
 
     /**

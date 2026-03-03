@@ -25,7 +25,11 @@ export default class Enemy extends actor {
         this.attackRadius = 20;
         this.attackCooldown = 1000;
         this.canAttack = true;
-        this.hasDamaged = false
+        this.hasDamaged = false;
+
+        this.path = [];
+        this.pathTimer = 0;
+        this.pathInterval = 600;
 
         // Animaciones
         this.scene.anims.create({
@@ -44,8 +48,8 @@ export default class Enemy extends actor {
         
         // bs escalado extraño para los colliders
         this.setScale(1.5);
-        this.body.setSize(16, 16);
-        this.body.setOffset(9, 15);
+        this.body.setSize(12, 12);
+        this.body.setOffset(11, 17);
         this.play('enemy_idle',true);
         this.is_moving = false;
         this.label = this.scene.add.text(1080,10,"",{fontSize: 20});     
@@ -91,10 +95,37 @@ export default class Enemy extends actor {
         if (this.scene.player.x <= this.x) {
             this.setFlip(true, false);
         }
+
+         // Recalcular path cada X milisegundos
+        this.pathTimer += dt;
+        if (this.pathTimer >= this.pathInterval) {
+            this.pathTimer = 0;
+
+            this.scene.findPath(
+                this.x, this.y,
+                this.scene.player.x, this.scene.player.y,
+                (newPath) => { this.path = newPath; }
+            );
+        }
+
         if (!this.scene.physics.overlap(this, this.scene.player)) {
-            this.scene.physics.moveToObject(this,this.scene.player,this.speed);
-            this.play('enemy_walk',true);
-        } else {this.body.setVelocity(0);
+            if (this.path && this.path.length > 0) {
+            const waypoint = this.path[0];
+            const dist = Phaser.Math.Distance.Between(this.x, this.y, waypoint.x, waypoint.y);
+
+                if (dist < 4) {
+                    this.path.shift(); // waypoint alcanzado, ir al siguiente
+                } else {
+                    this.scene.physics.moveToObject(this, waypoint, this.speed);
+                    this.play('enemy_walk', true);
+                }
+            } else {
+                // si no hay camino calculado, va directo
+                this.scene.physics.moveToObject(this, this.scene.player, this.speed);
+                this.play('enemy_walk', true);
+            }
+        } else {
+            this.body.setVelocity(0);
             this.is_moving=false;
         }
     }

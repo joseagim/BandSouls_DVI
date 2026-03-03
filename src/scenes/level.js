@@ -3,6 +3,8 @@ import Platform from '../game-objects/platform.js';
 import Player from '../game-objects/player.js';
 import Enemy from '../game-objects/enemy.js';
 import actor from  '../game-objects/actor.js';
+import Spawner from '../game-objects/spawner.js';
+import WaveManager from '../game-objects/wave-manager.js';
 
 
 /**
@@ -28,29 +30,28 @@ export default class Level extends Phaser.Scene {
         //this.stars = 10;
         this.bases = this.add.group();
         this.player = new Player(this, 400, 400);
-        this.enemyGroup = this.physics.add.group({
-            classType : actor,
-            active : true,
-            maxSize : -1
-        });
-        let enemy1 = new Enemy(this,450,400);
-        //this.enemyGroup.add(new Enemy(this, 450, 450));
-        this.enemyGroup.add(enemy1);
+
+        this.spawner = new Spawner(this);
+
+        this.waveManager = new WaveManager(this, this.spawner);
+        this.waveManager.startNextWave();
 
         console.log("Lanzar el HUD");
         this.scene.launch('hud');
-        this.physics.add.overlap(this.player,this.enemyGroup,function(player,enemy){
-            enemy.attack(player);
-        },null,this);
 
-        this.setWeaponCollision(this.player.arma)
+        this.physics.add.overlap(this.player, this.spawner.pool, function(player,enemy){
+            if (enemy.active === true) enemy.attack(player);
+        }, null, this);
+
+        this.setWeaponCollision(this.player.arma);
 
     }
 
     setWeaponCollision(weapon) {
         for (let hurtBox of weapon.getHurtboxes()) {
-            this.physics.add.overlap(hurtBox, this.enemyGroup, (hurtbox, enemy) => {
+            this.physics.add.overlap(hurtBox, this.spawner.pool, (hurtbox, enemy) => {
                 weapon.attack(enemy, this.player.attackMod);
+                if (enemy.life <= 0) this.waveManager.enemyDies();
             }, null, this);
         }
     }

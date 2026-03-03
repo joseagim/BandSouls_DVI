@@ -26,9 +26,9 @@ export default class Player extends actor {
         this.y = y;
                  
         // Velocidades
-        this.speed = 300;
+        this.speed = 200;
         this.dashSpeed = 2000;
-        this.dashDuration = 25;
+        this.dashDuration = 15;
         this.dashCooldown = 300;
 
         // Estados

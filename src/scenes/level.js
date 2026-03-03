@@ -40,7 +40,7 @@ export default class Level extends Phaser.Scene {
         this.scene.launch('hud');
 
         this.physics.add.overlap(this.player, this.spawner.pool, function(player,enemy){
-            if (enemy.active === true) enemy.attack(player);
+            if (enemy.active && !player.invincible) enemy.attack(player);
         }, null, this);
 
         this.setWeaponCollision(this.player.arma);
@@ -50,8 +50,10 @@ export default class Level extends Phaser.Scene {
     setWeaponCollision(weapon) {
         for (let hurtBox of weapon.getHurtboxes()) {
             this.physics.add.overlap(hurtBox, this.spawner.pool, (hurtbox, enemy) => {
-                weapon.attack(enemy, this.player.attackMod);
-                if (enemy.life <= 0) this.waveManager.enemyDies();
+                if (!enemy.invincible) {
+                    weapon.attack(enemy, this.player.attackMod);
+                    if (enemy.life <= 0) this.waveManager.enemyDies();
+                }
             }, null, this);
         }
     }

@@ -17,6 +17,7 @@ export default class actor extends Phaser.GameObjects.Sprite {
         this.speed = stats.speed;
         this.defenseMod = stats.defenseMod;
         this.attackMod = stats.attackMod;
+        this.invincible = false; // para el dash, cambios de fase de enemigos, etc.
     }
 
     updateHealth() {

@@ -31,11 +31,4 @@ export default class Guitar extends Arma{
         this.y = this.player.y;
         this.posicionarHitBox(this.scene.input.activePointer);
     }
-
-    hacerDaño(enemigo){
-        if(enemigo && enemigo.active){
-            enemigo.getDamage(this.attk);
-            this.scene.cameras.main.shake(50,0.01);
-        }
-    }
 }

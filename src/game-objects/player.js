@@ -28,8 +28,8 @@ export default class Player extends actor {
         // Velocidades
         this.speed = 200;
         this.dashSpeed = 2000;
-        this.dashDuration = 15;
-        this.dashCooldown = 300;
+        this.dashDuration = 25;
+        this.dashCooldown = 1000;
 
         // Estados
         this.isDashing = false;
@@ -136,16 +136,24 @@ export default class Player extends actor {
         
         // velocidad en función del vector dirección del jugador
         this.body.velocity.normalize().scale(this.dashSpeed);
-        
+        this.invincible = true;
+
         // cuando termine el dash
         this.scene.time.delayedCall(this.dashDuration, () => {
             this.isDashing = false;
+            this.invincible = false;
         });
 
         // cuando termine el cooldown del dash
         this.scene.time.delayedCall(this.dashCooldown, () => {
             this.canDash = true;
         });
+    }
+
+    getDamage(dmg) {
+        super.getDamage(dmg);
+        this.scene.cameras.main.shake(50,0.01);
+
     }
 
     getDirection() {

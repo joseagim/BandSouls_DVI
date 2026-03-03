@@ -62,8 +62,7 @@ export default class Enemy extends actor {
 
     attack(player) {
         if(this.canAttack){
-            console.error("ENTRA A ATTACK");
-            player.getDamage(this.attackDamage);
+            player.getDamage(this.attackDamage * this.attackMod);
             this.canAttack = false;
             
 

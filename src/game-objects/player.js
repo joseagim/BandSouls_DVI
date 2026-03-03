@@ -34,7 +34,8 @@ export default class Player extends actor {
         // Estados
         this.isDashing = false;
         this.canDash = true;
-
+        this.isAttacking = false;
+        this.canAttack = true;
         // Esta label es la UI en la que pondremos la puntuación del jugador
         this.label = this.scene.add.text(10, 10, "", {fontSize: 20});
         
@@ -48,20 +49,19 @@ export default class Player extends actor {
         // this.keyF = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F); DEBUG FOR DAMAGE
         this.keySpace = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.mouseClick = this.scene.input.on('pointerdown', (pointer) => {
-            if(pointer.button == 0){    //segun documentación 0 es el botón derechp
-                this.arma.active = true;
-                this.scene.time.delayedCall(this.arma.attk_timer)
+            if(pointer.button == 0 && this.canAttack){    //segun documentación 0 es el botón derechp
+                this.arma.activateWeapon()
+                this.canAttack = false;
+                this.isAttacking = true;
+                this.scene.time.delayedCall(this.arma.duration, 
+                    () => {this.arma.deactivateWeapon(); this.isAttacking = false;
+                    this.scene.time.delayedCall(this.arma.cooldown - this.arma.duration, 
+                    () => {this.canAttack = true;})});
             }
         });
 
                 //Seccion de armas
         this.arma = new Guitar(this.scene,this.x,this.y,this);
-        this.setWeaponCollision();
-        this.arma.active = false;
-        
-        this.enemigo = null;
-
-
         this.updateScore();
     }
 
@@ -102,20 +102,6 @@ export default class Player extends actor {
         if (this.keySpace.isDown && this.canDash && this.body.velocity.length() > 0) {
             this.doDash();
         }
-        
-        /* DEBUG ENEMY TAKING DAMAGE
-            if (this.keyF.isDown && this.scene.enemy !== null && this.canDash) {
-            this.isDashing = true;
-            this.canDash = false;
-            this.scene.enemy.getDamage(10);
-            this.scene.time.delayedCall(this.dashDuration, () => {
-                this.isDashing = false;
-            });
-            this.scene.time.delayedCall(this.dashCooldown, () => {
-                this.canDash = true;
-            });
-        } */
-
     }
     
     doDash() {
@@ -132,18 +118,6 @@ export default class Player extends actor {
         this.scene.time.delayedCall(this.dashCooldown, () => {
             this.canDash = true;
         });
-    }
-
-    attack(enemy) {
-        if(!this.arma.attacking){
-            this.arma.attacking = true;
-            this.arma.attack(enemy, this.attackMod);
-        }
-    }
-
-    // funcion para pasarle el arma seleccionada al nivel y enganchar su hurtbox con los enemigos
-    setWeaponCollision() {
-        this.scene.setWeaponCollision(this.arma);
     }
 
     getDirection() {
@@ -164,10 +138,4 @@ export default class Player extends actor {
         
         return direction;
     }
-
-    setEnemigo(enemigo){
-        this.enemigo = enemigo;
-    }
-    
-
 }

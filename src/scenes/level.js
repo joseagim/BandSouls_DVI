@@ -31,13 +31,12 @@ export default class Level extends Phaser.Scene {
         this.bases = this.add.group();
         this.player = new Player(this, 400, 400);
 
+        this.scene.launch('hud');
+
         this.spawner = new Spawner(this);
 
         this.waveManager = new WaveManager(this, this.spawner);
-        this.waveManager.startNextWave();
-
-        console.log("Lanzar el HUD");
-        this.scene.launch('hud');
+        this.scene.get('hud').events.once('hud-ready', () => this.waveManager.startNextWave());
 
         this.physics.add.overlap(this.player, this.spawner.pool, function(player,enemy){
             if (enemy.active && !player.invincible) enemy.attack(player);

@@ -43,7 +43,7 @@ export default class Enemy extends actor {
         });
         
         // bs escalado extraño para los colliders
-        this.setScale(2);
+        this.setScale(1.5);
         this.body.setSize(16, 16);
         this.body.setOffset(9, 15);
         this.play('enemy_idle',true);

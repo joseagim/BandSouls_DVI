@@ -53,7 +53,7 @@ export default class Guitar extends Arma{
         // Rotar el hurtbox para que apunte en la dirección del movimiento
         this.hurtbox.rotation = Math.atan2(normY, normX);
         
-        console.log("Dirección:", direction, "Rotación:", this.hurtbox.rotation); // Debug
+        //console.log("Dirección:", direction, "Rotación:", this.hurtbox.rotation); // Debug
     }
 
     hacerDaño(enemigo){

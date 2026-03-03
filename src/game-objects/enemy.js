@@ -17,7 +17,7 @@ export default class Enemy extends actor {
                                         speed       : 100,
                                         defenseMod  : 1, 
                                         attackMod   : 1   
-        });	
+        });
 
         // Estadísticas propias del enemigo
         this.attackDamage = 10;
@@ -51,20 +51,27 @@ export default class Enemy extends actor {
         this.label = this.scene.add.text(1080,10,"",{fontSize: 20});     
     }
 
-    
+    spawn(x, y) {
+        this.setActive(true);
+        this.setVisible(true);
+        this.setPosition(x, y);
+        this.body.enable = true;
+        this.life = this.maxHP;
+    }
     
     die() {
-        this.scene.enemy = null;
-        this.destroy();
+        this.setActive(false);
+        this.setVisible(false);
+        this.body.enable = false;
     }
 
     attack(player) {
-        if(this.canAttack){
+        if (this.canAttack) {
             player.getDamage(this.attackDamage * this.attackMod);
             this.canAttack = false;
             
 
-            this.scene.time.delayedCall(this.attackCooldown,() => {
+            this.scene.time.delayedCall(this.attackCooldown, () => {
                 this.canAttack = true;
             })
         }
@@ -78,6 +85,9 @@ export default class Enemy extends actor {
      */
     preUpdate(t, dt) {
         super.preUpdate(t, dt);
+
+        if (!this.active) return;
+
         if (this.scene.player.x <= this.x) {
             this.setFlip(true, false);
         }

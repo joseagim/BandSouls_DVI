@@ -9,9 +9,9 @@ export default class Guitar extends Arma{
                                         duration    : 500});
 
         this.player = player;
-
+        this.visible = false;
         this.scene = scene;
-        this.hurtbox = this.scene.add.circle(0,0,40,0xff0000);
+        this.hurtbox = this.scene.add.circle(0,0,20,0xff0000);
         this.hurtbox.visible = true;
         this.scene.add.existing(this);
         this.scene.physics.add.existing(this.hurtbox);
@@ -33,7 +33,7 @@ export default class Guitar extends Arma{
     }
 
     posicionarHitBox(direction){
-        const offset = 25; // Distancia desde el personaje
+        const offset = -5; // Distancia desde el personaje
         
         // Normalizar dirección por si acaso
         const length = Math.sqrt(direction.x * direction.x + direction.y * direction.y);

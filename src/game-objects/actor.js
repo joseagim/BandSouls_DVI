@@ -19,15 +19,14 @@ export default class actor extends Phaser.GameObjects.Sprite {
         this.attackMod = stats.attackMod;
     }
 
-    updateScore() {
-        this.label.text = this.tag + ' HP: ' + this.life + '/' + this.maxHP;
+    updateHealth() {
+
     }
 
     getDamage(dmg) {
         this.life -= dmg;
         if (this.life <= 0) this.die();
-        this.updateScore();
-        console.log("RECOBE DAÑO");
+        this.updateHealth();
     }
 
     die() {

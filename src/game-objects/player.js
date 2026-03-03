@@ -72,7 +72,6 @@ export default class Player extends actor {
 
         // Seccion de armas
         this.arma = new Guitar(this.scene,this.x,this.y,this);
-        this.updateScore();
     }
 
     /**
@@ -120,7 +119,15 @@ export default class Player extends actor {
             this.doDash();
         }
     }
+
+    updateHealth() {
+        this.scene.events.emit('updateHealth', this);
+    }
     
+    die() {
+        this.scene.scene.start("boot")
+    }
+
     doDash() {
         // el jugador hace dash
         this.isDashing = true;

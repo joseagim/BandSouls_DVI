@@ -16,7 +16,7 @@ export default class HUD extends Phaser.Scene {
         
         // Cuando el jugador cambie su vida, el HUD reacciona
         mainLevel.events.on('updateHealth', (player) => {
-            const percentage = player.current / player.max;
+            const percentage = player.life / player.maxHP;
             this.healthBar.setValue(percentage);
         });
     }

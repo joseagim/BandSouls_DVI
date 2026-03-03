@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import Platform from '../game-objects/platform.js';
 import Player from '../game-objects/player.js';
 import Enemy from '../game-objects/enemy.js'
+import Level from './level.js';
 
 
 /**
@@ -12,12 +13,12 @@ import Enemy from '../game-objects/enemy.js'
  * El juego termina cuando el jugador ha recogido 10 estrellas.
  * @extends Phaser.Scene
  */
-export default class Level_Fondo extends Phaser.Scene {
+export default class Level_Fondo extends Level {
     /**
      * Constructor de la escena
      */
     constructor() {
-        super({ key: 'level_fondo' });
+        super('level_fondo');
     }
 
     /**
@@ -34,14 +35,12 @@ export default class Level_Fondo extends Phaser.Scene {
         layer_edif.setCollisionByExclusion([-1],true);
         layer_deco.setCollisionByExclusion([-1],true);
         layer_obj.setCollisionByExclusion([-1],true);
-
+        
         
         this.bases = this.add.group();
-        this.player = new Player(this, 400, 400);
-        this.enemy = new Enemy(this,600,700);
-
-        this.player.setEnemigo(this.enemy);
-
+        
+        super.create();
+        
         // Configurar cámara
         this.cameras.main.setBounds(0, 0, 1280, 720);
         this.cameras.main.setZoom(3); // Ventana de visualización
@@ -50,7 +49,6 @@ export default class Level_Fondo extends Phaser.Scene {
         // Opcional: agregar bordes para visualizar la cámara
         this.cameras.main.setBackgroundColor(0x000000);
 
-        this.scene.launch('hud');
 
 
     }

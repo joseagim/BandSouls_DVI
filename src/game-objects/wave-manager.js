@@ -14,7 +14,8 @@ export default class WaveManager {
         // si he llegado a la última oleada salgo
         if (this.currentWave >= this.wavesData.length) return;
 
-        console.log("Iniciando la oleada " + (this.currentWave + 1));
+        this.scene.events.emit('nextWave', this.currentWave + 1);
+        //console.log("Iniciando la oleada " + (this.currentWave + 1));
 
         // pillo los datos de la wave 'currentWave'
         const wave = this.wavesData[this.currentWave];
@@ -23,22 +24,23 @@ export default class WaveManager {
             this.enemies += enemyType.count;
             this.spawner.spawnMultiple(enemyType);
         });
+
+        this.scene.events.emit('enemyDead', this.enemies);
+
         // actualizo datos de esta oleada
         this.waveDelay = wave.delay;
         this.currentWave++;
-
-        console.log("Enemigos restantes: " + this.enemies);
-
+        
     }
 
     enemyDies() {
         // cuando un enemigo muera compruebo si he eliminado a todos y sigo con la siguiente oleada
         this.enemies--;
 
-        console.log("Enemigos restantes: " + this.enemies);
+        this.scene.events.emit('enemyDead', this.enemies);
 
         if (this.enemies <= 0) {
-            console.log("La oleada ha terminado. Esperando " + this.waveDelay / 1000 + " segundos");
+        this.scene.events.emit('finishWave', this.waveDelay);
             this.scene.time.delayedCall(this.waveDelay, () => this.startNextWave());
         }
     }

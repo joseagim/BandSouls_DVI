@@ -126,7 +126,7 @@ export default class Player extends actor {
     
     die() {
         this.scene.scene.stop('hud');
-        this.scene.scene.start("boot")
+        this.scene.scene.start("end")
     }
 
     doDash() {

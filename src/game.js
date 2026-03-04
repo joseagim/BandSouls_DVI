@@ -19,12 +19,12 @@ let config = {
         autoCenter: Phaser.Scale.CENTER_BOTH
     },
     pixelArt: true,
-    scene: [Boot, Level,Level_Fondo, End, HUD],
+    scene: [Boot,Level_Fondo, End, HUD],
     physics: {
         default: 'arcade',
         arcade: {
             gravity: { x:0, y: 0 },
-            debug: true
+            debug: false
         }
     }
 };

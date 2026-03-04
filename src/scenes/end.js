@@ -18,12 +18,9 @@ export default class End extends Phaser.Scene {
    */
   create() {
     this.add.image(640,368,'death');
-    this.input.keyboard.on("keydown-SPACE",()=>{
-    this.registry.destroy(); 
-    this.registry = new Phaser.Data.DataManager(this); 
-    this.scene.stop('level_fondo');
-    this.scene.start('boot');
-    })
+    this.input.keyboard.on('keydown-SPACE', function (_event) { 
+      this.scene.start('boot');
+    }, this);
   }
 
 }

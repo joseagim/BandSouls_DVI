@@ -17,7 +17,7 @@ export default class Enemy extends actor {
                                         speed       : 100,
                                         defenseMod  : 1, 
                                         attackMod   : 1   
-        });	
+        });
 
         // Estadísticas propias del enemigo
         this.attackDamage = 10;
@@ -26,8 +26,6 @@ export default class Enemy extends actor {
         this.attackCooldown = 1000;
         this.canAttack = true;
         this.hasDamaged = false
-        this.state;
-        this.hurtbox = new Phaser.GameObjects.Sprite(scene, x, y, 'hurtbox');
 
         // Animaciones
         this.scene.anims.create({
@@ -43,43 +41,40 @@ export default class Enemy extends actor {
             frameRate: 4,
             repeat : -1
         });
-
-        // Cosas para el ataque 
-        this.hurtbox.setVisible(false);
-        this.hurtbox.active = false;
-
-        this.scene.add.existing(this.hurtbox);
-        this.scene.physics.add.existing(this.hurtbox);
+        
         // bs escalado extraño para los colliders
-        this.setScale(2);
+        this.setScale(1.5);
         this.body.setSize(16, 16);
         this.body.setOffset(9, 15);
-        this.hurtbox.body.setCircle(this.attackRadius);
-        this.hurtbox.body.setCollideWorldBounds();
         this.play('enemy_idle',true);
         this.is_moving = false;
-        this.label = this.scene.add.text(1080,10,"",{fontSize: 20});
-        this.updateScore();
-        
+        this.label = this.scene.add.text(1080,10,"",{fontSize: 20});     
     }
 
-    
+    spawn(x, y) {
+        this.setActive(true);
+        this.setVisible(true);
+        this.setPosition(x, y);
+        this.body.enable = true;
+        this.life = this.maxHP;
+    }
     
     die() {
-        this.scene.enemy = null;
-        this.hurtbox.destroy();
-        this.hurtbox = null;
-        this.destroy();
+        this.setActive(false);
+        this.setVisible(false);
+        this.body.enable = false;
     }
 
     attack(player) {
-        this.hurtbox.setPosition(this.scene.player.x, this.scene.player.y);
+        if (this.canAttack) {
+            player.getDamage(this.attackDamage * this.attackMod);
+            this.canAttack = false;
+            
 
-        this.hurtbox.setVisible(true);
-        this.hurtbox.active = true;
-
-        this.scene.time.delayedCall(this.attackDuration, () => {if (this.hurtbox !== null) {this.hurtbox.active = false; this.hurtbox.setVisible(false); this.hasDamaged = false;}});
-        this.scene.time.delayedCall(this.attackCooldown, () => {if (this.hurtbox !== null) {this.hurtbox.active = false; this.hurtbox.setVisible(false); this.canAttack = true;}});
+            this.scene.time.delayedCall(this.attackCooldown, () => {
+                this.canAttack = true;
+            })
+        }
     }
 
     /**
@@ -90,6 +85,9 @@ export default class Enemy extends actor {
      */
     preUpdate(t, dt) {
         super.preUpdate(t, dt);
+
+        if (!this.active) return;
+
         if (this.scene.player.x <= this.x) {
             this.setFlip(true, false);
         }
@@ -98,22 +96,6 @@ export default class Enemy extends actor {
             this.play('enemy_walk',true);
         } else {this.body.setVelocity(0);
             this.is_moving=false;
-        }
-        
-        
-        if (this.canAttack && Phaser.Math.Distance.Between(this.x, this.y + 42, this.scene.player.x, this.scene.player.y) <= this.attackRange && this.hurtbox !== null) {
-            this.canAttack = false;
-            this.attack(this.scene.player);
-        }
-
-        // quick hack, refactor laater
-        if (!this.hasDamaged && this.hurtbox !== null && this.scene.physics.overlap(this.hurtbox, this.scene.player)) {
-            this.scene.player.getDamage(this.attackDamage);
-            this.hasDamaged = true;
-            this.scene.events.emit('updateHealth', { 
-                current: this.scene.player.life, 
-                max: this.scene.player.maxHP
-            });
         }
     }
 

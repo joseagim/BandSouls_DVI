@@ -26,15 +26,17 @@ export default class Player extends actor {
         this.y = y;
                  
         // Velocidades
-        this.speed = 300;
+        this.speed = 200;
         this.dashSpeed = 2000;
         this.dashDuration = 25;
-        this.dashCooldown = 300;
+        this.dashCooldown = 1000;
 
         // Estados
         this.isDashing = false;
         this.canDash = true;
         this.lastDirection = 'down';
+        this.isAttacking = false;
+        this.canAttack = true;
 
         // Sprites
         this.createAnimations();
@@ -57,19 +59,19 @@ export default class Player extends actor {
         // this.keyF = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F); DEBUG FOR DAMAGE
         this.keySpace = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.mouseClick = this.scene.input.on('pointerdown', (pointer) => {
-            if(pointer.button == 0){    //segun documentación 0 es el botón derechp
-                //console.log("Presionando ratón");
-                this.attack();
+            if(pointer.button == 0 && this.canAttack){    //segun documentación 0 es el botón derechp
+                this.arma.activateWeapon()
+                this.canAttack = false;
+                this.isAttacking = true;
+                this.scene.time.delayedCall(this.arma.duration, 
+                    () => {this.arma.deactivateWeapon(); this.isAttacking = false;
+                    this.scene.time.delayedCall(this.arma.cooldown - this.arma.duration, 
+                    () => {this.canAttack = true;})});
             }
         });
 
         // Seccion de armas
         this.arma = new Guitar(this.scene,this.x,this.y,this);
-
-        this.enemigo = null;
-
-
-        this.updateScore();
     }
 
     /**
@@ -116,22 +118,17 @@ export default class Player extends actor {
         if (this.keySpace.isDown && this.canDash && this.body.velocity.length() > 0) {
             this.doDash();
         }
-        
-        /* DEBUG ENEMY TAKING DAMAGE
-            if (this.keyF.isDown && this.scene.enemy !== null && this.canDash) {
-            this.isDashing = true;
-            this.canDash = false;
-            this.scene.enemy.getDamage(10);
-            this.scene.time.delayedCall(this.dashDuration, () => {
-                this.isDashing = false;
-            });
-            this.scene.time.delayedCall(this.dashCooldown, () => {
-                this.canDash = true;
-            });
-        } */
+    }
 
+    updateHealth() {
+        this.scene.events.emit('updateHealth', this);
     }
     
+    die() {
+        this.scene.scene.stop('hud');
+        this.scene.scene.start("end")
+    }
+
     doDash() {
         // el jugador hace dash
         this.isDashing = true;
@@ -139,10 +136,12 @@ export default class Player extends actor {
         
         // velocidad en función del vector dirección del jugador
         this.body.velocity.normalize().scale(this.dashSpeed);
-        
+        this.invincible = true;
+
         // cuando termine el dash
         this.scene.time.delayedCall(this.dashDuration, () => {
             this.isDashing = false;
+            this.invincible = false;
         });
 
         // cuando termine el cooldown del dash
@@ -151,12 +150,10 @@ export default class Player extends actor {
         });
     }
 
-    attack() {
-        if(!this.arma.attacking){
-            this.arma.attacking = true;
+    getDamage(dmg) {
+        super.getDamage(dmg);
+        this.scene.cameras.main.shake(50,0.01);
 
-            this.arma.enemigoActual = this.enemigo;
-        }
     }
 
     getDirection() {

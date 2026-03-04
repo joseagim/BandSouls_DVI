@@ -31,8 +31,8 @@ export default class Arma extends Phaser.GameObjects.Sprite {
         const worldPoint = pointer.positionToCamera(this.scene.cameras.main);
 
         const angle = Phaser.Math.Angle.Between(
-            this.x,
-            this.y,
+            this.scene.player.x,
+            this.scene.player.y,
             worldPoint.x,
             worldPoint.y
         );
@@ -43,21 +43,34 @@ export default class Arma extends Phaser.GameObjects.Sprite {
         const targetX = this.x + dir.x * distance;
         const targetY = this.y + dir.y * distance;
 
-        this.hurtbox.body.reset(targetX, targetY);
         this.hurtbox.setPosition(targetX, targetY);
+        this.setPosition(targetX, targetY);
 
         this.hurtbox.setRotation(angle);
+        this.setRotation(angle);
     }
 
     activateWeapon() {
-        this.hurtbox.visible = true;
+        this.visible = true;
         this.hurtbox.body.enable = true;
         this.hurtbox.active = true;
         this.enemiesHit.clear();
+        this.scene.tweens.add({
+            targets: this,
+            rotation: {
+                from: this.rotation - 1.5,
+                to: this.rotation + 1.5
+            },
+            duration: this.duration,
+            ease: 'Cubic.easeOut',
+            onComplete: () => {
+                this.rotation = this.rotation;
+            }
+        });
     }
 
     deactivateWeapon() {
-        this.hurtbox.visible = false;
+        this.visible = false;
         this.hurtbox.body.enable = false;
         this.hurtbox.active = false;
         this.enemiesHit.clear();

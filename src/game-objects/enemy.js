@@ -13,7 +13,7 @@ export default class Enemy extends actor {
      * @param {number} y Coordenada Y
      */
     constructor(scene, x, y) {
-        super(scene, x, y, 'enemy', {   life        : 50,
+        super(scene, x, y, 'enemy', {   life        : 20,
                                         speed       : 100,
                                         defenseMod  : 1, 
                                         attackMod   : 1   

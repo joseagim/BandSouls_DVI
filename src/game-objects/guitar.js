@@ -1,17 +1,19 @@
 import Phaser from 'phaser';
 import Arma from './arma.js'
+import selectionPick from '../../assets/sprites/title-screen/selection-pick.png'
 import Enemy from './enemy.js';
 
 export default class Guitar extends Arma{
     constructor(scene,x,y,player){
-        super(scene,x,y, 'guitar',  {   damage      : 10,
+        super(scene,x,y, 'selectionPick',  {   damage      : 10,
                                         cooldown    : 1000,
                                         duration    : 500});
 
         this.player = player;
+        this.setScale(-0.30, 0.30);
         this.visible = false;
         this.hurtbox = this.scene.add.circle(0,0,20,0xff0000);
-        this.hurtbox.visible = true;
+        this.hurtbox.visible = false;
         this.scene.add.existing(this);
         this.scene.physics.add.existing(this.hurtbox);
         this.deactivateWeapon()

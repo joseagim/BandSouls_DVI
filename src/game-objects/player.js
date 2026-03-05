@@ -16,20 +16,15 @@ export default class Player extends actor {
      * @param {number} y Coordenada Y
      */
 
-    constructor(scene, x, y) {
-        super(scene, x, y, 'player', {  life        : 100,
-                                        speed       : 300,
-                                        defenseMod  : 1, 
-                                        attackMod   : 1});
-        this.score = 0;
+    constructor(scene, x, y, stats) {
+        super(scene, x, y, 'player', stats);
         this.x = x;
         this.y = y;
                  
         // Velocidades
-        this.speed = 200;
-        this.dashSpeed = 2000;
-        this.dashDuration = 25;
-        this.dashCooldown = 1000;
+        this.dashSpeed = stats.dashSpeed;
+        this.dashDuration = stats.dashDuration;
+        this.dashCooldown = stats.dashCooldown;
 
         // Estados
         this.isDashing = false;

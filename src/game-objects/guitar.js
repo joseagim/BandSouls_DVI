@@ -13,7 +13,7 @@ export default class Guitar extends Arma{
         this.setScale(-0.35, 0.35);
         this.visible = false;
         this.hurtbox = this.scene.add.circle(0,0,20,0xff0000);
-        this.hurtbox.visible = true;
+        this.hurtbox.visible = false;
         this.scene.add.existing(this);
         this.scene.physics.add.existing(this.hurtbox);
         this.deactivateWeapon()

@@ -10,6 +10,8 @@ export default class Spawner {
             maxSize: -1,
             runChildUpdate: true
         })
+
+        this.shadowStats = this.cache.json.get('shadowBaseStats');
     }
 
     spawn(x, y) {

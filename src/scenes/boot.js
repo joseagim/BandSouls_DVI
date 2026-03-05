@@ -28,6 +28,7 @@ import city_json from '../../assets/map/ciudad-mapa.json'
 
 // data
 import playerBaseStats from '../../assets/data/playerBaseStats.json';
+import shadowBaseStats from '../../assets/data/shadowBaseStats.json';
 import wavesJSON from '../../assets/data/waves.json';
 
 /**
@@ -64,7 +65,8 @@ export default class Boot extends Phaser.Scene {
     this.load.atlas('optionsSelected',optionsSelected,optionsJSON);
     this.load.atlas('startSelected', startSelected, startJSON);
     this.load.atlas('laude', laudeSpritesheet, laudeAtlas);
-    this.load.json('laudeBaseStats', playerBaseStats)
+    this.load.json('laudeBaseStats', playerBaseStats);
+    this.load.json('shadowBaseStats', shadowBaseStats);
     this.load.atlas('enemy_idle',enemyIdle,enemyIdleJSON);
     this.load.atlas('enemy_walk',enemyWalk,enemyWalkJSON);
     this.load.atlas('enemy_hit',enemyHit,enemyHitJSON);

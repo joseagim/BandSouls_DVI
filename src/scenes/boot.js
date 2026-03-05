@@ -5,7 +5,8 @@ import base from '../../assets/sprites/base.png'
 import player from '../../assets/sprites/player.png'
 import titleScreen from '../../assets/sprites/title-screen/lopk.png'
 import laudeSpritesheet from '../../assets/animations/laude/sprite.png'
-import laudeAtlas from '../../assets/animations/laude/atlas.json'
+import laudeGuitarSpriteSheet from '../../assets/animations/laude/guitar-sprite.png'
+import laudeAtlas from '../../assets/animations/laude/laude_atlas.json'
 import start from '../../assets/sprites/title-screen/start-text.png'
 import startJSON from '../../assets/sprites/title-screen/start-selected-atlas.json'
 import options from '../../assets/sprites/title-screen/options-text.png'
@@ -27,9 +28,7 @@ import city_tileset from '../../assets/map/rogueLike_city.png';
 import city_json from '../../assets/map/city_map.json'
 
 // data
-import playerBaseStats from '../../assets/data/playerBaseStats.json';
-import shadowBaseStats from '../../assets/data/shadowBaseStats.json';
-import wavesJSON from '../../assets/data/waves.json';
+import data from '../../assets/data/gameConfig';
 
 /**
  * Escena para la precarga de los assets que se usarán en el juego.
@@ -65,14 +64,13 @@ export default class Boot extends Phaser.Scene {
     this.load.atlas('optionsSelected',optionsSelected,optionsJSON);
     this.load.atlas('startSelected', startSelected, startJSON);
     this.load.atlas('laude', laudeSpritesheet, laudeAtlas);
-    this.load.json('laudeBaseStats', playerBaseStats);
-    this.load.json('shadowBaseStats', shadowBaseStats);
+    this.load.atlas('laude_guitar', laudeGuitarSpriteSheet, laudeAtlas);
+    this.cache.json.add('data', data);
     this.load.atlas('enemy_idle',enemyIdle,enemyIdleJSON);
     this.load.atlas('enemy_walk',enemyWalk,enemyWalkJSON);
     this.load.atlas('enemy_hit',enemyHit,enemyHitJSON);
     this.load.image('hud_health_border', HUDhealthBorder);
     this.load.image('hud_health_bar', HUDhealthBar);
-    this.load.json('wavesJSON', wavesJSON);
   }
 
   /**

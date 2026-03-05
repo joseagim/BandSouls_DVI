@@ -177,43 +177,46 @@ export default class Player extends actor {
     updateAnimation() {
         // para evitar todo el rato this.body.velocity
         const vel = this.body.velocity;
+        const suffix = this.isAttacking ? this.arma.attackAnimSuffix : this.arma.animSuffix;
 
         // si se está moviendo
         if (vel.length() > 0) {
             if (Math.abs(vel.x) > Math.abs(vel.y)) {
                 this.flipX = (vel.x < 0);
-                this.play('run-right', true);
+                this.play('run-right' + suffix, true);
             } else {
                 this.flipX = false;
-                if (vel.y < 0) this.play('run-up', true);
-                else this.play('run-down', true);
+                if (vel.y < 0) this.play('run-up' + suffix, true);
+                else this.play('run-down' + suffix, true);
             }
-        } 
+        }
         // si está quieto
         else {
             // miramos la última dirección
             switch (this.lastDirection) {
                 case 'left':
                     this.flipX = true;
-                    this.play('idle-right', true);
+                    this.play('idle-right' + suffix, true);
                     break;
                 case 'right':
                     this.flipX = false;
-                    this.play('idle-right', true);
+                    this.play('idle-right' + suffix, true);
                     break;
                 case 'up':
                     this.flipX = false;
-                    this.play('idle-up', true);
+                    this.play('idle-up' + suffix, true);
                     break;
                 case 'down':
                     this.flipX = false;
-                    this.play('idle-down', true);
+                    this.play('idle-down' + suffix, true);
                     break;
             }
         }
     }
 
     createAnimations() {
+
+        // Animaciones sin arma
         this.scene.anims.create({
             key: 'idle-down',
             frames: this.anims.generateFrameNames('laude', {
@@ -271,6 +274,62 @@ export default class Player extends actor {
                 start: 1,
                 end: 4
             }),
+            frameRate: 8,
+            repeat: -1
+        });
+
+        // Animaciones guitarra
+        this.scene.anims.create({
+            key: 'idle-down-guitar',
+            frames: this.anims.generateFrameNames('laude_guitar', { 
+                prefix: 'idle_down_', 
+                start: 1, 
+                end: 4 }),
+            frameRate: 4,
+            repeat: -1
+        });
+        this.scene.anims.create({
+            key: 'idle-up-guitar',
+            frames: this.anims.generateFrameNames('laude_guitar', { 
+                prefix: 'idle_up_', 
+                start: 1, 
+                end: 4 }),
+            frameRate: 4,
+            repeat: -1
+        });
+        this.scene.anims.create({
+            key: 'idle-right-guitar',
+            frames: this.anims.generateFrameNames('laude_guitar', { 
+                prefix: 'idle_right_', 
+                start: 1, 
+                end: 4 }),
+            frameRate: 4,
+            repeat: -1
+        });
+        this.scene.anims.create({
+            key: 'run-down-guitar',
+            frames: this.anims.generateFrameNames('laude_guitar', { 
+                prefix: 'run_down_', 
+                start: 1, 
+                end: 4 }),
+            frameRate: 8,
+            repeat: -1
+        });
+        this.scene.anims.create({
+            key: 'run-up-guitar',
+            frames: this.anims.generateFrameNames('laude_guitar', { 
+                prefix: 'run_up_', 
+                start: 1, 
+                end: 4 }),
+            frameRate: 8,
+            repeat: -1
+        });
+        this.scene.anims.create({
+            key: 'run-right-guitar',
+            frames: this.anims.generateFrameNames('laude_guitar', { 
+                prefix: 'run_right_', 
+                start: 1, 
+                end: 4 }),
             frameRate: 8,
             repeat: -1
         });

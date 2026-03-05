@@ -6,7 +6,7 @@ export default class WaveManager {
         this.spawner = spawner;
         this.currentWave = 0;
         this.enemies = 0;
-        this.wavesData = scene.cache.json.get('wavesJSON').waves;
+        this.wavesData = scene.cache.json.get('data').waves;
         this.waveDelay = 3000;
     }
 

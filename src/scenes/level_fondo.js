@@ -27,19 +27,31 @@ export default class Level_Fondo extends Level {
     create() {
         //this.stars = 10;
         var map = this.make.tilemap({ key: 'map' });
-        var tiles = map.addTilesetImage('tileset-ciudad','city_tiles');
+        var tiles = map.addTilesetImage('city_tileset','city_tiles');
+        
         var layer_suelo = map.createLayer('suelo',tiles,0,0);
         var layer_edif = map.createLayer('edificios',tiles,0,0);
         var layer_deco = map.createLayer('decorado',tiles,0,0);
+        var layer_deco_sin = map.createLayer('decoradoSin',tiles,0,0);
         var layer_obj = map.createLayer('objetos',tiles,0,0);
+        
         layer_edif.setCollisionByExclusion([-1],true);
         layer_deco.setCollisionByExclusion([-1],true);
         layer_obj.setCollisionByExclusion([-1],true);
-        
+
         
         this.bases = this.add.group();
         
         super.create();
+
+                
+        this.physics.add.collider(this.player,layer_edif);
+        this.physics.add.collider(this.player,layer_deco);
+        this.physics.add.collider(this.player,layer_obj);
+        
+         this.physics.add.collider(this.spawner.pool,layer_edif);
+        this.physics.add.collider(this.spawner.pool,layer_deco);
+        this.physics.add.collider(this.spawner.pool,layer_obj);
         
         // Configurar cámara
         this.cameras.main.setBounds(0, 0, 1280, 720);

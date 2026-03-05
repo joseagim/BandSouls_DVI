@@ -12,7 +12,7 @@ export default class Arma extends Phaser.GameObjects.Sprite {
     */
 
     constructor(scene, x, y, tag, stats){
-        super(scene,x,y, tag);
+        super(scene, x, y, tag);
         this.scene = scene;
         this.damage = stats.damage;
         this.cooldown = stats.cooldown;
@@ -20,6 +20,8 @@ export default class Arma extends Phaser.GameObjects.Sprite {
         this.enemiesHit = new Set();
         this.knockback_cd = 3;
         this.isAttacking = false;
+        this.animSuffix = '';
+        this.attackAnimSuffix = '';
         this.scene.physics.add.existing(this);
     }
 

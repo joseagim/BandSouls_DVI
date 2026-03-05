@@ -11,7 +11,7 @@ export default class Spawner {
             runChildUpdate: true
         })
 
-        this.shadowStats = this.cache.json.get('shadowBaseStats');
+        //this.shadowStats = this.cache.json.get('shadowBaseStats');
     }
 
     spawn(x, y) {

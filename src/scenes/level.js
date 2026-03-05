@@ -30,7 +30,7 @@ export default class Level extends Phaser.Scene {
         //this.stars = 10;
         this.bases = this.add.group();
 
-        const playerStats = this.cache.json.get('laudeBaseStats');
+        const playerStats = this.cache.json.get('data').playerBaseStats;
         this.player = new Player(this, 400, 400, playerStats);
 
         this.scene.launch('hud');

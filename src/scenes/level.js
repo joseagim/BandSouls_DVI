@@ -39,7 +39,9 @@ export default class Level extends Phaser.Scene {
         this.scene.get('hud').events.once('hud-ready', () => this.waveManager.startNextWave());
 
         this.physics.add.overlap(this.player, this.spawner.pool, function(player,enemy){
-            if (enemy.active && !player.invincible) enemy.attack(player);
+            if (enemy.active && !player.invincible){
+                enemy.attack(player);
+            } 
         }, null, this);
 
         this.setWeaponCollision(this.player.arma);

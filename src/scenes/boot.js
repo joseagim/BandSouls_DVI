@@ -18,6 +18,8 @@ import enemyIdle from '../../assets/animations/basic-enemy/Idle.png'
 import enemyIdleJSON from '../../assets/animations/basic-enemy/enemy_idle_atlas.json'
 import enemyWalk from '../../assets/animations/basic-enemy/move.png'
 import enemyWalkJSON from '../../assets/animations/basic-enemy/enemy_walk_atlas.json'
+import enemyHit from '../../assets/animations/basic-enemy/enemy_hit.png'
+import enemyHitJSON from '../../assets/animations/basic-enemy/enemy_hit_atlas.json'
 import HUDhealthBorder from '../../assets/animations/hud/health-bar/border.png'
 import HUDhealthBar from '../../assets/animations/hud/health-bar/bar.png'
 
@@ -63,6 +65,7 @@ export default class Boot extends Phaser.Scene {
     this.load.atlas('laude', laudeSpritesheet, laudeAtlas);
     this.load.atlas('enemy_idle',enemyIdle,enemyIdleJSON);
     this.load.atlas('enemy_walk',enemyWalk,enemyWalkJSON);
+    this.load.atlas('enemy_hit',enemyHit,enemyHitJSON);
     this.load.image('hud_health_border', HUDhealthBorder);
     this.load.image('hud_health_bar', HUDhealthBar);
     this.load.json('wavesJSON', wavesJSON);

@@ -26,6 +26,7 @@ export default class Enemy extends actor {
         this.attackCooldown = 1000;
         this.canAttack = true;
         this.hasDamaged = false
+        this.is_knockback = false;
 
         // Animaciones
         this.scene.anims.create({
@@ -37,7 +38,14 @@ export default class Enemy extends actor {
 
         this.scene.anims.create({
             key : 'enemy_walk',
-            frames: this.anims.generateFrameNames('enemy_walk',{ prefix: 'walk-', start: 0, end: 9 } ),
+            frames: this.anims.generateFrameNames('enemy_walk',{ prefix: 'walk-', start: 1, end: 9 } ),
+            frameRate: 4,
+            repeat : -1
+        });
+
+        this.scene.anims.create({
+            key : 'enemy_hit',
+            frames: this.anims.generateFrameNames('enemy_hit',{ prefix: 'hit-', start: 1, end: 3 } ),
             frameRate: 4,
             repeat : -1
         });
@@ -63,6 +71,7 @@ export default class Enemy extends actor {
         this.setActive(false);
         this.setVisible(false);
         this.body.enable = false;
+        this.is_knockback = false;
     }
 
     attack(player) {
@@ -91,12 +100,46 @@ export default class Enemy extends actor {
         if (this.scene.player.x <= this.x) {
             this.setFlip(true, false);
         }
-        if (!this.scene.physics.overlap(this, this.scene.player)) {
-            this.scene.physics.moveToObject(this,this.scene.player,this.speed);
-            this.play('enemy_walk',true);
-        } else {this.body.setVelocity(0);
+        if (!this.scene.physics.overlap(this, this.scene.player) && !this.is_knockback) {
+            this.move();
+        }
+        else {//this.body.setVelocity(0);
             this.is_moving=false;
         }
+    }
+
+    playHit(){
+        this.play('enemy_hit',true);
+    }
+
+    knockback(){
+        if(this.is_knockback) return;
+        this.is_knockback = true;
+
+        this.playHit();
+
+        const angle = Phaser.Math.Angle.Between(this.scene.player.x, this.scene.player.y, this.x, this.y);
+        const knockbackForce = 300;
+
+       // console.log("La velocidad aqui es %d %d",Math.cos(angle) * knockbackForce,Math.sin(angle) * knockbackForce);
+        this.body.setVelocityX(Math.cos(angle) * knockbackForce);
+          
+        this.body.setVelocityY(Math.sin(angle) * knockbackForce);
+       // console.log("La velocidad aqui es %d",this.speed);
+
+        this.scene.time.delayedCall(200, () => {
+                this.is_knockback = false;
+                console.log("KNOCKBACK ES FALSO");
+                //this.move();
+        });
+      //  console.log("La velocidad aqui es %d",this.speed);
+        
+
+    }
+
+    move(){
+        this.scene.physics.moveToObject(this,this.scene.player,this.speed);
+        this.play('enemy_walk',true);
     }
 
 }

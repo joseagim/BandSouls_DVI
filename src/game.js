@@ -11,6 +11,8 @@ import Level_Fondo from './scenes/level_fondo.js';
  */
 let config = {
     type: Phaser.AUTO,
+    pixelArt: true,
+    roundPixels: true,
     width: 1280,
     height: 736,
     parent: 'juego',

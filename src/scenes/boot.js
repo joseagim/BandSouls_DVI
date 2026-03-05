@@ -23,8 +23,8 @@ import enemyHitJSON from '../../assets/animations/basic-enemy/enemy_hit_atlas.js
 import HUDhealthBorder from '../../assets/animations/hud/health-bar/border.png'
 import HUDhealthBar from '../../assets/animations/hud/health-bar/bar.png'
 
-import city_tileset from '../../assets/map/city_tileset.png';
-import city_json from '../../assets/map/ciudad-mapa.json'
+import city_tileset from '../../assets/map/rogueLike_city.png';
+import city_json from '../../assets/map/city_map.json'
 
 import wavesJSON from '../waves.json';
 

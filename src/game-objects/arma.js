@@ -19,7 +19,7 @@ export default class Arma extends Phaser.GameObjects.Sprite {
         this.duration = stats.duration;
         this.enemiesHit = new Set();
         this.knockback_cd = 3;
-
+        this.isAttacking = false;
         this.scene.physics.add.existing(this);
     }
 
@@ -44,6 +44,8 @@ export default class Arma extends Phaser.GameObjects.Sprite {
         const targetX = this.x + dir.x * distance;
         const targetY = this.y + dir.y * distance;
 
+        //probablemente tengamos que reworkear esto para que cada arma gestione su propio posicionamiento
+
         this.hurtbox.setPosition(targetX, targetY);
         this.setPosition(targetX, targetY);
 
@@ -55,25 +57,20 @@ export default class Arma extends Phaser.GameObjects.Sprite {
         this.visible = true;
         this.hurtbox.body.enable = true;
         this.hurtbox.active = true;
+        this.isAttacking = true;
         this.enemiesHit.clear();
-        this.scene.tweens.add({
-            targets: this,
-            rotation: {
-                from: this.rotation - 1.5,
-                to: this.rotation + 1.5
-            },
-            duration: this.duration,
-            ease: 'Cubic.easeOut',
-            onComplete: () => {
-                this.rotation = this.rotation;
-            }
-        });
+        this.weaponAttackAnimation();
+    }
+
+    weaponAttackAnimation() {
+        console.error("ESTAS LLAMANDO A ANIMACION DE CLASE ABSTRACTA");
     }
 
     deactivateWeapon() {
         this.visible = false;
         this.hurtbox.body.enable = false;
         this.hurtbox.active = false;
+        this.isAttacking = false;
         this.enemiesHit.clear();
     }
 

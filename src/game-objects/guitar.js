@@ -10,7 +10,7 @@ export default class Guitar extends Arma{
                                         duration    : 500});
 
         this.player = player;
-        this.setScale(-0.30, 0.30);
+        this.setScale(-0.35, 0.35);
         this.visible = false;
         this.hurtbox = this.scene.add.circle(0,0,20,0xff0000);
         this.hurtbox.visible = false;
@@ -21,6 +21,18 @@ export default class Guitar extends Arma{
 
     getHurtboxes() {
         return [this.hurtbox];
+    }
+
+    weaponAttackAnimation() {
+        this.scene.tweens.add({
+            targets: this,
+            rotation: {
+                from: this.rotation - 1.5,
+                to: this.rotation + 1.5
+            },
+            duration: this.duration,
+            ease: 'Back.easeOut',
+        });
     }
 
     

@@ -26,7 +26,10 @@ import HUDhealthBar from '../../assets/animations/hud/health-bar/bar.png'
 import city_tileset from '../../assets/map/city_tileset.png';
 import city_json from '../../assets/map/ciudad-mapa.json'
 
-import wavesJSON from '../waves.json';
+// data
+import playerBaseStats from '../../assets/data/playerBaseStats.json';
+import shadowBaseStats from '../../assets/data/shadowBaseStats.json';
+import wavesJSON from '../../assets/data/waves.json';
 
 /**
  * Escena para la precarga de los assets que se usarán en el juego.
@@ -63,6 +66,8 @@ export default class Boot extends Phaser.Scene {
     this.load.atlas('optionsSelected',optionsSelected,optionsJSON);
     this.load.atlas('startSelected', startSelected, startJSON);
     this.load.atlas('laude', laudeSpritesheet, laudeAtlas);
+    this.load.json('laudeBaseStats', playerBaseStats);
+    this.load.json('shadowBaseStats', shadowBaseStats);
     this.load.atlas('enemy_idle',enemyIdle,enemyIdleJSON);
     this.load.atlas('enemy_walk',enemyWalk,enemyWalkJSON);
     this.load.atlas('enemy_hit',enemyHit,enemyHitJSON);

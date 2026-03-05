@@ -18,6 +18,7 @@ export default class Arma extends Phaser.GameObjects.Sprite {
         this.cooldown = stats.cooldown;
         this.duration = stats.duration;
         this.enemiesHit = new Set();
+        this.knockback_cd = 3;
 
         this.scene.physics.add.existing(this);
     }
@@ -79,6 +80,7 @@ export default class Arma extends Phaser.GameObjects.Sprite {
     attack(enemy, attackMod){
         if (this.enemiesHit.has(enemy)) return; 
         enemy.getDamage(this.damage * attackMod);
+        enemy.knockback();
         this.enemiesHit.add(enemy);
     }
 

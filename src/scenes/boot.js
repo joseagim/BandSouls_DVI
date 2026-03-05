@@ -5,7 +5,8 @@ import base from '../../assets/sprites/base.png'
 import player from '../../assets/sprites/player.png'
 import titleScreen from '../../assets/sprites/title-screen/lopk.png'
 import laudeSpritesheet from '../../assets/animations/laude/sprite.png'
-import laudeAtlas from '../../assets/animations/laude/atlas.json'
+import laudeGuitarSpriteSheet from '../../assets/animations/laude/guitar-sprite.png'
+import laudeAtlas from '../../assets/animations/laude/laude_atlas.json'
 import start from '../../assets/sprites/title-screen/start-text.png'
 import startJSON from '../../assets/sprites/title-screen/start-selected-atlas.json'
 import options from '../../assets/sprites/title-screen/options-text.png'
@@ -63,14 +64,13 @@ export default class Boot extends Phaser.Scene {
     this.load.atlas('optionsSelected',optionsSelected,optionsJSON);
     this.load.atlas('startSelected', startSelected, startJSON);
     this.load.atlas('laude', laudeSpritesheet, laudeAtlas);
+    this.load.atlas('laude_guitar', laudeGuitarSpriteSheet, laudeAtlas);
     this.cache.json.add('data', data);
-    //this.cache.json.add('shadowBaseStats', data.shadowBaseStats);
     this.load.atlas('enemy_idle',enemyIdle,enemyIdleJSON);
     this.load.atlas('enemy_walk',enemyWalk,enemyWalkJSON);
     this.load.atlas('enemy_hit',enemyHit,enemyHitJSON);
     this.load.image('hud_health_border', HUDhealthBorder);
     this.load.image('hud_health_bar', HUDhealthBar);
-    //this.cache.json.add('wavesJSON', data.waves);
   }
 
   /**

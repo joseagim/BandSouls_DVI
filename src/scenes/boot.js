@@ -25,6 +25,7 @@ import enemyDie from '../../assets/animations/basic-enemy/enemy_die.png'
 import enemyDieJSON from '../../assets/animations/basic-enemy/enemy_die_atlas.json'
 import HUDhealthBorder from '../../assets/animations/hud/health-bar/border.png'
 import HUDhealthBar from '../../assets/animations/hud/health-bar/bar.png'
+import roundNumbers from '../../assets/sprites/round-numbers/numbers.png'
 
 import city_tileset from '../../assets/map/rogueLike_city.png';
 import city_json from '../../assets/map/city_map.json'
@@ -74,6 +75,7 @@ export default class Boot extends Phaser.Scene {
     this.load.atlas('enemy_die',enemyDie,enemyDieJSON);
     this.load.image('hud_health_border', HUDhealthBorder);
     this.load.image('hud_health_bar', HUDhealthBar);
+    this.load.spritesheet('round_numbers', roundNumbers, { frameWidth: 24, frameHeight: 32 });
   }
 
   /**

@@ -13,15 +13,15 @@ export default class HUD extends Phaser.Scene {
         this.healthBar.setScrollFactor(0);
 
         // crear el texto de info oleadas
-        this.waveCounter = this.add.text(20, 80, 'Oleada X', {
+        /*this.waveCounter = this.add.text(20, 80, 'Oleada X', {
             fontSize: '32px',
             fill: '#ffffff',
             fontFamily: 'Arial',
             stroke: '#000000',
             strokeThickness: 4
-        });
+        });*/
 
-        this.remainingEnemies = this.add.text(20, 120, 'Enemigos restantes: X', {
+        this.remainingEnemies = this.add.text(20, 80, 'Enemigos restantes: X', {
             fontSize: '32px',
             fill: '#ffffff',
             fontFamily: 'Arial',
@@ -38,6 +38,10 @@ export default class HUD extends Phaser.Scene {
         })
         this.waitingNextWave.visible = false;
 
+        // Display de número de oleada (esquina superior derecha)
+        this._roundDigits = [];
+        this._showRound(1);
+
         // pillamos la escena para escuchar eventos y actualizar el hud
         const mainLevel = this.scene.get('level_fondo');
         
@@ -49,15 +53,16 @@ export default class HUD extends Phaser.Scene {
 
         // evento: actualizar número de oleada
         mainLevel.events.on('nextWave', (waveNumber) => {
-            this.waveCounter.setText('Oleada ' + waveNumber);
+            //this.waveCounter.setText('Oleada ' + waveNumber);
+            this._showRound(waveNumber);
 
             // efecto visual
-            this.tweens.add({
+            /*this.tweens.add({
                     targets: this.waveCounter,
                     scale: 1.2,
                     duration: 200,
                     yoyo: true
-            });
+            });*/
         })
 
         // evento: actualizar enemigos restantes
@@ -94,5 +99,25 @@ export default class HUD extends Phaser.Scene {
         });
 
         this.events.emit('hud-ready');
+    }
+
+    _showRound(number) {
+        // Destruir dígitos anteriores
+        this._roundDigits.forEach(img => img.destroy());
+        this._roundDigits = [];
+
+        const digits = String(number).split('');
+        const scale = 3;
+        const digitWidth = 24 * scale;
+        const gap = 4;
+        const totalWidth = digits.length * digitWidth + (digits.length - 1) * gap;
+        const rightEdge = this.scale.width - 20;
+        const y = 20;
+
+        digits.forEach((d, i) => {
+            const x = rightEdge - totalWidth + i * (digitWidth + gap) + digitWidth / 2;
+            const img = this.add.image(x, y, 'round_numbers', Number(d)).setOrigin(0.5, 0).setScale(scale).setScrollFactor(0);
+            this._roundDigits.push(img);
+        });
     }
 }

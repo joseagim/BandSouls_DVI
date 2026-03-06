@@ -1,12 +1,6 @@
 import Phaser from 'phaser'
 
-import platform from '../../assets/sprites/platform.png'
-import base from '../../assets/sprites/base.png'
-import player from '../../assets/sprites/player.png'
 import titleScreen from '../../assets/sprites/title-screen/lopk.png'
-import laudeSpritesheet from '../../assets/animations/laude/sprite.png'
-import laudeGuitarSpriteSheet from '../../assets/animations/laude/guitar-sprite.png'
-import laudeAtlas from '../../assets/animations/laude/laude_atlas.json'
 import start from '../../assets/sprites/title-screen/start-text.png'
 import startJSON from '../../assets/sprites/title-screen/start-selected-atlas.json'
 import options from '../../assets/sprites/title-screen/options-text.png'
@@ -14,7 +8,16 @@ import optionsJSON from '../../assets/sprites/title-screen/options-selected-atla
 import optionsSelected from '../../assets/sprites/title-screen/options-selected-sheet.png'
 import startSelected from '../../assets/sprites/title-screen/start-selected-sheet.png'
 import selectionPick from '../../assets/sprites/title-screen/selection-pick.png'
+
+import laudeSpritesheet from '../../assets/animations/laude/sprite.png'
+import laudeGuitarSpriteSheet from '../../assets/animations/laude/guitar-sprite.png'
+import laudeAtlas from '../../assets/animations/laude/laude_atlas.json'
+import cooldownResetVisualCueSheet from '../../assets/animations/laude/CooldownResetVisualCue-Sheet.png'
+import cooldownResetVisualCueJSON from '../../assets/animations/laude/CooldownResetVisualCue.json'
+
+
 import deathScreen from '../../assets/sprites/title-screen/death-screen.png'
+
 import enemyIdle from '../../assets/animations/basic-enemy/Idle.png'
 import enemyIdleJSON from '../../assets/animations/basic-enemy/enemy_idle_atlas.json'
 import enemyWalk from '../../assets/animations/basic-enemy/move.png'
@@ -23,6 +26,7 @@ import enemyHit from '../../assets/animations/basic-enemy/enemy_hit.png'
 import enemyHitJSON from '../../assets/animations/basic-enemy/enemy_hit_atlas.json'
 import enemyDie from '../../assets/animations/basic-enemy/enemy_die.png'
 import enemyDieJSON from '../../assets/animations/basic-enemy/enemy_die_atlas.json'
+
 import HUDhealthBorder from '../../assets/animations/hud/health-bar/border.png'
 import HUDhealthBar from '../../assets/animations/hud/health-bar/bar.png'
 
@@ -57,21 +61,24 @@ export default class Boot extends Phaser.Scene {
     this.load.image('title', titleScreen);
     this.load.image('options', options);
     this.load.image('selectionPick', selectionPick);
+    this.load.atlas('optionsSelected',optionsSelected,optionsJSON);
+    this.load.atlas('startSelected', startSelected, startJSON);
+
     this.load.image('city_tiles',city_tileset);
     this.load.image('death',deathScreen);
     this.load.tilemapTiledJSON('map',city_json);
-    this.load.image('platform', platform);
-    this.load.image('base', base);
-    this.load.image('player', player);
-    this.load.atlas('optionsSelected',optionsSelected,optionsJSON);
-    this.load.atlas('startSelected', startSelected, startJSON);
+
     this.load.atlas('laude', laudeSpritesheet, laudeAtlas);
     this.load.atlas('laude_guitar', laudeGuitarSpriteSheet, laudeAtlas);
+    this.load.atlas('cooldownResetVisualCue', cooldownResetVisualCueSheet, cooldownResetVisualCueJSON);
+    
     this.cache.json.add('data', data);
+
     this.load.atlas('enemy_idle',enemyIdle,enemyIdleJSON);
     this.load.atlas('enemy_walk',enemyWalk,enemyWalkJSON);
     this.load.atlas('enemy_hit',enemyHit,enemyHitJSON);
     this.load.atlas('enemy_die',enemyDie,enemyDieJSON);
+
     this.load.image('hud_health_border', HUDhealthBorder);
     this.load.image('hud_health_bar', HUDhealthBar);
   }

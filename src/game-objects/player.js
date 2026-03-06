@@ -41,10 +41,11 @@ export default class Player extends actor {
         this.setScale(1.5);
         this.play('idle-down', true);
 
-        // Esta label es la UI en la que pondremos la puntuación del jugador
-        this.label = this.scene.add.text(10, 10, "", {fontSize: 20});
-        
-
+        // visual cues
+        this.cdAnim = this.scene.add.sprite(x, y, 'cooldownResetVisualCue');
+        this.cdAnim.setVisible(false);
+        this.xOffsetCdAnim = -25;
+        this.yOffsetCdAnim = -15;
 
         // this.cursors = this.scene.input.keyboard.createCursorKeys();
         this.keyA = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
@@ -69,6 +70,11 @@ export default class Player extends actor {
         this.arma = new Guitar(this.scene,this.x,this.y,this);
     }
 
+    updateVisualCues() {
+        this.cdAnim.x = this.x + this.xOffsetCdAnim;
+        this.cdAnim.y = this.y + this.yOffsetCdAnim;
+    }
+
     /**
      * Métodos preUpdate de Phaser. En este caso solo se encarga del movimiento del jugador.
      * Como se puede ver, no se tratan las colisiones con las estrellas, ya que estas colisiones 
@@ -79,6 +85,7 @@ export default class Player extends actor {
         super.preUpdate(t, dt);
 
         let isHorizontal = false;
+        this.updateVisualCues();
 
         if (this.isDashing) return;
        
@@ -124,6 +131,19 @@ export default class Player extends actor {
         this.scene.scene.start("end")
     }
 
+    showCooldownCue(color) {
+        this.cdAnim.clearTint();   
+        this.cdAnim.setTintFill(color); 
+        
+        this.cdAnim.setVisible(true);
+        this.cdAnim.play('cooldown_reset', true);
+
+        this.cdAnim.once('animationcomplete-cooldown_reset', () => {
+            this.cdAnim.setVisible(false);
+        });
+    }
+
+
     doDash() {
         // el jugador hace dash
         this.isDashing = true;
@@ -141,6 +161,8 @@ export default class Player extends actor {
 
         // cuando termine el cooldown del dash
         this.scene.time.delayedCall(this.dashCooldown, () => {
+            let dashColor = 0x00ffff;
+            this.showCooldownCue(dashColor);
             this.canDash = true;
         });
     }
@@ -333,6 +355,19 @@ export default class Player extends actor {
             frameRate: 8,
             repeat: -1
         });
+
+        this.scene.anims.create({
+            key: 'cooldown_reset',
+            frames: this.anims.generateFrameNames('cooldownResetVisualCue', {
+                prefix: 'CooldownResetVisualCue ',
+                suffix: '.aseprite',
+                start: 0,
+                end: 9
+            }),
+            frameRate: 35,
+            repeat: 0     
+        });
+
     }
     
 

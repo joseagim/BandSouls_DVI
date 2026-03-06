@@ -40,7 +40,7 @@ export default class Guitar extends Arma{
             targets: this,
             swingAngle: startAngle + arcHalf,
             duration: this.duration,
-            ease: 'Sine.easeInOut',
+            ease: 'Back.easeInOut',
         });
     }
 

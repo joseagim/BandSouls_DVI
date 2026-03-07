@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import Arma from './arma';
 import actor from './actor';
 import Guitar from './guitar';
+import Drum from './drum';
 
 /**
  * Clase que representa el jugador del juego. El jugador se mueve por el mundo usando los cursores.
@@ -30,8 +31,6 @@ export default class Player extends actor {
         this.isDashing = false;
         this.canDash = true;
         this.lastDirection = 'down';
-        this.isAttacking = false;
-        this.canAttack = true;
 
         // Sprites
         this.createAnimations();
@@ -54,19 +53,14 @@ export default class Player extends actor {
         // this.keyF = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F); DEBUG FOR DAMAGE
         this.keySpace = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.mouseClick = this.scene.input.on('pointerdown', (pointer) => {
-            if(pointer.button == 0 && this.canAttack){    //segun documentación 0 es el botón derechp
-                this.arma.activateWeapon()
-                this.canAttack = false;
-                this.isAttacking = true;
-                this.scene.time.delayedCall(this.arma.duration, 
-                    () => {this.arma.deactivateWeapon(); this.isAttacking = false;
-                    this.scene.time.delayedCall(this.arma.cooldown - this.arma.duration, 
-                    () => {this.canAttack = true;})});
+            if (pointer.button == 0 && this.arma.canAttack) {
+                this.arma.startAttack();
             }
         });
 
         // Seccion de armas
-        this.arma = new Guitar(this.scene,this.x,this.y,this);
+        //this.arma = new Guitar(this.scene,this.x,this.y,this);
+        this.arma = new Drum(this.scene,this.x,this.y,this);
     }
 
     /**
@@ -177,7 +171,7 @@ export default class Player extends actor {
     updateAnimation() {
         // para evitar todo el rato this.body.velocity
         const vel = this.body.velocity;
-        const suffix = this.isAttacking ? this.arma.attackAnimSuffix : this.arma.animSuffix;
+        const suffix = this.arma.getAnimSuffix();
 
         // si se está moviendo
         if (vel.length() > 0) {
@@ -327,6 +321,62 @@ export default class Player extends actor {
         this.scene.anims.create({
             key: 'run-right-guitar',
             frames: this.anims.generateFrameNames('laude_guitar', { 
+                prefix: 'run_right_', 
+                start: 1, 
+                end: 4 }),
+            frameRate: 8,
+            repeat: -1
+        });
+
+        // Animaciones batería
+        this.scene.anims.create({
+            key: 'idle-down-drum',
+            frames: this.anims.generateFrameNames('laude_drum', { 
+                prefix: 'idle_down_', 
+                start: 1, 
+                end: 4 }),
+            frameRate: 4,
+            repeat: -1
+        });
+        this.scene.anims.create({
+            key: 'idle-up-drum',
+            frames: this.anims.generateFrameNames('laude_drum', { 
+                prefix: 'idle_up_', 
+                start: 1, 
+                end: 4 }),
+            frameRate: 4,
+            repeat: -1
+        });
+        this.scene.anims.create({
+            key: 'idle-right-drum',
+            frames: this.anims.generateFrameNames('laude_drum', { 
+                prefix: 'idle_right_', 
+                start: 1, 
+                end: 4 }),
+            frameRate: 4,
+            repeat: -1
+        });
+        this.scene.anims.create({
+            key: 'run-down-drum',
+            frames: this.anims.generateFrameNames('laude_drum', { 
+                prefix: 'run_down_', 
+                start: 1, 
+                end: 4 }),
+            frameRate: 8,
+            repeat: -1
+        });
+        this.scene.anims.create({
+            key: 'run-up-drum',
+            frames: this.anims.generateFrameNames('laude_drum', { 
+                prefix: 'run_up_', 
+                start: 1, 
+                end: 4 }),
+            frameRate: 8,
+            repeat: -1
+        });
+        this.scene.anims.create({
+            key: 'run-right-drum',
+            frames: this.anims.generateFrameNames('laude_drum', { 
                 prefix: 'run_right_', 
                 start: 1, 
                 end: 4 }),

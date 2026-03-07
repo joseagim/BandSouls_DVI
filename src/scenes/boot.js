@@ -6,6 +6,7 @@ import player from '../../assets/sprites/player.png'
 import titleScreen from '../../assets/sprites/title-screen/lopk.png'
 import laudeSpritesheet from '../../assets/animations/laude/sprite.png'
 import laudeGuitarSpriteSheet from '../../assets/animations/laude/guitar-sprite.png'
+import laudeDrumSpriteSheet from '../../assets/animations/laude/drum-sprite.png'
 import laudeAtlas from '../../assets/animations/laude/laude_atlas.json'
 import start from '../../assets/sprites/title-screen/start-text.png'
 import startJSON from '../../assets/sprites/title-screen/start-selected-atlas.json'
@@ -14,6 +15,8 @@ import optionsJSON from '../../assets/sprites/title-screen/options-selected-atla
 import optionsSelected from '../../assets/sprites/title-screen/options-selected-sheet.png'
 import startSelected from '../../assets/sprites/title-screen/start-selected-sheet.png'
 import selectionPick from '../../assets/sprites/title-screen/selection-pick.png'
+import guitarSprite from '../../assets/sprites/weapons/guitar/guitar-sprite.png'
+import drumSticks from '../../assets/sprites/weapons/drum/drum-sticks.sprite.png'
 import deathScreen from '../../assets/sprites/title-screen/death-screen.png'
 import enemyIdle from '../../assets/animations/basic-enemy/Idle.png'
 import enemyIdleJSON from '../../assets/animations/basic-enemy/enemy_idle_atlas.json'
@@ -58,6 +61,8 @@ export default class Boot extends Phaser.Scene {
     this.load.image('title', titleScreen);
     this.load.image('options', options);
     this.load.image('selectionPick', selectionPick);
+    this.load.image('guitarSprite', guitarSprite);
+    this.load.image('drumSticks', drumSticks);
     this.load.image('city_tiles',city_tileset);
     this.load.image('death',deathScreen);
     this.load.tilemapTiledJSON('map',city_json);
@@ -68,6 +73,7 @@ export default class Boot extends Phaser.Scene {
     this.load.atlas('startSelected', startSelected, startJSON);
     this.load.atlas('laude', laudeSpritesheet, laudeAtlas);
     this.load.atlas('laude_guitar', laudeGuitarSpriteSheet, laudeAtlas);
+    this.load.atlas('laude_drum', laudeDrumSpriteSheet, laudeAtlas);
     this.cache.json.add('data', data);
     this.load.atlas('enemy_idle',enemyIdle,enemyIdleJSON);
     this.load.atlas('enemy_walk',enemyWalk,enemyWalkJSON);

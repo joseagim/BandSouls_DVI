@@ -1,18 +1,15 @@
 import Phaser from 'phaser';
 import Arma from './arma.js'
-import selectionPick from '../../assets/sprites/title-screen/selection-pick.png'
 import Enemy from './enemy.js';
 
 export default class Guitar extends Arma{
     constructor(scene,x,y,player){
-        super(scene,x,y, 'selectionPick',  {   damage      : 10,
+        super(scene,x,y, 'guitarSprite',  {   damage      : 10,
                                         cooldown    : 700,
                                         duration    : 250});
 
         this.player = player;
-        this.animSuffix = '-guitar';
-        this.attackAnimSuffix = '';
-        this.setScale(-0.35, 0.35);
+        this.setScale(-1.5, 1.5);
         this.visible = false;
         this.hurtbox = this.scene.add.circle(0,0,20,0xff0000);
         this.hurtbox.visible = false;
@@ -23,6 +20,10 @@ export default class Guitar extends Arma{
 
     getHurtboxes() {
         return [this.hurtbox];
+    }
+
+    getAnimSuffix() {
+        return this.isAttacking ? '' : '-guitar';
     }
 
     weaponAttackAnimation() {
@@ -40,7 +41,7 @@ export default class Guitar extends Arma{
             targets: this,
             swingAngle: startAngle + arcHalf,
             duration: this.duration,
-            ease: 'Sine.easeInOut',
+            ease: 'Back.easeInOut',
         });
     }
 

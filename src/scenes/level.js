@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import Platform from '../game-objects/platform.js';
 import Player from '../game-objects/player.js';
 import Enemy from '../game-objects/enemy.js';
-import actor from  '../game-objects/actor.js';
+import actor from '../game-objects/actor.js';
 import Spawner from '../game-objects/spawner.js';
 import WaveManager from '../game-objects/wave-manager.js';
 
@@ -40,13 +40,14 @@ export default class Level extends Phaser.Scene {
         this.waveManager = new WaveManager(this, this.spawner);
         this.scene.get('hud').events.once('hud-ready', () => this.waveManager.startNextWave());
 
-        this.physics.add.overlap(this.player, this.spawner.pool, function(player,enemy){
-            if (enemy.active && !player.invincible){
+        this.physics.add.overlap(this.player, this.spawner.pool, function (player, enemy) {
+            if (enemy.active && !player.invincible) {
                 enemy.attack(player);
-            } 
+            }
         }, null, this);
 
-        this.setWeaponCollision(this.player.arma);
+        this.setWeaponCollision(this.player.guitar);
+        this.setWeaponCollision(this.player.bajo);// para que funcione el bajo de momento
 
     }
 

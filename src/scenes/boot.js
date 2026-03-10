@@ -33,6 +33,14 @@ import city_json from '../../assets/map/city_map.json'
 // data
 import data from '../../assets/data/gameConfig';
 
+// sound-fx
+import SoundManager from '../game-objects/sound_manager.js'; 
+import movement from '../../assets/sounds/fx/movement-player.mp3';
+import dash from '../../assets/sounds/fx/dash.mp3';
+import guitar_attk from '../../assets/sounds/fx/guitar-attk.mp3';
+import enemy_hurt_fx from '../../assets/sounds/fx/enemy_hurt.mp3';
+import menu_music from '../../assets/sounds/music/menu-music.mp3';
+
 /**
  * Escena para la precarga de los assets que se usarán en el juego.
  * Esta escena se puede mejorar añadiendo una imagen del juego y una 
@@ -76,6 +84,20 @@ export default class Boot extends Phaser.Scene {
     this.load.image('hud_health_border', HUDhealthBorder);
     this.load.image('hud_health_bar', HUDhealthBar);
     this.load.spritesheet('round_numbers', roundNumbers, { frameWidth: 24, frameHeight: 32 });
+
+    //sonidos
+
+    this.load.audio('movement', movement);
+    this.load.audio('dash', dash); 
+    this.load.audio('guitar_attk', guitar_attk);
+    this.load.audio('enemy_hurt', enemy_hurt_fx);
+    this.load.audio('menu_music', menu_music);
+
+    this.soundManager = new SoundManager(this);
+    this.soundManager.addSounds({
+        'menu_music': { key: 'menu_music', loop: true, category: 'music' },
+    })
+
   }
 
   /**
@@ -83,6 +105,7 @@ export default class Boot extends Phaser.Scene {
    * nivel del juego
    */
   create() {
+    this.soundManager.play('menu_music');
     this.add.image(640, 368, "title");
     this.startText = this.add.sprite(596, 490, "start");
     this.anims.create({
@@ -146,7 +169,11 @@ export default class Boot extends Phaser.Scene {
 
     this.input.keyboard.on("keydown-ENTER",()=>{
       if(this.activeOption==this.startText){
-        this.scene.start('level_fondo');
+        this.soundManager.fadeOutMusic(500);
+         // 2. Esperar a que termine el fade out antes de cambiar de escena
+        this.time.delayedCall(500, () => {
+          this.scene.start('level_fondo');
+        });
       }else if(this.activeOption==this.optionsText){
         alert("se mostraria menu de opciones: audio, brillo, etc...")
       }else{

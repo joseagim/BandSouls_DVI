@@ -3,6 +3,7 @@ import Arma from './arma';
 import actor from './actor';
 import Guitar from './guitar';
 import Bass from './bass';
+import SoundManager from './sound_manager';
 
 /**
  * Clase que representa el jugador del juego. El jugador se mueve por el mundo usando los cursores.
@@ -60,7 +61,8 @@ export default class Player extends actor {
         // this.keyF = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F); DEBUG FOR DAMAGE
         this.keySpace = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.mouseClick = this.scene.input.on('pointerdown', (pointer) => {
-            if (pointer.button == 0 && this.canAttack) {    //segun documentación 0 es el botón derechp
+            if(pointer.button == 0 && this.canAttack){    //segun documentación 0 es el botón derechp
+                this.soundManager.playWithPitch('guitar_attk'); 
                 this.arma.activateWeapon()
                 this.canAttack = false;
                 this.isAttacking = true;
@@ -78,6 +80,8 @@ export default class Player extends actor {
         this.bajo = new Bass(this.scene, this.x, this.y, this);
         // Arma activa inicializado a guitarra
         this.arma = this.guitar;
+        this.soundManager = SoundManager.getInstance(this.scene);
+        this.playingMovementSound = false;
     }
 
     /**
@@ -129,6 +133,14 @@ export default class Player extends actor {
 
         this.body.velocity.normalize().scale(this.speed);
 
+        if(this.body.velocity.length() > 0 && !this.playingMovementSound) {
+            this.soundManager.play('movement');
+            this.playingMovementSound = true;
+        } else if(this.body.velocity.length() === 0 && this.playingMovementSound) {
+            this.soundManager.stop('movement');
+            this.playingMovementSound = false;
+        }
+
         this.updateAnimation();
 
         if (this.keySpace.isDown && this.canDash && this.body.velocity.length() > 0) {
@@ -141,12 +153,14 @@ export default class Player extends actor {
     }
 
     die() {
+        this.soundManager.stopAll();
         this.scene.scene.stop('hud');
         this.scene.scene.start("end")
     }
 
     doDash() {
         // el jugador hace dash
+        this.soundManager.play('dash');
         this.isDashing = true;
         this.canDash = false;
 

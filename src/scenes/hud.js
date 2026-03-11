@@ -49,7 +49,8 @@ export default class HUD extends Phaser.Scene {
         mainLevel.events.on('updateHealth', (player) => {
             const percentage = player.life / player.maxHP;
             this.healthBar.setValue(percentage);
-        });
+            }
+        );
 
         // evento: actualizar número de oleada
         mainLevel.events.on('nextWave', (waveNumber) => {

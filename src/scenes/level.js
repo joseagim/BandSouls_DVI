@@ -2,9 +2,10 @@ import Phaser from 'phaser';
 import Platform from '../game-objects/platform.js';
 import Player from '../game-objects/player.js';
 import Enemy from '../game-objects/enemy.js';
-import actor from  '../game-objects/actor.js';
+import actor from '../game-objects/actor.js';
 import Spawner from '../game-objects/spawner.js';
 import WaveManager from '../game-objects/wave-manager.js';
+import SoundManager from '../game-objects/sound_manager.js';
 
 
 /**
@@ -29,7 +30,13 @@ export default class Level extends Phaser.Scene {
     create() {
         //this.stars = 10;
         this.bases = this.add.group();
-
+        this.soundManager = new SoundManager(this);
+        this.soundManager.addSounds({
+            'movement': { key: 'movement', loop: true, loopDelay: 100 },
+            'dash': { key: 'dash', volume: 10 },
+            'guitar_attk': { key: 'guitar_attk', volume: 0.5 },
+            'enemy_hurt': { key: 'enemy_hurt' }
+        })
         const playerStats = this.cache.json.get('data').playerBaseStats;
         this.player = new Player(this, 400, 400, playerStats);
 
@@ -40,13 +47,14 @@ export default class Level extends Phaser.Scene {
         this.waveManager = new WaveManager(this, this.spawner);
         this.scene.get('hud').events.once('hud-ready', () => this.waveManager.startNextWave());
 
-        this.physics.add.overlap(this.player, this.spawner.pool, function(player,enemy){
-            if (enemy.active && !player.invincible){
+        this.physics.add.overlap(this.player, this.spawner.pool, function (player, enemy) {
+            if (enemy.active && !player.invincible) {
                 enemy.attack(player);
-            } 
+            }
         }, null, this);
 
-        this.setWeaponCollision(this.player.arma);
+        this.setWeaponCollision(this.player.guitar);
+        this.setWeaponCollision(this.player.bajo);// para que funcione el bajo de momento
 
     }
 
@@ -54,6 +62,7 @@ export default class Level extends Phaser.Scene {
         for (let hurtBox of weapon.getHurtboxes()) {
             this.physics.add.overlap(hurtBox, this.spawner.pool, (hurtbox, enemy) => {
                 if (!enemy.invincible) {
+                    this.soundManager.playWithPitch('enemy_hurt');
                     weapon.attack(enemy, this.player.attackMod, hurtbox);
                     if (enemy.life <= 0) this.waveManager.enemyDies();
                 }

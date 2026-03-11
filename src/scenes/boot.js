@@ -3,11 +3,14 @@ import Phaser from 'phaser'
 import platform from '../../assets/sprites/platform.png'
 import base from '../../assets/sprites/base.png'
 import player from '../../assets/sprites/player.png'
+import bajo from '../../assets/sprites/bajo.png'
 import titleScreen from '../../assets/sprites/title-screen/lopk.png'
 import laudeSpritesheet from '../../assets/animations/laude/sprite.png'
 import laudeGuitarSpriteSheet from '../../assets/animations/laude/guitar-sprite.png'
 import laudeDrumSpriteSheet from '../../assets/animations/laude/drum-sprite.png'
+import laudeBassSpritesheet from '../../assets/animations/laude/bass-sprite.png'
 import laudeAtlas from '../../assets/animations/laude/laude_atlas.json'
+import laudeBassAtlas from '../../assets/animations/laude/bass-sprite.json'
 import start from '../../assets/sprites/title-screen/start-text.png'
 import startJSON from '../../assets/sprites/title-screen/start-selected-atlas.json'
 import options from '../../assets/sprites/title-screen/options-text.png'
@@ -36,6 +39,14 @@ import city_json from '../../assets/map/city_map.json'
 // data
 import data from '../../assets/data/gameConfig';
 
+// sound-fx
+import SoundManager from '../game-objects/sound_manager.js'; 
+import movement from '../../assets/sounds/fx/movement-player.mp3';
+import dash from '../../assets/sounds/fx/dash.mp3';
+import guitar_attk from '../../assets/sounds/fx/guitar-attk.mp3';
+import enemy_hurt_fx from '../../assets/sounds/fx/enemy_hurt.mp3';
+import menu_music from '../../assets/sounds/music/menu-music.mp3';
+
 /**
  * Escena para la precarga de los assets que se usarán en el juego.
  * Esta escena se puede mejorar añadiendo una imagen del juego y una 
@@ -59,6 +70,7 @@ export default class Boot extends Phaser.Scene {
     //this.load.setPath('assets/sprites/');
     this.load.image('start', start);
     this.load.image('title', titleScreen);
+    this.load.image('death', deathScreen);
     this.load.image('options', options);
     this.load.image('selectionPick', selectionPick);
     this.load.image('guitarSprite', guitarSprite);
@@ -66,22 +78,41 @@ export default class Boot extends Phaser.Scene {
     this.load.image('city_tiles',city_tileset);
     this.load.image('death',deathScreen);
     this.load.tilemapTiledJSON('map',city_json);
+    this.load.image('city_tiles', city_tileset);
+    this.load.image('death', deathScreen);
+    this.load.tilemapTiledJSON('map', city_json);
     this.load.image('platform', platform);
     this.load.image('base', base);
     this.load.image('player', player);
-    this.load.atlas('optionsSelected',optionsSelected,optionsJSON);
+    this.load.image('bajo', bajo);
+    this.load.atlas('optionsSelected', optionsSelected, optionsJSON);
     this.load.atlas('startSelected', startSelected, startJSON);
     this.load.atlas('laude', laudeSpritesheet, laudeAtlas);
     this.load.atlas('laude_guitar', laudeGuitarSpriteSheet, laudeAtlas);
     this.load.atlas('laude_drum', laudeDrumSpriteSheet, laudeAtlas);
+    this.load.atlas('laude_bass', laudeBassSpritesheet, laudeBassAtlas);
     this.cache.json.add('data', data);
-    this.load.atlas('enemy_idle',enemyIdle,enemyIdleJSON);
-    this.load.atlas('enemy_walk',enemyWalk,enemyWalkJSON);
-    this.load.atlas('enemy_hit',enemyHit,enemyHitJSON);
-    this.load.atlas('enemy_die',enemyDie,enemyDieJSON);
+    this.load.atlas('enemy_idle', enemyIdle, enemyIdleJSON);
+    this.load.atlas('enemy_walk', enemyWalk, enemyWalkJSON);
+    this.load.atlas('enemy_hit', enemyHit, enemyHitJSON);
+    this.load.atlas('enemy_die', enemyDie, enemyDieJSON);
     this.load.image('hud_health_border', HUDhealthBorder);
     this.load.image('hud_health_bar', HUDhealthBar);
     this.load.spritesheet('round_numbers', roundNumbers, { frameWidth: 24, frameHeight: 32 });
+
+    //sonidos
+
+    this.load.audio('movement', movement);
+    this.load.audio('dash', dash); 
+    this.load.audio('guitar_attk', guitar_attk);
+    this.load.audio('enemy_hurt', enemy_hurt_fx);
+    this.load.audio('menu_music', menu_music);
+
+    this.soundManager = new SoundManager(this);
+    this.soundManager.addSounds({
+        'menu_music': { key: 'menu_music', loop: true, category: 'music' },
+    })
+
   }
 
   /**
@@ -89,20 +120,21 @@ export default class Boot extends Phaser.Scene {
    * nivel del juego
    */
   create() {
+    this.soundManager.play('menu_music');
     this.add.image(640, 368, "title");
     this.startText = this.add.sprite(596, 490, "start");
     this.anims.create({
-        key: 'startAnim',
-        frames: this.anims.generateFrameNames('startSelected'), 
-        frameRate: 10,
-        repeat: -1
+      key: 'startAnim',
+      frames: this.anims.generateFrameNames('startSelected'),
+      frameRate: 10,
+      repeat: -1
     });
 
     this.anims.create({
-        key: 'optionsAnim',
-        frames: this.anims.generateFrameNames('optionsSelected'), 
-        frameRate: 10,
-        repeat: -1
+      key: 'optionsAnim',
+      frames: this.anims.generateFrameNames('optionsSelected'),
+      frameRate: 10,
+      repeat: -1
     });
 
     this.select = this.add.image(405, 490, "selectionPick");
@@ -111,11 +143,11 @@ export default class Boot extends Phaser.Scene {
     this.activeOption = null;
 
     this.input.keyboard.on("keydown-W", () => {
-      if (this.activeOption == null){
-        this.activeOption=this.startText;
+      if (this.activeOption == null) {
+        this.activeOption = this.startText;
         this.startText.play('startAnim');
         this.select.setVisible(true);
-      }else if (this.activeOption == this.optionsText) {
+      } else if (this.activeOption == this.optionsText) {
         this.startText.play('startAnim');
         this.optionsText.stop();
         this.optionsText.setTexture('options');
@@ -123,7 +155,7 @@ export default class Boot extends Phaser.Scene {
         this.moveSelect(this.select, this.activeOption);
       } else {
         this.startText.stop();
-        this.activeOption=this.optionsText;
+        this.activeOption = this.optionsText;
         this.startText.setTexture('start');
         this.optionsText.play('optionsAnim')
         this.moveSelect(this.select, this.activeOption);
@@ -131,11 +163,11 @@ export default class Boot extends Phaser.Scene {
     });
 
     this.input.keyboard.on("keydown-S", () => {
-      if (this.activeOption == null){
-        this.activeOption=this.startText;
+      if (this.activeOption == null) {
+        this.activeOption = this.startText;
         this.startText.play('startAnim');
         this.select.setVisible(true);
-      }else if (this.activeOption == this.optionsText) {
+      } else if (this.activeOption == this.optionsText) {
         this.startText.play('startAnim');
         this.optionsText.stop();
         this.optionsText.setTexture('options');
@@ -143,7 +175,7 @@ export default class Boot extends Phaser.Scene {
         this.moveSelect(this.select, this.activeOption);
       } else {
         this.startText.stop();
-        this.activeOption=this.optionsText;
+        this.activeOption = this.optionsText;
         this.startText.setTexture('start');
         this.optionsText.play('optionsAnim')
         this.moveSelect(this.select, this.activeOption);
@@ -152,10 +184,13 @@ export default class Boot extends Phaser.Scene {
 
     this.input.keyboard.on("keydown-ENTER",()=>{
       if(this.activeOption==this.startText){
-        this.scene.start('level_fondo');
+        this.soundManager.fadeOutMusic(500);
+        this.time.delayedCall(500, () => {
+          this.scene.start('level_fondo');
+        });
       }else if(this.activeOption==this.optionsText){
         alert("se mostraria menu de opciones: audio, brillo, etc...")
-      }else{
+      } else {
 
       }
     });

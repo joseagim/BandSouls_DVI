@@ -61,14 +61,33 @@ export default class Player extends actor {
         // this.keyF = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F); DEBUG FOR DAMAGE
         this.keySpace = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.mouseClick = this.scene.input.on('pointerdown', (pointer) => {
-            if(pointer.button == 0 && this.canAttack){    //segun documentación 0 es el botón derechp
-                this.soundManager.playWithPitch('guitar_attk'); 
-                this.arma.activateWeapon()
+            if (pointer.button === 0 && this.canAttack) {
+                if (this.arma === this.bajo) {
+                    this.arma.startCharge();
+                    this.isAttacking = true;
+                } else {
+                    this.soundManager.playWithPitch('guitar_attk');
+                    this.arma.activateWeapon();
+                    this.canAttack = false;
+                    this.isAttacking = true;
+                    this.scene.time.delayedCall(this.arma.duration,
+                        () => {
+                            this.arma.deactivateWeapon(); this.isAttacking = false;
+                            this.scene.time.delayedCall(this.arma.cooldown - this.arma.duration,
+                                () => { this.canAttack = true; })
+                        });
+                }
+            }
+        });
+
+        this.scene.input.on('pointerup', (pointer) => {
+            if (pointer.button === 0 && this.arma === this.bajo && this.arma.isCharging) {
+                // Bass: release charge → perform the strike
+                this.arma.releaseCharge();
                 this.canAttack = false;
-                this.isAttacking = true;
                 this.scene.time.delayedCall(this.arma.duration,
                     () => {
-                        this.arma.deactivateWeapon(); this.isAttacking = false;
+                        this.isAttacking = false;
                         this.scene.time.delayedCall(this.arma.cooldown - this.arma.duration,
                             () => { this.canAttack = true; })
                     });
@@ -99,6 +118,11 @@ export default class Player extends actor {
 
         // funcion para cambiar de arma de momento
         if (Phaser.Input.Keyboard.JustDown(this.keyP) && !this.isAttacking) {
+            // Cancel bass charge if switching away
+            if (this.arma === this.bajo && this.arma.isCharging) {
+                this.arma.cancelCharge();
+                this.isAttacking = false;
+            }
             this.arma.deactivateWeapon();
             if (this.arma === this.guitar) {
                 this.arma = this.bajo;

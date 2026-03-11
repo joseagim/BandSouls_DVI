@@ -176,7 +176,6 @@ export default class Boot extends Phaser.Scene {
     this.input.keyboard.on("keydown-ENTER",()=>{
       if(this.activeOption==this.startText){
         this.soundManager.fadeOutMusic(500);
-         // 2. Esperar a que termine el fade out antes de cambiar de escena
         this.time.delayedCall(500, () => {
           this.scene.start('level_fondo');
         });

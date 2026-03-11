@@ -32,6 +32,7 @@ export default class Player extends actor {
         // Estados
         this.isDashing = false;
         this.canDash = true;
+        this.canAttack = true;
         this.lastDirection = 'down';
 
         // Sprites
@@ -64,6 +65,8 @@ export default class Player extends actor {
                 if (this.arma === this.bajo) {
                     this.arma.startCharge();
                     this.isAttacking = true;
+                } else if (this.arma === this.drum) {
+                    this.arma.startAttack();
                 } else {
                     this.soundManager.playWithPitch('guitar_attk');
                     this.arma.activateWeapon();
@@ -96,9 +99,10 @@ export default class Player extends actor {
         // Seccion de armas
         this.guitar = new Guitar(this.scene, this.x, this.y, this);
         this.bajo = new Bass(this.scene, this.x, this.y, this);
+        this.drum = new Drum(this.scene, this.x, this.y, this);
           
         // Arma activa inicializado a guitarra
-        this.arma = this.guitar;
+        this.arma = this.bajo;
         this.soundManager = SoundManager.getInstance(this.scene);
         this.playingMovementSound = false;
     }

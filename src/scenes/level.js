@@ -54,7 +54,8 @@ export default class Level extends Phaser.Scene {
         }, null, this);
 
         this.setWeaponCollision(this.player.guitar);
-        this.setWeaponCollision(this.player.bajo);// para que funcione el bajo de momento
+        this.setWeaponCollision(this.player.bajo);
+        this.setWeaponCollision(this.player.drum);
 
     }
 

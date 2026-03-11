@@ -20,8 +20,7 @@ export default class Arma extends Phaser.GameObjects.Sprite {
         this.enemiesHit = new Set();
         this.knockback_cd = 3;
         this.isAttacking = false;
-        this.animSuffix = '';
-        this.attackAnimSuffix = '';
+        this.canAttack = true;
         this.scene.physics.add.existing(this);
     }
 
@@ -55,6 +54,20 @@ export default class Arma extends Phaser.GameObjects.Sprite {
         this.setRotation(angle);
     }
 
+    // Comportamiento por defecto: un único ataque, bloquea canAttack hasta que termina el cooldown
+    startAttack() {
+        this.canAttack = false;
+        this.isAttacking = true;
+        this.activateWeapon();
+        this.scene.time.delayedCall(this.duration, () => {
+            this.deactivateWeapon();
+            this.isAttacking = false;
+            this.scene.time.delayedCall(this.cooldown - this.duration, () => {
+                this.canAttack = true;
+            });
+        });
+    }
+
     activateWeapon() {
         this.visible = true;
         this.hurtbox.body.enable = true;
@@ -76,11 +89,16 @@ export default class Arma extends Phaser.GameObjects.Sprite {
         this.enemiesHit.clear();
     }
 
-    attack(enemy, attackMod){
-        if (this.enemiesHit.has(enemy)) return; 
+    attack(enemy, attackMod, hurtbox){
+        const hitSet = hurtbox?.enemiesHit ?? this.enemiesHit;
+        if (hitSet.has(enemy)) return;
         enemy.getDamage(this.damage * attackMod);
         enemy.knockback();
-        this.enemiesHit.add(enemy);
+        hitSet.add(enemy);
+    }
+
+    getAnimSuffix() {
+        return '';
     }
 
     ability(){

@@ -63,7 +63,7 @@ export default class Level extends Phaser.Scene {
             this.physics.add.overlap(hurtBox, this.spawner.pool, (hurtbox, enemy) => {
                 if (!enemy.invincible) {
                     this.soundManager.playWithPitch('enemy_hurt');
-                    weapon.attack(enemy, this.player.attackMod);
+                    weapon.attack(enemy, this.player.attackMod, hurtbox);
                     if (enemy.life <= 0) this.waveManager.enemyDies();
                 }
             }, null, this);

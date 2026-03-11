@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import Arma from './arma';
 import actor from './actor';
 import Guitar from './guitar';
+import Drum from './drum';
 import Bass from './bass';
 import SoundManager from './sound_manager';
 
@@ -32,8 +33,6 @@ export default class Player extends actor {
         this.isDashing = false;
         this.canDash = true;
         this.lastDirection = 'down';
-        this.isAttacking = false;
-        this.canAttack = true;
 
         // Sprites
         this.createAnimations();
@@ -97,6 +96,7 @@ export default class Player extends actor {
         // Seccion de armas
         this.guitar = new Guitar(this.scene, this.x, this.y, this);
         this.bajo = new Bass(this.scene, this.x, this.y, this);
+          
         // Arma activa inicializado a guitarra
         this.arma = this.guitar;
         this.soundManager = SoundManager.getInstance(this.scene);
@@ -236,7 +236,7 @@ export default class Player extends actor {
     updateAnimation() {
         // para evitar todo el rato this.body.velocity
         const vel = this.body.velocity;
-        const suffix = this.isAttacking ? this.arma.attackAnimSuffix : this.arma.animSuffix;
+        const suffix = this.arma.getAnimSuffix();
 
         // si se está moviendo
         if (vel.length() > 0) {
@@ -462,6 +462,62 @@ export default class Player extends actor {
                 start: 1,
                 end: 4
             }),
+            frameRate: 8,
+            repeat: -1
+        });
+
+        // Animaciones batería
+        this.scene.anims.create({
+            key: 'idle-down-drum',
+            frames: this.anims.generateFrameNames('laude_drum', { 
+                prefix: 'idle_down_', 
+                start: 1, 
+                end: 4 }),
+            frameRate: 4,
+            repeat: -1
+        });
+        this.scene.anims.create({
+            key: 'idle-up-drum',
+            frames: this.anims.generateFrameNames('laude_drum', { 
+                prefix: 'idle_up_', 
+                start: 1, 
+                end: 4 }),
+            frameRate: 4,
+            repeat: -1
+        });
+        this.scene.anims.create({
+            key: 'idle-right-drum',
+            frames: this.anims.generateFrameNames('laude_drum', { 
+                prefix: 'idle_right_', 
+                start: 1, 
+                end: 4 }),
+            frameRate: 4,
+            repeat: -1
+        });
+        this.scene.anims.create({
+            key: 'run-down-drum',
+            frames: this.anims.generateFrameNames('laude_drum', { 
+                prefix: 'run_down_', 
+                start: 1, 
+                end: 4 }),
+            frameRate: 8,
+            repeat: -1
+        });
+        this.scene.anims.create({
+            key: 'run-up-drum',
+            frames: this.anims.generateFrameNames('laude_drum', { 
+                prefix: 'run_up_', 
+                start: 1, 
+                end: 4 }),
+            frameRate: 8,
+            repeat: -1
+        });
+        this.scene.anims.create({
+            key: 'run-right-drum',
+            frames: this.anims.generateFrameNames('laude_drum', { 
+                prefix: 'run_right_', 
+                start: 1, 
+                end: 4 }),
             frameRate: 8,
             repeat: -1
         });

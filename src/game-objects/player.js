@@ -85,7 +85,12 @@ export default class Player extends actor {
 
         let isHorizontal = false;
 
-        if (this.isDashing) return;
+        // Si estamos haciendo dash y chocamos contra algo (pared o objeto sólido)
+        if (this.isDashing && (this.body.blocked.left || this.body.blocked.right || this.body.blocked.up || this.body.blocked.down)) {
+            this.stopDash();
+            if (this.dashTimer) this.dashTimer.remove(); // Cancelamos el timer de duración
+            return; // No procesamos más movimiento mientras hacemos dash
+        }
        
         this.body.setVelocity(0);
         
@@ -117,6 +122,7 @@ export default class Player extends actor {
             this.soundManager.play('movement');
             this.playingMovementSound = true;
         } else if(this.body.velocity.length() === 0 && this.playingMovementSound) {
+            console.log("stop movement sound");
             this.soundManager.stop('movement');
             this.playingMovementSound = false;
         }
@@ -150,14 +156,21 @@ export default class Player extends actor {
 
         // cuando termine el dash
         this.scene.time.delayedCall(this.dashDuration, () => {
-            this.isDashing = false;
-            this.invincible = false;
+            this.stopDash();
         });
 
         // cuando termine el cooldown del dash
         this.scene.time.delayedCall(this.dashCooldown, () => {
             this.canDash = true;
         });
+    }
+
+    stopDash() {
+        this.isDashing = false;
+        this.invincible = false;
+        if (this.body) {
+            this.body.setVelocity(0, 0); // Opcional: frenar en seco al terminar
+        }
     }
 
     getDamage(dmg) {

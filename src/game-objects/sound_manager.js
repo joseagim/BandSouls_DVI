@@ -82,8 +82,16 @@ class SoundManager {
             return null;
         }
 
-        const sound = this.scene.sound.add(key, playConfig);
-        sound.play();
+        // LÓGICA PARA EVITAR DUPLICADOS (Especialmente para caminar/bucles)
+        let sound = this.scene.sound.get(key);
+        
+        if (!sound) {
+            sound = this.scene.sound.add(key, playConfig);
+        }
+
+        if (!sound.isPlaying) {
+            sound.play(playConfig);
+        }
 
         // Si es música, guardar referencia
         if (soundConfig.category === this.categories.MUSIC) {
@@ -211,8 +219,10 @@ class SoundManager {
      * Detener un sonido específico
      */
     stop(key) {
+        
         const sound = this.scene.sound.get(key);
         if (sound) {
+            console.log(`Stopping sound: ${key}`);
             sound.stop();
         }
     }

@@ -64,11 +64,15 @@ export default class Player extends actor {
             if (pointer.button === 0 && this.canAttack) {
                 if (this.arma === this.bajo) {
                     this.arma.startCharge();
+                    //this.soundManager.playWithPitch('bajo_attk');
                     this.isAttacking = true;
                 } else if (this.arma === this.drum) {
                     this.arma.startAttack();
+                    this.soundManager.playWithPitch('drum_attk');
                 } else {
                     this.soundManager.playWithPitch('guitar_attk');
+
+                    //this.soundManager.playWithPitch('teclado_attk');
                     this.arma.activateWeapon();
                     this.canAttack = false;
                     this.isAttacking = true;

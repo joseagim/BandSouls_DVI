@@ -47,6 +47,9 @@ import guitar_attk from '../../assets/sounds/fx/guitar-attk.mp3';
 import get_hit from '../../assets/sounds/fx/get-hit.mp3';
 import enemy_hurt_fx from '../../assets/sounds/fx/enemy_hurt.mp3';
 import menu_music from '../../assets/sounds/music/menu-music.mp3';
+import teclado_attk from '../../assets/sounds/fx/teclado-attk.mp3';
+import bajo_attk from '../../assets/sounds/fx/bajo-attk.mp3';
+import drum_attk from '../../assets/sounds/fx/drum-attk.mp3';
 
 
 /**
@@ -110,6 +113,9 @@ export default class Boot extends Phaser.Scene {
     this.load.audio('enemy_hurt', enemy_hurt_fx);
     this.load.audio('menu_music', menu_music);
     this.load.audio('get_hit', get_hit);
+    this.load.audio('teclado_attk', teclado_attk);
+    this.load.audio('bajo_attk', bajo_attk);
+    this.load.audio('drum_attk', drum_attk);
 
     this.soundManager = new SoundManager(this);
     this.soundManager.addSounds({

@@ -74,8 +74,13 @@ export default class Bass extends Arma {
     releaseCharge() {
         if (!this.isCharging) return;
 
+        
         this.isCharging = false;
         this.chargeTime = this.scene.time.now - this.chargeStartTime;
+        console.log(`Bass charged for ${this.chargeTime} ms`);
+        this.player.soundManager.setSFXVolume(1 + Math.min(this.chargeTime / this.maxChargeTime, 1) * 0.5);
+        this.player.soundManager.playWithPitch('bajo_attk');
+        this.player.soundManager.setSFXVolume(0.5);
 
         // Calculate damage multiplier: linear interpolation from 1x to maxDamageMultiplier
         // over maxChargeTime ms, clamped at maxDamageMultiplier

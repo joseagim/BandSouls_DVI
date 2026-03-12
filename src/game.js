@@ -25,6 +25,7 @@ let config = {
     physics: {
         default: 'arcade',
         arcade: {
+            fps: 120,
             gravity: { x:0, y: 0 },
             debug: false
         }

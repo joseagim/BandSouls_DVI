@@ -35,7 +35,8 @@ export default class Level extends Phaser.Scene {
             'movement': { key: 'movement', loop: true, loopDelay: 100 },
             'dash': { key: 'dash', volume: 10 },
             'guitar_attk': { key: 'guitar_attk', volume: 0.5 },
-            'enemy_hurt': { key: 'enemy_hurt' }
+            'enemy_hurt': { key: 'enemy_hurt' },
+            'get_hit': { key: 'get_hit' }
         })
         const playerStats = this.cache.json.get('data').playerBaseStats;
         this.player = new Player(this, 400, 400, playerStats);
@@ -47,8 +48,9 @@ export default class Level extends Phaser.Scene {
         this.waveManager = new WaveManager(this, this.spawner);
         this.scene.get('hud').events.once('hud-ready', () => this.waveManager.startNextWave());
 
-        this.physics.add.overlap(this.player, this.spawner.pool, function (player, enemy) {
-            if (enemy.active && !player.invincible) {
+        this.physics.add.overlap(this.player, this.spawner.pool, function(player,enemy){
+            if (enemy.active && !player.invincible){
+                this.soundManager.play('get_hit');
                 enemy.attack(player);
             }
         }, null, this);

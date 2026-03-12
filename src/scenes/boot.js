@@ -44,8 +44,10 @@ import SoundManager from '../game-objects/sound_manager.js';
 import movement from '../../assets/sounds/fx/movement-player.mp3';
 import dash from '../../assets/sounds/fx/dash.mp3';
 import guitar_attk from '../../assets/sounds/fx/guitar-attk.mp3';
+import get_hit from '../../assets/sounds/fx/get-hit.mp3';
 import enemy_hurt_fx from '../../assets/sounds/fx/enemy_hurt.mp3';
 import menu_music from '../../assets/sounds/music/menu-music.mp3';
+
 
 /**
  * Escena para la precarga de los assets que se usarán en el juego.
@@ -107,6 +109,7 @@ export default class Boot extends Phaser.Scene {
     this.load.audio('guitar_attk', guitar_attk);
     this.load.audio('enemy_hurt', enemy_hurt_fx);
     this.load.audio('menu_music', menu_music);
+    this.load.audio('get_hit', get_hit);
 
     this.soundManager = new SoundManager(this);
     this.soundManager.addSounds({

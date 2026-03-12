@@ -41,6 +41,10 @@ export default class Bass extends Arma {
         return [this.hurtbox];
     }
 
+    getAnimSuffix() {
+        return (this.isAttacking || this.isCharging) ? this.attackAnimSuffix : this.animSuffix;
+    }
+
     /**
      * Called when the player clicks — starts charging.
      * The bass becomes visible and positioned at the click direction,

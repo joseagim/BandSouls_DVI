@@ -40,7 +40,7 @@ import city_json from '../../assets/map/city_map.json'
 import data from '../../assets/data/gameConfig';
 
 // sound-fx
-import SoundManager from '../game-objects/sound_manager.js'; 
+import SoundManager from '../game-objects/sound_manager.js';
 import movement from '../../assets/sounds/fx/movement-player.mp3';
 import dash from '../../assets/sounds/fx/dash.mp3';
 import guitar_attk from '../../assets/sounds/fx/guitar-attk.mp3';
@@ -77,9 +77,9 @@ export default class Boot extends Phaser.Scene {
     this.load.image('selectionPick', selectionPick);
     this.load.image('guitarSprite', guitarSprite);
     this.load.image('drumSticks', drumSticks);
-    this.load.image('city_tiles',city_tileset);
-    this.load.image('death',deathScreen);
-    this.load.tilemapTiledJSON('map',city_json);
+    this.load.image('city_tiles', city_tileset);
+    this.load.image('death', deathScreen);
+    this.load.tilemapTiledJSON('map', city_json);
     this.load.image('city_tiles', city_tileset);
     this.load.image('death', deathScreen);
     this.load.tilemapTiledJSON('map', city_json);
@@ -105,7 +105,7 @@ export default class Boot extends Phaser.Scene {
     //sonidos
 
     this.load.audio('movement', movement);
-    this.load.audio('dash', dash); 
+    this.load.audio('dash', dash);
     this.load.audio('guitar_attk', guitar_attk);
     this.load.audio('enemy_hurt', enemy_hurt_fx);
     this.load.audio('menu_music', menu_music);
@@ -113,7 +113,7 @@ export default class Boot extends Phaser.Scene {
 
     this.soundManager = new SoundManager(this);
     this.soundManager.addSounds({
-        'menu_music': { key: 'menu_music', loop: true, category: 'music' },
+      'menu_music': { key: 'menu_music', loop: true, category: 'music' },
     })
 
   }
@@ -123,7 +123,7 @@ export default class Boot extends Phaser.Scene {
    * nivel del juego
    */
   create() {
-    this.soundManager.play('menu_music');
+    /*this.soundManager.play('menu_music');
     this.add.image(640, 368, "title");
     this.startText = this.add.sprite(596, 490, "start");
     this.anims.create({
@@ -185,18 +185,25 @@ export default class Boot extends Phaser.Scene {
       }
     });
 
-    this.input.keyboard.on("keydown-ENTER",()=>{
-      if(this.activeOption==this.startText){
+    this.input.keyboard.on("keydown-ENTER", () => {
+      if (this.activeOption == this.startText) {
         this.soundManager.fadeOutMusic(500);
         this.time.delayedCall(500, () => {
           this.scene.start('level_fondo');
         });
-      }else if(this.activeOption==this.optionsText){
+      } else if (this.activeOption == this.optionsText) {
         alert("se mostraria menu de opciones: audio, brillo, etc...")
       } else {
 
       }
-    });
+    });*/
+    this.add.rectangle(640, 736 / 2, 640, 408, 0xffffff);
+
+    // MEJORA: Añadimos color negro al texto para que contraste y lo centramos
+    this.add.text(510, 300, 'Shop', {
+      fontSize: '20px',
+      color: '#f20808ff'
+    }).setOrigin(0.5);
 
   }
 

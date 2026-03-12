@@ -55,6 +55,7 @@ export default class Drum extends Arma{
     attack(enemy, attackMod, hurtbox) {
         if (hurtbox.enemiesHit.has(enemy)) return;
         enemy.getDamage(this.damage * attackMod);
+        enemy.knockback();
         hurtbox.enemiesHit.add(enemy);
         if (hurtbox.enemiesHit.size >= 3) this._deactivateProjectile(hurtbox);
     }

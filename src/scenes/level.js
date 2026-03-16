@@ -5,7 +5,7 @@ import Enemy from '../game-objects/enemy.js';
 import actor from '../game-objects/actor.js';
 import Spawner from '../game-objects/spawner.js';
 import WaveManager from '../game-objects/wave-manager.js';
-import SoundManager from '../game-objects/sound_manager.js';
+import SoundManager from '../game-objects/sound-manager.js';
 
 
 /**

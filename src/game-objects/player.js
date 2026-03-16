@@ -4,7 +4,8 @@ import actor from './actor';
 import Guitar from './guitar';
 import Drum from './drum';
 import Bass from './bass';
-import SoundManager from './sound_manager';
+import SoundManager from './sound-manager';
+import GunManager from './gun-manager';
 
 /**
  * Clase que representa el jugador del juego. El jugador se mueve por el mundo usando los cursores.
@@ -54,9 +55,6 @@ export default class Player extends actor {
         this.keyD = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
         this.keyW = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
 
-        //cambio de arma provisional con p
-        this.keyP = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
-
 
         // this.keyF = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F); DEBUG FOR DAMAGE
         this.keySpace = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
@@ -100,15 +98,22 @@ export default class Player extends actor {
             }
         });
 
-        // Seccion de armas
         this.guitar = new Guitar(this.scene, this.x, this.y, this);
         this.bajo = new Bass(this.scene, this.x, this.y, this);
         this.drum = new Drum(this.scene, this.x, this.y, this);
 
-        // Arma activa inicializado a guitarra
-        this.arma = this.guitar;
+        this.gunManager = new GunManager(this.scene, this, [
+            { weapon: this.guitar, iconKey: 'guitar-icon' },
+            { weapon: this.drum,   iconKey: 'drum-icon' },
+            { weapon: this.bajo,   iconKey: 'bass-icon' },
+        ]);
+
         this.soundManager = SoundManager.getInstance(this.scene);
         this.playingMovementSound = false;
+    }
+
+    get arma() {
+        return this.gunManager.currentWeapon;
     }
 
     /**
@@ -129,25 +134,6 @@ export default class Player extends actor {
             return; // No procesamos más movimiento mientras hacemos dash
         }
 
-        // funcion para cambiar de arma de momento
-        if (Phaser.Input.Keyboard.JustDown(this.keyP) && !this.isAttacking) {
-            // Cancel bass charge if switching away
-            if (this.arma === this.bajo && this.arma.isCharging) {
-                this.arma.cancelCharge();
-                this.isAttacking = false;
-            }
-            this.arma.deactivateWeapon();
-            if (this.arma === this.guitar) {
-                this.arma = this.bajo;
-            } else if (this.arma === this.bajo) {
-                this.arma = this.drum;
-            } else {
-                this.arma = this.guitar;
-            }
-        }
-
-
-       
         this.body.setVelocity(0);
 
         if (this.keyA.isDown) {

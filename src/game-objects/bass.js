@@ -1,10 +1,9 @@
 import Phaser from 'phaser';
 import Arma from './arma.js'
-import bajo from '../../assets/sprites/bajo.png'
 
 export default class Bass extends Arma {
     constructor(scene, x, y, player) {
-        super(scene, x, y, 'bajo', {
+        super(scene, x, y, 'bass-sprite', {
             damage: 8,
             cooldown: 1000,
             duration: 400

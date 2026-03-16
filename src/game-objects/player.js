@@ -25,9 +25,11 @@ export default class Player extends actor {
         this.dashSpeed = stats.dashSpeed;
         this.dashDuration = stats.dashDuration;
         this.dashCooldown = stats.dashCooldown;
+        this.easeOutScale = 0.80;
 
         // Estados
         this.isDashing = false;
+        this.dashEaseout = false;
         this.canDash = true;
         this.lastDirection = 'down';
         this.isAttacking = false;
@@ -55,7 +57,7 @@ export default class Player extends actor {
         // this.keyF = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F); DEBUG FOR DAMAGE
         this.keySpace = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.mouseClick = this.scene.input.on('pointerdown', (pointer) => {
-            if(pointer.button == 0 && this.canAttack){    //segun documentación 0 es el botón derechp
+            if(pointer.button == 0 && this.canAttack){    //segun documentación 0 es el botón izquierdo
                 this.arma.activateWeapon()
                 this.canAttack = false;
                 this.isAttacking = true;
@@ -86,8 +88,17 @@ export default class Player extends actor {
 
         let isHorizontal = false;
         this.updateVisualCues();
+        
+        if (this.dashEaseout) {
+            this.body.velocity.scale(this.easeOutScale);
 
-        if (this.isDashing) return;
+            if (this.body.velocity.length() < 15) {
+                this.dashEaseout = false;
+                this.body.setVelocity(0);
+            }
+        }
+
+        if (this.isDashing || this.dashEaseout) return;
        
         this.body.setVelocity(0);
         
@@ -120,6 +131,7 @@ export default class Player extends actor {
         if (this.keySpace.isDown && this.canDash && this.body.velocity.length() > 0) {
             this.doDash();
         }
+
     }
 
     updateHealth() {
@@ -152,7 +164,12 @@ export default class Player extends actor {
         // velocidad en función del vector dirección del jugador
         this.body.velocity.normalize().scale(this.dashSpeed);
         this.invincible = true;
-
+        
+        // ease out del dash
+        this.scene.time.delayedCall(1/4 * this.dashDuration, () => {
+            this.dashEaseout = true;
+        });
+        
         // cuando termine el dash
         this.scene.time.delayedCall(this.dashDuration, () => {
             this.isDashing = false;
@@ -364,7 +381,7 @@ export default class Player extends actor {
                 start: 0,
                 end: 9
             }),
-            frameRate: 35,
+            frameRate:   35,
             repeat: 0     
         });
 

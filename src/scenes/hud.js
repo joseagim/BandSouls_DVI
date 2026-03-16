@@ -12,6 +12,8 @@ export default class HUD extends Phaser.Scene {
         this.healthBar.setScale(3);
         this.healthBar.setScrollFactor(0);
 
+
+
         // crear el texto de info oleadas
         /*this.waveCounter = this.add.text(20, 80, 'Oleada X', {
             fontSize: '32px',
@@ -44,12 +46,12 @@ export default class HUD extends Phaser.Scene {
 
         // pillamos la escena para escuchar eventos y actualizar el hud
         const mainLevel = this.scene.get('level_fondo');
-        
+
         // evento: actualizar salud del jugador
         mainLevel.events.on('updateHealth', (player) => {
             const percentage = player.life / player.maxHP;
             this.healthBar.setValue(percentage);
-            }
+        }
         );
 
         // evento: actualizar número de oleada
@@ -70,12 +72,12 @@ export default class HUD extends Phaser.Scene {
         mainLevel.events.on('enemyDead', (enemiesLeft) => {
             this.remainingEnemies.setText('Enemigos restantes: ' + enemiesLeft);
         })
-        
+
         // evento: mensaje de espera para la siguiente oleada
         mainLevel.events.on('finishWave', (waveDelay) => {
             // calcular segundos
             let timeLeft = Math.floor(waveDelay / 1000);
-            
+
             // modificar texto
             this.waitingNextWave.visible = true;
             this.waitingNextWave.setText('La siguiente oleada comenzará en ' + timeLeft);
@@ -86,7 +88,7 @@ export default class HUD extends Phaser.Scene {
                 repeat: timeLeft - 1,
                 callback: () => {
                     timeLeft--;
-                    
+
                     if (timeLeft > 0) {
                         this.waitingNextWave.setText('La siguiente oleada comenzará en ' + timeLeft);
                         //console.log('Siguiente oleada en: ' + timeLeft);
@@ -106,7 +108,22 @@ export default class HUD extends Phaser.Scene {
         // Destruir dígitos anteriores
         this._roundDigits.forEach(img => img.destroy());
         this._roundDigits = [];
+        // Comprobamos si estamos en la tienda (this.scene.key aquí siempre sería 'hud')
+        if (this.scene.manager.isActive("shop")) {
+            const rightEdge = this.scale.width - 20;
+            const y = 20;
+            const shopText = this.add.text(rightEdge, y, 'SHOP', {
+                fontSize: '40px',
+                fill: '#ff0000',
+                fontFamily: '"System-ui", Courier, monospace',
+                stroke: '#000000',
+                strokeThickness: 6,
+                shadow: { offsetX: 3, offsetY: 3, color: '#000000', blur: 0, stroke: true, fill: true }
+            }).setOrigin(1, 0).setScrollFactor(0);
 
+            this._roundDigits.push(shopText);
+            return;
+        }
         const digits = String(number).split('');
         const scale = 3;
         const digitWidth = 24 * scale;

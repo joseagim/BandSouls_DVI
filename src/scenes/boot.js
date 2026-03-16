@@ -35,6 +35,8 @@ import roundNumbers from '../../assets/sprites/round-numbers/numbers.png'
 
 import city_tileset from '../../assets/map/rogueLike_city.png';
 import city_json from '../../assets/map/city_map.json'
+import shop_tileset from '../../assets/map/gj.png'
+import shop_json from '../../assets/map/garajefinal.json'
 
 // data
 import data from '../../assets/data/gameConfig';
@@ -81,6 +83,8 @@ export default class Boot extends Phaser.Scene {
     this.load.image('death', deathScreen);
     this.load.tilemapTiledJSON('map', city_json);
     this.load.image('city_tiles', city_tileset);
+    this.load.image('shop_tiles', shop_tileset);
+    this.load.tilemapTiledJSON('shop_map', shop_json);
     this.load.image('death', deathScreen);
     this.load.tilemapTiledJSON('map', city_json);
     this.load.image('platform', platform);
@@ -123,7 +127,7 @@ export default class Boot extends Phaser.Scene {
    * nivel del juego
    */
   create() {
-    /*this.soundManager.play('menu_music');
+    this.soundManager.play('menu_music');
     this.add.image(640, 368, "title");
     this.startText = this.add.sprite(596, 490, "start");
     this.anims.create({
@@ -189,21 +193,16 @@ export default class Boot extends Phaser.Scene {
       if (this.activeOption == this.startText) {
         this.soundManager.fadeOutMusic(500);
         this.time.delayedCall(500, () => {
-          this.scene.start('level_fondo');
+          this.scene.start('shop');//cambio solo para probar como funciona la tienda
         });
       } else if (this.activeOption == this.optionsText) {
         alert("se mostraria menu de opciones: audio, brillo, etc...")
       } else {
 
       }
-    });*/
-    this.add.rectangle(640, 736 / 2, 640, 408, 0xffffff);
+    });
 
-    // MEJORA: Añadimos color negro al texto para que contraste y lo centramos
-    this.add.text(510, 300, 'Shop', {
-      fontSize: '20px',
-      color: '#f20808ff'
-    }).setOrigin(0.5);
+
 
   }
 

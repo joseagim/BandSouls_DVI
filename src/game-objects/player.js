@@ -105,6 +105,9 @@ export default class Player extends actor {
         this.arma = this.guitar;
         this.soundManager = SoundManager.getInstance(this.scene);
         this.playingMovementSound = false;
+
+        //seccion de items no consumibles(trinkets)
+        this.trinket = [];
     }
 
     /**
@@ -118,7 +121,7 @@ export default class Player extends actor {
 
         let isHorizontal = false;
 
-                // Si estamos haciendo dash y chocamos contra algo (pared o objeto sólido)
+        // Si estamos haciendo dash y chocamos contra algo (pared o objeto sólido)
         if (this.isDashing && (this.body.blocked.left || this.body.blocked.right || this.body.blocked.up || this.body.blocked.down)) {
             this.stopDash();
             if (this.dashTimer) this.dashTimer.remove(); // Cancelamos el timer de duración
@@ -143,7 +146,7 @@ export default class Player extends actor {
         }
 
 
-       
+
         this.body.setVelocity(0);
 
         if (this.keyA.isDown) {

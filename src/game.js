@@ -3,6 +3,7 @@ import Boot from './scenes/boot.js';
 import End from './scenes/end.js';
 import Level from './scenes/level-ataque-guitar.js';
 import HUD from './scenes/hud.js';
+import Shop from './scenes/shop.js';
 import Level_Fondo from './scenes/level_fondo.js';
 
 /**
@@ -17,16 +18,16 @@ let config = {
     height: 736,
     parent: 'juego',
     scale: {
-        mode: Phaser.Scale.FIT,  
+        mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH
     },
     pixelArt: true,
-    scene: [Boot,Level_Fondo, End, HUD],
+    scene: [Boot, Level_Fondo, Shop, End, HUD],
     physics: {
         default: 'arcade',
         arcade: {
             fps: 120,
-            gravity: { x:0, y: 0 },
+            gravity: { x: 0, y: 0 },
             debug: false
         }
     }

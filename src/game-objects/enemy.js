@@ -13,10 +13,11 @@ export default class Enemy extends actor {
      * @param {number} y Coordenada Y
      */
     constructor(scene, x, y) {
-        super(scene, x, y, 'enemy', {   life        : 20,
-                                        speed       : 100,
-                                        defenseMod  : 1, 
-                                        attackMod   : 1   
+        super(scene, x, y, 'enemy', {
+            life: 20,
+            speed: 100,
+            defenseMod: 1,
+            attackMod: 1
         });
 
         // Estadísticas propias del enemigo
@@ -30,35 +31,35 @@ export default class Enemy extends actor {
 
         // Animaciones
         this.scene.anims.create({
-            key : 'enemy_idle',
-            frames: this.anims.generateFrameNames('enemy_idle',{ prefix: 'idle-', start: 1, end: 2 } ),
+            key: 'enemy_idle',
+            frames: this.anims.generateFrameNames('enemy_idle', { prefix: 'idle-', start: 1, end: 2 }),
             frameRate: 5,
-            repeat : -1
+            repeat: -1
         });
 
         this.scene.anims.create({
-            key : 'enemy_walk',
-            frames: this.anims.generateFrameNames('enemy_walk',{ prefix: 'walk-', start: 1, end: 9 } ),
+            key: 'enemy_walk',
+            frames: this.anims.generateFrameNames('enemy_walk', { prefix: 'walk-', start: 1, end: 9 }),
             frameRate: 10,
-            repeat : -1
+            repeat: -1
         });
 
         this.scene.anims.create({
-            key : 'enemy_hit',
-            frames: this.anims.generateFrameNames('enemy_hit',{ prefix: 'hit-', start: 1, end: 3 } ),
+            key: 'enemy_hit',
+            frames: this.anims.generateFrameNames('enemy_hit', { prefix: 'hit-', start: 1, end: 3 }),
             frameRate: 4,
-            repeat : -1
+            repeat: -1
         });
-        
+
         this.scene.anims.create({
             key: 'enemy_die',
-            frames: this.anims.generateFrameNames('enemy_die',{ prefix: 'die-', start: 1, end: 16 } ),
+            frames: this.anims.generateFrameNames('enemy_die', { prefix: 'die-', start: 1, end: 16 }),
             frameRate: 20,
-            repeat : 0
+            repeat: 0
         })
 
-        this.on('animationcomplete', (anim) =>{
-            if(anim.key =='enemy_die'){
+        this.on('animationcomplete', (anim) => {
+            if (anim.key == 'enemy_die') {
                 this.setActive(false);
                 this.setVisible(false);
                 this.body.enable = false;
@@ -70,9 +71,9 @@ export default class Enemy extends actor {
         this.isDead = false;
         this.body.setSize(16, 16);
         this.body.setOffset(9, 15);
-        this.play('enemy_idle',true);
+        this.play('enemy_idle', true);
         this.is_moving = false;
-        this.label = this.scene.add.text(1080,10,"",{fontSize: 20});
+        this.label = this.scene.add.text(1080, 10, "", { fontSize: 20 });
 
         // Pathfinding
         this.currentPath = null;
@@ -91,7 +92,7 @@ export default class Enemy extends actor {
 
         if (this.body) {
             this.body.enable = true;
-            this.body.checkCollision.none = false; 
+            this.body.checkCollision.none = false;
         }
 
         this.life = this.maxHP;
@@ -106,7 +107,7 @@ export default class Enemy extends actor {
     }
 
     die() {
-        if(this.isDead) return;
+        if (this.isDead) return;
         this.isDead = true;
 
         if (this.body) {
@@ -117,9 +118,9 @@ export default class Enemy extends actor {
         const angle = Phaser.Math.Angle.Between(this.scene.player.x, this.scene.player.y, this.x, this.y);
         const knockbackForce = 100;
 
-       // console.log("La velocidad aqui es %d %d",Math.cos(angle) * knockbackForce,Math.sin(angle) * knockbackForce);
+        // console.log("La velocidad aqui es %d %d",Math.cos(angle) * knockbackForce,Math.sin(angle) * knockbackForce);
         this.body.setVelocityX(Math.cos(angle) * knockbackForce);
-          
+
         this.body.setVelocityY(Math.sin(angle) * knockbackForce);
         //this.body.stop();
         this.is_knockback = false;
@@ -136,7 +137,6 @@ export default class Enemy extends actor {
             //this.play('enemy_idle');
         }) 
             */
- 
 
     }
 
@@ -144,7 +144,7 @@ export default class Enemy extends actor {
         if (this.canAttack) {
             player.getDamage(this.attackDamage * this.attackMod);
             this.canAttack = false;
-            
+
 
             this.scene.time.delayedCall(this.attackCooldown, () => {
                 this.canAttack = true;
@@ -170,17 +170,17 @@ export default class Enemy extends actor {
             this.move(dt);
         }
         else {//this.body.setVelocity(0);
-            this.is_moving=false;
+            this.is_moving = false;
         }
     }
 
-    playHit(){
-        if(this.life <= 0) return;
-        this.play('enemy_hit',true);
+    playHit() {
+        if (this.life <= 0) return;
+        this.play('enemy_hit', true);
     }
 
-    knockback(){
-        if(this.is_knockback || this.life <= 0) return;
+    knockback() {
+        if (this.is_knockback || this.life <= 0) return;
         this.is_knockback = true;
 
         this.playHit();
@@ -188,25 +188,25 @@ export default class Enemy extends actor {
         const angle = Phaser.Math.Angle.Between(this.scene.player.x, this.scene.player.y, this.x, this.y);
         const knockbackForce = 300;
 
-       // console.log("La velocidad aqui es %d %d",Math.cos(angle) * knockbackForce,Math.sin(angle) * knockbackForce);
+        // console.log("La velocidad aqui es %d %d",Math.cos(angle) * knockbackForce,Math.sin(angle) * knockbackForce);
         this.body.setVelocityX(Math.cos(angle) * knockbackForce);
-          
+
         this.body.setVelocityY(Math.sin(angle) * knockbackForce);
-       // console.log("La velocidad aqui es %d",this.speed);
+        // console.log("La velocidad aqui es %d",this.speed);
 
         this.scene.time.delayedCall(200, () => {
-            if(this.active){
+            if (this.active) {
                 this.is_knockback = false;
                 console.log("KNOCKBACK ES FALSO");
                 //this.move();
-                }
+            }
         });
-      //  console.log("La velocidad aqui es %d",this.speed);
-        
+        //  console.log("La velocidad aqui es %d",this.speed);
+
 
     }
 
-    move(dt){
+    move(dt) {
         if (this.scene.easystar) {
             this._moveWithPathfinding(dt);
         } else {
@@ -219,8 +219,8 @@ export default class Enemy extends actor {
         const tileSize = this.scene.pathfinderTileSize;
         const startX = Math.floor(this.body.center.x / tileSize);
         const startY = Math.floor(this.body.center.y / tileSize);
-        const endX   = Math.floor(this.scene.player.body.center.x / tileSize);
-        const endY   = Math.floor(this.scene.player.body.center.y / tileSize);
+        const endX = Math.floor(this.scene.player.body.center.x / tileSize);
+        const endY = Math.floor(this.scene.player.body.center.y / tileSize);
 
         // Detección de atasco: si el enemigo no se ha movido más de 4px en 600ms, resetea el path
         this._stuckTimer += dt;
@@ -271,7 +271,7 @@ export default class Enemy extends actor {
 
                 // Si hay colisión física en un eje, deslizar por el otro (wall sliding)
                 if ((this.body.blocked.left && dx < 0) || (this.body.blocked.right && dx > 0)) dx = 0;
-                if ((this.body.blocked.up   && dy < 0) || (this.body.blocked.down  && dy > 0)) dy = 0;
+                if ((this.body.blocked.up && dy < 0) || (this.body.blocked.down && dy > 0)) dy = 0;
 
                 const newLen = Math.sqrt(dx * dx + dy * dy);
                 if (newLen > 0) {

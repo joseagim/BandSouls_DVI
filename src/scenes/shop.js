@@ -1,36 +1,41 @@
 import Phaser from 'phaser';
 import Player from '../game-objects/player.js';
+
 import SoundManager from '../game-objects/sound_manager.js';
 
-
-/**
- * Escena principal del juego. La escena se compone de una serie de plataformas 
- * sobre las que se sitúan las bases en las podrán aparecer las estrellas. 
- * El juego comienza generando aleatoriamente una base sobre la que generar una estrella. 
- * @abstract 
- 
- * @extends Phaser.Scene
- */
 export default class Shop extends Phaser.Scene {
     /**
      * Constructor de la escena
      */
-    constructor(key_nombre) {
-        super({ key: key_nombre });
+    constructor() {
+        super('shop');
     }
 
     /**
-     * Creación de los elementos de la escena principal de juego
+     * Creación de los elementos de la escena de la tienda
      */
     create() {
-        this.add.rectangle(960, 736, 400, 300, 0xffffff);
+        var map = this.make.tilemap({ key: 'shop_map' });
+        var tiles = map.addTilesetImage('gardef', 'shop_tiles');
+        const mapOffsetX = (this.cameras.main.width - map.widthInPixels) / 2;
+        const mapOffsetY = (this.cameras.main.height - map.heightInPixels) / 2;
+        var layer = map.createLayer('Capa de patrones 1', tiles, mapOffsetX, mapOffsetY);
 
-        // MEJORA: Añadimos color negro al texto para que contraste y lo centramos
-        this.add.text(400, 300, 'Shop', {
-            fontSize: '20px',
-            color: '#f20808ff'
-        }).setOrigin(0.5);
+
+        layer.setCollisionByProperty({ colision: true });
+        this.soundManager = new SoundManager(this);
+        this.soundManager.addSounds({
+            'movement': { key: 'movement', loop: true, loopDelay: 100 },
+            'dash': { key: 'dash', volume: 10 },
+            'guitar_attk': { key: 'guitar_attk', volume: 0.5 }
+        });
+
+        const playerStats = this.cache.json.get('data').playerBaseStats;
+        this.player = new Player(this, mapOffsetX + (map.widthInPixels / 2), mapOffsetY + (map.heightInPixels / 2), playerStats);
+
+        this.physics.add.collider(this.player, layer);
+
+        this.scene.launch('hud');
+        console.log(this.scene.key);
     }
-
 }
-

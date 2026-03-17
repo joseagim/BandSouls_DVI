@@ -2,7 +2,7 @@
   {
     "id": "tube_shouter",
     "name": "Tube Shouter",
-    "description": "Echale algo de overdrive a tu guitarra/bajo.",
+    "description": "Pedal de overdrive para guitarristas y bajistas.",
     "buffs": {
       "attackMod": 0.15
     },
@@ -15,7 +15,7 @@
   },
   {
     "id": "mascara",
-    "name": "Mascara nº3",
+    "name": "Mascara del nº3",
     "description": "El dueño era un buen bateria.",
     "buffs": {
       "attackMod": 0.25

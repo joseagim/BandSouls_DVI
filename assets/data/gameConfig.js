@@ -11,13 +11,13 @@ const gameConfig = {
     },
 
     playerBaseStats: {
-        life: 100,
-        speed: 150,
-        defenseMod: 1,
-        attackMod: 1,
-        dashSpeed: 2000,
-        dashDuration: 25,
-        dashCooldown: 1000,
+    life: 100,
+    speed: 150,
+    defenseMod: 1,
+    attackMod: 1,
+    dashSpeed: 2000,
+    dashDuration: 50,
+    dashCooldown: 1000,
     },
 
     waves: [

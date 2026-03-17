@@ -5,7 +5,8 @@ import Guitar from './guitar';
 import Drum from './drum';
 import Bass from './bass';
 import Item from './item';
-import SoundManager from './sound_manager';
+import SoundManager from './sound-manager';
+import GunManager from './gun-manager';
 
 /**
  * Clase que representa el jugador del juego. El jugador se mueve por el mundo usando los cursores.
@@ -29,9 +30,11 @@ export default class Player extends actor {
         this.dashSpeed = stats.dashSpeed;
         this.dashDuration = stats.dashDuration;
         this.dashCooldown = stats.dashCooldown;
+        this.easeOutScale = 0.80;
 
         // Estados
         this.isDashing = false;
+        this.dashEaseout = false;
         this.canDash = true;
         this.canAttack = true;
         this.lastDirection = 'down';
@@ -48,15 +51,17 @@ export default class Player extends actor {
         this.label = this.scene.add.text(10, 10, "", { fontSize: 20 });
 
 
+        // visual cues
+        this.cdAnim = this.scene.add.sprite(x, y, 'cooldownResetVisualCue');
+        this.cdAnim.setVisible(false);
+        this.xOffsetCdAnim = -25;
+        this.yOffsetCdAnim = -15;
 
         // this.cursors = this.scene.input.keyboard.createCursorKeys();
         this.keyA = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
         this.keyS = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
         this.keyD = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
         this.keyW = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
-
-        //cambio de arma provisional con p
-        this.keyP = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
 
 
         // this.keyF = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F); DEBUG FOR DAMAGE
@@ -65,11 +70,15 @@ export default class Player extends actor {
             if (pointer.button === 0 && this.canAttack) {
                 if (this.arma === this.bajo) {
                     this.arma.startCharge();
+                    //this.soundManager.playWithPitch('bajo_attk');
                     this.isAttacking = true;
                 } else if (this.arma === this.drum) {
                     this.arma.startAttack();
+                    this.soundManager.playWithPitch('drum_attk');
                 } else {
                     this.soundManager.playWithPitch('guitar_attk');
+
+                    //this.soundManager.playWithPitch('teclado_attk');
                     this.arma.activateWeapon();
                     this.canAttack = false;
                     this.isAttacking = true;
@@ -97,13 +106,16 @@ export default class Player extends actor {
             }
         });
 
-        // Seccion de armas
         this.guitar = new Guitar(this.scene, this.x, this.y, this);
         this.bajo = new Bass(this.scene, this.x, this.y, this);
         this.drum = new Drum(this.scene, this.x, this.y, this);
 
-        // Arma activa inicializado a guitarra
-        this.arma = this.guitar;
+        this.gunManager = new GunManager(this.scene, this, [
+            { weapon: this.guitar, iconKey: 'guitar-icon' },
+            { weapon: this.drum,   iconKey: 'drum-icon' },
+            { weapon: this.bajo,   iconKey: 'bass-icon' },
+        ]);
+
         this.soundManager = SoundManager.getInstance(this.scene);
         this.playingMovementSound = false;
 
@@ -145,6 +157,15 @@ export default class Player extends actor {
         this.updateHealth();
     }
 
+    get arma() {
+        return this.gunManager.currentWeapon;
+    }
+
+    updateVisualCues() {
+        this.cdAnim.x = this.x + this.xOffsetCdAnim;
+        this.cdAnim.y = this.y + this.yOffsetCdAnim;
+    }
+
     /**
      * Métodos preUpdate de Phaser. En este caso solo se encarga del movimiento del jugador.
      * Como se puede ver, no se tratan las colisiones con las estrellas, ya que estas colisiones 
@@ -155,33 +176,25 @@ export default class Player extends actor {
         super.preUpdate(t, dt);
 
         let isHorizontal = false;
-
-        // Si estamos haciendo dash y chocamos contra algo (pared o objeto sólido)
+        this.updateVisualCues();
+        
+        if (this.dashEaseout) {
+            this.body.velocity.scale(this.easeOutScale);
+            
+            if (this.body.velocity.length() < 15) {
+                this.dashEaseout = false;
+                this.body.setVelocity(0);
+            }
+        }
+                // Si estamos haciendo dash y chocamos contra algo (pared o objeto sólido)
         if (this.isDashing && (this.body.blocked.left || this.body.blocked.right || this.body.blocked.up || this.body.blocked.down)) {
             this.stopDash();
             if (this.dashTimer) this.dashTimer.remove(); // Cancelamos el timer de duración
             return; // No procesamos más movimiento mientras hacemos dash
         }
-
-        // funcion para cambiar de arma de momento
-        if (Phaser.Input.Keyboard.JustDown(this.keyP) && !this.isAttacking) {
-            // Cancel bass charge if switching away
-            if (this.arma === this.bajo && this.arma.isCharging) {
-                this.arma.cancelCharge();
-                this.isAttacking = false;
-            }
-            this.arma.deactivateWeapon();
-            if (this.arma === this.guitar) {
-                this.arma = this.bajo;
-            } else if (this.arma === this.bajo) {
-                this.arma = this.drum;
-            } else {
-                this.arma = this.guitar;
-            }
-        }
-
-
-
+        
+        if (this.isDashing || this.dashEaseout) return;
+       
         this.body.setVelocity(0);
 
         if (this.keyA.isDown) {
@@ -221,6 +234,7 @@ export default class Player extends actor {
         if (this.keySpace.isDown && this.canDash && this.body.velocity.length() > 0) {
             this.doDash();
         }
+
     }
 
     updateHealth() {
@@ -233,6 +247,19 @@ export default class Player extends actor {
         this.scene.scene.start("end")
     }
 
+    showCooldownCue(color) {
+        this.cdAnim.clearTint();   
+        this.cdAnim.setTintFill(color); 
+        
+        this.cdAnim.setVisible(true);
+        this.cdAnim.play('cooldown_reset', true);
+
+        this.cdAnim.once('animationcomplete-cooldown_reset', () => {
+            this.cdAnim.setVisible(false);
+        });
+    }
+
+
     doDash() {
         // el jugador hace dash
         this.soundManager.play('dash');
@@ -242,7 +269,12 @@ export default class Player extends actor {
         // velocidad en función del vector dirección del jugador
         this.body.velocity.normalize().scale(this.dashSpeed);
         this.invincible = true;
-
+        
+        // ease out del dash
+        this.scene.time.delayedCall(1/4 * this.dashDuration, () => {
+            this.dashEaseout = true;
+        });
+        
         // cuando termine el dash
         this.scene.time.delayedCall(this.dashDuration, () => {
             this.stopDash();
@@ -250,6 +282,8 @@ export default class Player extends actor {
 
         // cuando termine el cooldown del dash
         this.scene.time.delayedCall(this.dashCooldown, () => {
+            let dashColor = 0x00ffff;
+            this.showCooldownCue(dashColor);
             this.canDash = true;
         });
     }
@@ -585,6 +619,19 @@ export default class Player extends actor {
             frameRate: 8,
             repeat: -1
         });
+
+        this.scene.anims.create({
+            key: 'cooldown_reset',
+            frames: this.anims.generateFrameNames('cooldownResetVisualCue', {
+                prefix: 'CooldownResetVisualCue ',
+                suffix: '.aseprite',
+                start: 0,
+                end: 9
+            }),
+            frameRate:   35,
+            repeat: 0     
+        });
+
     }
 
 

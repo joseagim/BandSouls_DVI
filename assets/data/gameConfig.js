@@ -16,7 +16,7 @@ const gameConfig = {
     defenseMod: 1,
     attackMod: 1,
     dashSpeed: 2000,
-    dashDuration: 25,
+    dashDuration: 50,
     dashCooldown: 1000,
     },
 

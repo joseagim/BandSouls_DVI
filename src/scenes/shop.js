@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import Player from '../game-objects/player.js';
 import Item from '../game-objects/item.js';
-import SoundManager from '../game-objects/sound_manager.js';
+import SoundManager from '../game-objects/sound-manager.js';
 
 export default class Shop extends Phaser.Scene {
     /**

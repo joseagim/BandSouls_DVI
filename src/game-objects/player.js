@@ -4,6 +4,7 @@ import actor from './actor';
 import Guitar from './guitar';
 import Drum from './drum';
 import Bass from './bass';
+import Item from './item';
 import SoundManager from './sound_manager';
 
 /**
@@ -108,6 +109,40 @@ export default class Player extends actor {
 
         //seccion de items no consumibles(trinkets)
         this.trinket = [];
+
+        // Re-aplicar trinkets guardados en el registro (persistencia entre escenas)
+        const savedTrinkets = this.scene.registry.get('trinkets') || [];
+        for (const trinketData of savedTrinkets) {
+            const item = new Item(trinketData);
+            item.applyTo(this);
+            this.trinket.push(item);
+        }
+    }
+
+    /**
+     * Añade un trinket al jugador, aplica sus buffs/debuffs y actualiza el registro.
+     * @param {Item} item
+     */
+    addTrinket(item) {
+        item.applyTo(this);
+        item.purchased = true;
+        this.trinket.push(item);
+
+        // Guardar en el registro para persistencia entre escenas
+        const savedTrinkets = this.scene.registry.get('trinkets') || [];
+        savedTrinkets.push({
+            id: item.id,
+            name: item.name,
+            description: item.description,
+            buffs: item.buffs,
+            debuffs: item.debuffs,
+            price: item.price,
+            weight: item.weight
+        });
+        this.scene.registry.set('trinkets', savedTrinkets);
+
+        // Actualizar barra de vida si se ha cambiado
+        this.updateHealth();
     }
 
     /**

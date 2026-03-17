@@ -28,31 +28,31 @@ export default class Level_Fondo extends Level {
     create() {
         //this.stars = 10;
         var map = this.make.tilemap({ key: 'map' });
-        var tiles = map.addTilesetImage('city_tileset','city_tiles');
-        
-        var layer_suelo = map.createLayer('suelo',tiles,0,0);
-        var layer_edif = map.createLayer('edificios',tiles,0,0);
-        var layer_deco = map.createLayer('decorado',tiles,0,0);
-        var layer_deco_sin = map.createLayer('decoradoSin',tiles,0,0);
-        var layer_obj = map.createLayer('objetos',tiles,0,0);
-        
-        layer_edif.setCollisionByExclusion([-1],true);
-        layer_deco.setCollisionByExclusion([-1],true);
-        layer_obj.setCollisionByExclusion([-1],true);
+        var tiles = map.addTilesetImage('city_tileset', 'city_tiles');
 
-        
+        var layer_suelo = map.createLayer('suelo', tiles, 0, 0);
+        var layer_edif = map.createLayer('edificios', tiles, 0, 0);
+        var layer_deco = map.createLayer('decorado', tiles, 0, 0);
+        var layer_deco_sin = map.createLayer('decoradoSin', tiles, 0, 0);
+        var layer_obj = map.createLayer('objetos', tiles, 0, 0);
+
+        layer_edif.setCollisionByExclusion([-1], true);
+        layer_deco.setCollisionByExclusion([-1], true);
+        layer_obj.setCollisionByExclusion([-1], true);
+
+
         this.bases = this.add.group();
-        
+
         super.create();
 
-                
-        this.physics.add.collider(this.player,layer_edif);
-        this.physics.add.collider(this.player,layer_deco);
-        this.physics.add.collider(this.player,layer_obj);
 
-        this.physics.add.collider(this.spawner.pool,layer_edif);
-        this.physics.add.collider(this.spawner.pool,layer_deco);
-        this.physics.add.collider(this.spawner.pool,layer_obj);
+        this.physics.add.collider(this.player, layer_edif);
+        this.physics.add.collider(this.player, layer_deco);
+        this.physics.add.collider(this.player, layer_obj);
+
+        this.physics.add.collider(this.spawner.pool, layer_edif);
+        this.physics.add.collider(this.spawner.pool, layer_deco);
+        this.physics.add.collider(this.spawner.pool, layer_obj);
 
         // Inicializar pathfinding A* con el grid del tilemap
         const gridWidth = map.width;
@@ -63,10 +63,10 @@ export default class Level_Fondo extends Level {
             for (let x = 0; x < gridWidth; x++) {
                 const tileEdif = layer_edif.getTileAt(x, y);
                 const tileDeco = layer_deco.getTileAt(x, y);
-                const tileObj  = layer_obj.getTileAt(x, y);
+                const tileObj = layer_obj.getTileAt(x, y);
                 const blocked = (tileEdif && tileEdif.collides) ||
-                                (tileDeco && tileDeco.collides) ||
-                                (tileObj  && tileObj.collides);
+                    (tileDeco && tileDeco.collides) ||
+                    (tileObj && tileObj.collides);
                 row.push(blocked ? 1 : 0);
             }
             grid.push(row);
@@ -82,16 +82,49 @@ export default class Level_Fondo extends Level {
         this.cameras.main.setBounds(0, 0, 1280, 720);
         this.cameras.main.setZoom(1); // Ventana de visualización
         this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
-        
+
         // Opcional: agregar bordes para visualizar la cámara
         this.cameras.main.setBackgroundColor(0x000000);
 
+        // --- Portal al finalizar oleadas ---
+        this.portal = null;
+        this.keyEnter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+        this.portalInteractionRange = 50;
 
+        // Crear la animación por si no estuviese creada en esta escena
+        if (!this.anims.exists('portalAnim')) {
+            this.anims.create({
+                key: 'portalAnim',
+                frames: this.anims.generateFrameNames('portal', { prefix: 'Sprite-0001 ', suffix: '.', start: 0, end: 6 }),
+                frameRate: 10,
+                repeat: -1
+            });
+        }
 
+        this.events.on('allWavesComplete', () => {
+            // Un poco más arriba del centro del mapa (asumiendo 1280x720 como tamaño)
+            const mapCenterX = 1280 / 2;
+            const mapCenterY = 736 / 2 - 150;
+
+            this.portal = this.physics.add.sprite(mapCenterX, mapCenterY, 'portal');
+            this.portal.play('portalAnim');
+        });
     }
 
     update() {
         if (this.easystar) this.easystar.calculate();
+
+        // Control del portal si ya ha aparecido
+        if (this.portal) {
+            const distToPortal = Phaser.Math.Distance.Between(
+                this.player.x, this.player.y,
+                this.portal.x, this.portal.y
+            );
+
+            if (distToPortal < this.portalInteractionRange && Phaser.Input.Keyboard.JustDown(this.keyEnter)) {
+                this.scene.start('shop');
+            }
+        }
     }
 
     /**

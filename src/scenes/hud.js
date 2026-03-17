@@ -12,24 +12,33 @@ export default class HUD extends Phaser.Scene {
         this.healthBar.setScale(3);
         this.healthBar.setScrollFactor(0);
 
+        // --- Score display (rojo, centrado arriba) ---
+        this.scoreText = this.add.text(this.scale.width / 2, 20, '0', {
+            fontSize: '36px',
+            fill: '#ff0000',
+            fontFamily: '"System-ui", Courier, monospace',
+            stroke: '#000000',
+            strokeThickness: 4,
+            shadow: { offsetX: 2, offsetY: 2, color: '#000000', blur: 0, stroke: true, fill: true }
+        }).setOrigin(0.5, 0).setScrollFactor(0);
 
+        // Mostrar el score actual del registro (por si venimos de otra escena)
+        const currentScore = this.registry.get('score') || 0;
+        this.scoreText.setText(String(currentScore));
+
+        // Escuchar cambios en el registry para actualizar el score
+        this.registry.events.on('changedata-score', (_parent, value) => {
+            this.scoreText.setText(String(value));
+        });
 
         // crear el texto de info oleadas
-        /*this.waveCounter = this.add.text(20, 80, 'Oleada X', {
-            fontSize: '32px',
-            fill: '#ffffff',
-            fontFamily: 'Arial',
-            stroke: '#000000',
-            strokeThickness: 4
-        });*/
-
         this.remainingEnemies = this.add.text(20, 80, 'Enemigos restantes: X', {
             fontSize: '32px',
             fill: '#ffffff',
             fontFamily: 'Arial',
             stroke: '#000000',
             strokeThickness: 4
-        })
+        });
 
         this.waitingNextWave = this.add.text(400, 150, 'La siguiente oleada comenzará en X', {
             fontSize: '32px',
@@ -37,7 +46,7 @@ export default class HUD extends Phaser.Scene {
             fontFamily: 'Arial',
             stroke: '#000000',
             strokeThickness: 4
-        })
+        });
         this.waitingNextWave.visible = false;
 
         // Display de número de oleada (esquina superior derecha)
@@ -51,49 +60,33 @@ export default class HUD extends Phaser.Scene {
         mainLevel.events.on('updateHealth', (player) => {
             const percentage = player.life / player.maxHP;
             this.healthBar.setValue(percentage);
-        }
-        );
+        });
 
         // evento: actualizar número de oleada
         mainLevel.events.on('nextWave', (waveNumber) => {
-            //this.waveCounter.setText('Oleada ' + waveNumber);
             this._showRound(waveNumber);
-
-            // efecto visual
-            /*this.tweens.add({
-                    targets: this.waveCounter,
-                    scale: 1.2,
-                    duration: 200,
-                    yoyo: true
-            });*/
-        })
+        });
 
         // evento: actualizar enemigos restantes
         mainLevel.events.on('enemyDead', (enemiesLeft) => {
             this.remainingEnemies.setText('Enemigos restantes: ' + enemiesLeft);
-        })
+        });
 
         // evento: mensaje de espera para la siguiente oleada
         mainLevel.events.on('finishWave', (waveDelay) => {
-            // calcular segundos
             let timeLeft = Math.floor(waveDelay / 1000);
 
-            // modificar texto
             this.waitingNextWave.visible = true;
             this.waitingNextWave.setText('La siguiente oleada comenzará en ' + timeLeft);
 
-            // metemos llamadas para cada segundo restante
             this.time.addEvent({
                 delay: 1000,
                 repeat: timeLeft - 1,
                 callback: () => {
                     timeLeft--;
-
                     if (timeLeft > 0) {
                         this.waitingNextWave.setText('La siguiente oleada comenzará en ' + timeLeft);
-                        //console.log('Siguiente oleada en: ' + timeLeft);
                     } else {
-                        // Al llegar a cero, ocultamos el mensaje
                         this.waitingNextWave.visible = false;
                     }
                 },
@@ -101,7 +94,143 @@ export default class HUD extends Phaser.Scene {
             });
         });
 
+        // --- Shop item panel (oculto por defecto) ---
+        this._itemPanelElements = [];
+        this._currentPanelItemId = null;
+        this._currentPanelCanAfford = null;
+
+        // Escuchar eventos del shop para mostrar/ocultar panel
+        const shopScene = this.scene.get('shop');
+        if (shopScene) {
+            shopScene.events.on('showShopItem', (item, canAfford) => {
+                // Solo recrear el panel si cambió el item o la affordability
+                if (this._currentPanelItemId !== item.id || this._currentPanelCanAfford !== canAfford) {
+                    this._showItemPanel(item, canAfford);
+                    this._currentPanelItemId = item.id;
+                    this._currentPanelCanAfford = canAfford;
+                }
+            });
+            shopScene.events.on('hideShopItem', () => {
+                this._hideItemPanel();
+                this._currentPanelItemId = null;
+                this._currentPanelCanAfford = null;
+            });
+
+            // Escuchar updateHealth del shop player también
+            shopScene.events.on('updateHealth', (player) => {
+                const percentage = player.life / player.maxHP;
+                this.healthBar.setValue(percentage);
+            });
+        }
+
+        // Si estamos en la tienda, ocultar info de oleadas
+        if (this.scene.manager.isActive('shop')) {
+            this.remainingEnemies.setVisible(false);
+            this.waitingNextWave.setVisible(false);
+        }
+
         this.events.emit('hud-ready');
+    }
+
+    /**
+     * Muestra el panel de info de un item de la tienda.
+     * @param {Item} item
+     * @param {boolean} canAfford
+     */
+    _showItemPanel(item, canAfford) {
+        // Limpiar panel anterior
+        this._hideItemPanel();
+
+        const panelWidth = 260;
+        const panelX = this.scale.width / 2 - panelWidth / 2;
+        const panelY = this.scale.height - 240;
+
+        // Fondo negro semi-transparente con borde blanco
+        const graphics = this.add.graphics();
+        graphics.fillStyle(0x000000, 0.4);
+        graphics.fillRect(panelX, panelY, panelWidth, 215);
+        graphics.lineStyle(2, 0xffffff, 1);
+        graphics.strokeRect(panelX, panelY, panelWidth, 230);
+        this._itemPanelElements.push(graphics);
+
+        const contentX = panelX + 15;
+        let currentY = panelY + 15;
+
+        // Nombre del item (título)
+        const nameText = this.add.text(contentX, currentY, item.name, {
+            fontSize: '22px',
+            fill: '#ffffff',
+            fontFamily: '"System-ui", Courier, monospace',
+            fontStyle: 'bold',
+            wordWrap: { width: panelWidth - 30 }
+        });
+        this._itemPanelElements.push(nameText);
+        currentY += nameText.height + 12;
+
+        // Línea horizontal (separador nombre)
+        const hr1 = this.add.graphics();
+        hr1.lineStyle(1, 0xffffff, 0.8);
+        hr1.lineBetween(panelX + 10, currentY, panelX + panelWidth - 10, currentY);
+        this._itemPanelElements.push(hr1);
+        currentY += 15;
+
+        // Descripción
+        const descText = this.add.text(contentX, currentY, item.description, {
+            fontSize: '14px',
+            fill: '#cccccc',
+            fontFamily: 'Arial',
+            wordWrap: { width: panelWidth - 30 }
+        });
+        this._itemPanelElements.push(descText);
+        currentY += descText.height + 15;
+
+        // Buffs y Debuffs
+        const statsText = item.getStatsText();
+        if (statsText.length > 0) {
+            const statsDisplay = this.add.text(contentX, currentY, statsText, {
+                fontSize: '14px',
+                fill: '#88ff88',
+                fontFamily: 'Arial',
+                wordWrap: { width: panelWidth - 30 }
+            });
+            this._itemPanelElements.push(statsDisplay);
+            currentY += statsDisplay.height + 20;
+        }
+
+        // Línea horizontal (separador precio)
+        const hr2 = this.add.graphics();
+        hr2.lineStyle(1, 0xffffff, 0.8);
+        hr2.lineBetween(panelX + 10, currentY, panelX + panelWidth - 10, currentY);
+        this._itemPanelElements.push(hr2);
+        currentY += 20;
+
+        // Precio (blanco si se puede comprar, rojo si no)
+        const priceColor = canAfford ? '#ffffff' : '#ff0000';
+        const priceText = this.add.text(contentX, currentY, `Score needed: ${item.price}`, {
+            fontSize: '18px',
+            fill: priceColor,
+            fontFamily: '"System-ui", Courier, monospace',
+            fontStyle: 'bold'
+        });
+        this._itemPanelElements.push(priceText);
+
+        // Texto de instrucción para comprar
+        if (canAfford) {
+            const buyHint = this.add.text(contentX, currentY + priceText.height + 4, '[E] Buy', {
+                fontSize: '12px',
+                fill: '#aaaaaa',
+                fontFamily: 'Arial'
+            });
+            this._itemPanelElements.push(buyHint);
+        }
+    }
+
+    /**
+     * Oculta el panel de info de item.
+     */
+    _hideItemPanel() {
+        this._itemPanelElements.forEach(el => el.destroy());
+        this._itemPanelElements = [];
     }
 
     _showRound(number) {

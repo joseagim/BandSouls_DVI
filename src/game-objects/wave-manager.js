@@ -30,7 +30,7 @@ export default class WaveManager {
         // actualizo datos de esta oleada
         this.waveDelay = wave.delay;
         this.currentWave++;
-        
+
     }
 
     enemyDies() {
@@ -40,8 +40,14 @@ export default class WaveManager {
         this.scene.events.emit('enemyDead', this.enemies);
 
         if (this.enemies <= 0) {
-        this.scene.events.emit('finishWave', this.waveDelay);
-            this.scene.time.delayedCall(this.waveDelay, () => this.startNextWave());
+            this.scene.events.emit('finishWave', this.waveDelay);
+
+            // Si era la última oleada
+            if (this.currentWave >= this.wavesData.length) {
+                this.scene.events.emit('allWavesComplete');
+            } else {
+                this.scene.time.delayedCall(this.waveDelay, () => this.startNextWave());
+            }
         }
     }
 }

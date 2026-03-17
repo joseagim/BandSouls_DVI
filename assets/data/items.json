@@ -1,0 +1,56 @@
+[
+  {
+    "id": "tube_shouter",
+    "name": "Tube Shouter",
+    "description": "Echale algo de overdrive a tu guitarra/bajo.",
+    "buffs": {
+      "attackMod": 0.15
+    },
+    "debuffs": {
+      "speed": -10
+    },
+    "price": 200,
+    "weight": 30,
+    "image": "assets/sprites/items/tubescreamer.png"
+  },
+  {
+    "id": "mascara",
+    "name": "Mascara nº3",
+    "description": "El dueño era un buen bateria.",
+    "buffs": {
+      "attackMod": 0.25
+    },
+    "debuffs": {
+      "dashCooldown": 200
+    },
+    "price": 400,
+    "weight": 20,
+    "image": "assets/sprites/items/mask.png"
+  },
+  {
+    "id": "bumble_pick",
+    "name": "Pua aguijon",
+    "description": "Puro tapping y tremolo.",
+    "buffs": {
+      "speed": 25
+    },
+    "debuffs": {},
+    "price": 300,
+    "weight": 25,
+    "image": "assets/sprites/items/bumble_pick.png"
+  },
+  {
+    "id": "metronome",
+    "name": "Metrónomo",
+    "description": "Domina el ritmo.",
+    "buffs": {
+      "attackMod": 0.35
+    },
+    "debuffs": {
+      "life": -15
+    },
+    "price": 500,
+    "weight": 15,
+    "image": "assets/sprites/items/metronome.png"
+  }
+]

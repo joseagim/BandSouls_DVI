@@ -67,7 +67,13 @@ export default class Level extends Phaser.Scene {
                 if (!enemy.invincible) {
                     this.soundManager.playWithPitch('enemy_hurt');
                     weapon.attack(enemy, this.player.attackMod, hurtbox);
-                    if (enemy.life <= 0) this.waveManager.enemyDies();
+                    if (enemy.life <= 0) {
+                        this.waveManager.enemyDies();
+                        // Sumar puntos por matar al enemigo
+                        const newScore = (this.registry.get('score') || 0) + 100;
+                        this.registry.set('score', newScore);
+                        this.events.emit('updateScore', newScore);
+                    }
                 }
             }, null, this);
         }

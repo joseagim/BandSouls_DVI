@@ -37,9 +37,17 @@ import city_tileset from '../../assets/map/rogueLike_city.png';
 import city_json from '../../assets/map/city_map.json'
 import shop_tileset from '../../assets/map/gj.png'
 import shop_json from '../../assets/map/garajefinal.json'
+import portalSpritesheet from '../../assets/animations/portal/portal-spritesheet.png'
+import portalJSON from '../../assets/animations/portal/portaljson.json'
 
 // data
 import data from '../../assets/data/gameConfig';
+import itemsData from '../../assets/data/items.json';
+
+import item_tubescreamer from '../../assets/sprites/items/tubescreamer.png';
+import item_mask from '../../assets/sprites/items/mask.png';
+import item_bumble_pick from '../../assets/sprites/items/bumble_pick.png';
+import item_metronome from '../../assets/sprites/items/metronome.png';
 
 // sound-fx
 import SoundManager from '../game-objects/sound_manager.js';
@@ -98,6 +106,7 @@ export default class Boot extends Phaser.Scene {
     this.load.atlas('laude_drum', laudeDrumSpriteSheet, laudeAtlas);
     this.load.atlas('laude_bass', laudeBassSpritesheet, laudeBassAtlas);
     this.cache.json.add('data', data);
+    this.cache.json.add('items', itemsData);
     this.load.atlas('enemy_idle', enemyIdle, enemyIdleJSON);
     this.load.atlas('enemy_walk', enemyWalk, enemyWalkJSON);
     this.load.atlas('enemy_hit', enemyHit, enemyHitJSON);
@@ -105,6 +114,12 @@ export default class Boot extends Phaser.Scene {
     this.load.image('hud_health_border', HUDhealthBorder);
     this.load.image('hud_health_bar', HUDhealthBar);
     this.load.spritesheet('round_numbers', roundNumbers, { frameWidth: 24, frameHeight: 32 });
+    this.load.atlas('portal', portalSpritesheet, portalJSON);
+
+    this.load.image('assets/sprites/items/tubescreamer.png', item_tubescreamer);
+    this.load.image('assets/sprites/items/mask.png', item_mask);
+    this.load.image('assets/sprites/items/bumble_pick.png', item_bumble_pick);
+    this.load.image('assets/sprites/items/metronome.png', item_metronome);
 
     //sonidos
 
@@ -127,6 +142,10 @@ export default class Boot extends Phaser.Scene {
    * nivel del juego
    */
   create() {
+    // Inicializar registro persistente de score y trinkets
+    this.registry.set('score', 0);
+    this.registry.set('trinkets', []);
+
     this.soundManager.play('menu_music');
     this.add.image(640, 368, "title");
     this.startText = this.add.sprite(596, 490, "start");
@@ -193,7 +212,7 @@ export default class Boot extends Phaser.Scene {
       if (this.activeOption == this.startText) {
         this.soundManager.fadeOutMusic(500);
         this.time.delayedCall(500, () => {
-          this.scene.start('shop');//cambio solo para probar como funciona la tienda
+          this.scene.start('level_fondo');
         });
       } else if (this.activeOption == this.optionsText) {
         alert("se mostraria menu de opciones: audio, brillo, etc...")

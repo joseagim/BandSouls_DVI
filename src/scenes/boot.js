@@ -19,7 +19,13 @@ import optionsSelected from '../../assets/sprites/title-screen/options-selected-
 import startSelected from '../../assets/sprites/title-screen/start-selected-sheet.png'
 import selectionPick from '../../assets/sprites/title-screen/selection-pick.png'
 import guitarSprite from '../../assets/sprites/weapons/guitar/guitar-sprite.png'
-import drumSticks from '../../assets/sprites/weapons/drum/drum-sticks.sprite.png'
+import drumSticks from '../../assets/sprites/weapons/drum/drum-sticks.png'
+import guitarIcon from '../../assets/sprites/weapons/guitar/guitar-icon.png'
+import drumIcon from '../../assets/sprites/weapons/drum/drum-icon.png'
+import bassSprite from '../../assets/sprites/weapons/bass/bass-sprite.png'
+import bassIcon from '../../assets/sprites/weapons/bass/bass-icon.png'
+import weaponSelected from '../../assets/sprites/weapons/selected-frame.png'
+import weaponUnselected from '../../assets/sprites/weapons/unselected-frame.png'
 import deathScreen from '../../assets/sprites/title-screen/death-screen.png'
 import enemyIdle from '../../assets/animations/basic-enemy/Idle.png'
 import enemyIdleJSON from '../../assets/animations/basic-enemy/enemy_idle_atlas.json'
@@ -40,13 +46,16 @@ import city_json from '../../assets/map/city_map.json'
 import data from '../../assets/data/gameConfig';
 
 // sound-fx
-import SoundManager from '../game-objects/sound_manager.js'; 
+import SoundManager from '../game-objects/sound-manager.js'; 
 import movement from '../../assets/sounds/fx/movement-player.mp3';
 import dash from '../../assets/sounds/fx/dash.mp3';
 import guitar_attk from '../../assets/sounds/fx/guitar-attk.mp3';
 import get_hit from '../../assets/sounds/fx/get-hit.mp3';
 import enemy_hurt_fx from '../../assets/sounds/fx/enemy_hurt.mp3';
 import menu_music from '../../assets/sounds/music/menu-music.mp3';
+import teclado_attk from '../../assets/sounds/fx/teclado-attk.mp3';
+import bajo_attk from '../../assets/sounds/fx/bajo-attk.mp3';
+import drum_attk from '../../assets/sounds/fx/drum-attk.mp3';
 
 
 /**
@@ -77,6 +86,12 @@ export default class Boot extends Phaser.Scene {
     this.load.image('selectionPick', selectionPick);
     this.load.image('guitarSprite', guitarSprite);
     this.load.image('drumSticks', drumSticks);
+    this.load.image('guitar-icon', guitarIcon);
+    this.load.image('drum-icon', drumIcon);
+    this.load.image('bass-sprite', bassSprite);
+    this.load.image('bass-icon', bassIcon);
+    this.load.image('weapon-selected', weaponSelected);
+    this.load.image('weapon-unselected', weaponUnselected);
     this.load.image('city_tiles',city_tileset);
     this.load.image('death',deathScreen);
     this.load.tilemapTiledJSON('map',city_json);
@@ -110,6 +125,9 @@ export default class Boot extends Phaser.Scene {
     this.load.audio('enemy_hurt', enemy_hurt_fx);
     this.load.audio('menu_music', menu_music);
     this.load.audio('get_hit', get_hit);
+    this.load.audio('teclado_attk', teclado_attk);
+    this.load.audio('bajo_attk', bajo_attk);
+    this.load.audio('drum_attk', drum_attk);
 
     this.soundManager = new SoundManager(this);
     this.soundManager.addSounds({

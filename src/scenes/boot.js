@@ -29,9 +29,7 @@ import weaponUnselected from '../../assets/sprites/weapons/unselected-frame.png'
 import cooldownResetVisualCueSheet from '../../assets/animations/laude/CooldownResetVisualCue-Sheet.png'
 import cooldownResetVisualCueJSON from '../../assets/animations/laude/CooldownResetVisualCue.json'
 
-
 import deathScreen from '../../assets/sprites/title-screen/death-screen.png'
-
 import enemyIdle from '../../assets/animations/basic-enemy/Idle.png'
 import enemyIdleJSON from '../../assets/animations/basic-enemy/enemy_idle_atlas.json'
 import enemyWalk from '../../assets/animations/basic-enemy/move.png'
@@ -40,7 +38,6 @@ import enemyHit from '../../assets/animations/basic-enemy/enemy_hit.png'
 import enemyHitJSON from '../../assets/animations/basic-enemy/enemy_hit_atlas.json'
 import enemyDie from '../../assets/animations/basic-enemy/enemy_die.png'
 import enemyDieJSON from '../../assets/animations/basic-enemy/enemy_die_atlas.json'
-
 import HUDhealthBorder from '../../assets/animations/hud/health-bar/border.png'
 import HUDhealthBar from '../../assets/animations/hud/health-bar/bar.png'
 import roundNumbers from '../../assets/sprites/round-numbers/numbers.png'
@@ -115,14 +112,11 @@ export default class Boot extends Phaser.Scene {
     this.load.atlas('laude_drum', laudeDrumSpriteSheet, laudeAtlas);
     this.load.atlas('laude_bass', laudeBassSpritesheet, laudeBassAtlas);
     this.load.atlas('cooldownResetVisualCue', cooldownResetVisualCueSheet, cooldownResetVisualCueJSON);
-
     this.cache.json.add('data', data);
-
     this.load.atlas('enemy_idle', enemyIdle, enemyIdleJSON);
     this.load.atlas('enemy_walk', enemyWalk, enemyWalkJSON);
     this.load.atlas('enemy_hit', enemyHit, enemyHitJSON);
     this.load.atlas('enemy_die', enemyDie, enemyDieJSON);
-
     this.load.image('hud_health_border', HUDhealthBorder);
     this.load.image('hud_health_bar', HUDhealthBar);
     this.load.spritesheet('round_numbers', roundNumbers, { frameWidth: 24, frameHeight: 32 });

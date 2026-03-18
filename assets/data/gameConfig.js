@@ -8,6 +8,9 @@ const gameConfig = {
     attackRange: 80,
     attackRadius: 20,
     attackCooldown: 1000,
+    canAttack: true,
+    hasDamaged: false,
+    is_knockback: false,
     },
 
     playerBaseStats: {
@@ -20,20 +23,26 @@ const gameConfig = {
     dashCooldown: 1000,
     },
 
+    // This tells the pool for the wave manager which enemies to keep track of
+    poolData: [
+        {shadow: [] },
+        {redVelvet: [] },
+    ],
+
     waves: [
         {
         waveNumber: 1,
-        enemies: [{ type: "basic", count: 1, spawnDelay: 2000 }],
+        enemies: [{ type: "shadow", count: 1, spawnDelay: 2000 }],
         delay: 3000,
         },
         {
         waveNumber: 2,
-        enemies: [{ type: "basic", count: 3, spawnDelay: 3000 }],
+        enemies: [{ type: "shadow", count: 3, spawnDelay: 3000 }],
         delay: 5000,
         },
         {
         waveNumber: 3,
-        enemies: [{ type: "basic", count: 100, spawnDelay: 500 }],
+        enemies: [{ type: "shadow", count: 100, spawnDelay: 500 }],
         delay: 5000,
         },
     ],

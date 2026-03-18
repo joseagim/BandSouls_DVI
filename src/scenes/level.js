@@ -47,6 +47,8 @@ export default class Level extends Phaser.Scene {
 
         this.scene.launch('hud');
 
+        const enemyPoolsData = this.cache.json.get('data').poolData;
+        
         this.spawner = new Spawner(this);
 
         this.waveManager = new WaveManager(this, this.spawner);

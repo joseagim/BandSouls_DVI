@@ -98,22 +98,26 @@ export default class HUD extends Phaser.Scene {
         this._itemPanelElements = [];
         this._currentPanelItemId = null;
         this._currentPanelCanAfford = null;
+        this._currentPanelIsPurchased = null;
+        this.trinketIcons = [];
 
         // Escuchar eventos del shop para mostrar/ocultar panel
         const shopScene = this.scene.get('shop');
         if (shopScene) {
-            shopScene.events.on('showShopItem', (item, canAfford) => {
-                // Solo recrear el panel si cambió el item o la affordability
-                if (this._currentPanelItemId !== item.id || this._currentPanelCanAfford !== canAfford) {
-                    this._showItemPanel(item, canAfford);
+            shopScene.events.on('showShopItem', (item, canAfford, isPurchased) => {
+                // Solo recrear el panel si cambió el item o la affordability o isPurchased
+                if (this._currentPanelItemId !== item.id || this._currentPanelCanAfford !== canAfford || this._currentPanelIsPurchased !== isPurchased) {
+                    this._showItemPanel(item, canAfford, isPurchased);
                     this._currentPanelItemId = item.id;
                     this._currentPanelCanAfford = canAfford;
+                    this._currentPanelIsPurchased = isPurchased;
                 }
             });
             shopScene.events.on('hideShopItem', () => {
                 this._hideItemPanel();
                 this._currentPanelItemId = null;
                 this._currentPanelCanAfford = null;
+                this._currentPanelIsPurchased = null;
             });
 
             // Escuchar updateHealth del shop player también
@@ -129,15 +133,51 @@ export default class HUD extends Phaser.Scene {
             this.waitingNextWave.setVisible(false);
         }
 
+        // Render trinkets
+        this._updateTrinketsDisplay(this.registry.get('trinkets') || []);
+        this.registry.events.on('changedata-trinkets', (_parent, values) => {
+            this._updateTrinketsDisplay(values);
+        });
+
         this.events.emit('hud-ready');
+    }
+
+    _updateTrinketsDisplay(trinkets) {
+        this.trinketIcons.forEach(icon => icon.destroy());
+        this.trinketIcons = [];
+
+        if (!trinkets || trinkets.length === 0) return;
+
+        const startX = 20;
+        const startY = 125;
+        const iconSize = 40;
+        const gap = 5;
+        const maxPerRow = 5;
+
+        trinkets.forEach((t, i) => {
+            if (!t.image) return;
+            const row = Math.floor(i / maxPerRow);
+            const col = i % maxPerRow;
+            const x = startX + col * (iconSize + gap);
+            const y = startY + row * (iconSize + gap);
+
+            const icon = this.add.image(x, y, t.image)
+                .setOrigin(0, 0)
+                .setDisplaySize(iconSize, iconSize)
+                .setAlpha(0.6)
+                .setScrollFactor(0);
+
+            this.trinketIcons.push(icon);
+        });
     }
 
     /**
      * Muestra el panel de info de un item de la tienda.
      * @param {Item} item
      * @param {boolean} canAfford
+     * @param {boolean} isPurchased
      */
-    _showItemPanel(item, canAfford) {
+    _showItemPanel(item, canAfford, isPurchased) {
         // Limpiar panel anterior
         this._hideItemPanel();
 
@@ -205,8 +245,15 @@ export default class HUD extends Phaser.Scene {
         currentY += 20;
 
         // Precio (blanco si se puede comprar, rojo si no)
-        const priceColor = canAfford ? '#ffffff' : '#ff0000';
-        const priceText = this.add.text(contentX, currentY, `Score needed: ${item.price}`, {
+        let priceTextContent = `Score: ${item.price}`;
+        let priceColor = canAfford ? '#ffffff' : '#ff0000';
+
+        if (isPurchased) {
+            priceTextContent = 'Already purchased';
+            priceColor = '#aaaaaa';
+        }
+
+        const priceText = this.add.text(contentX, currentY, priceTextContent, {
             fontSize: '18px',
             fill: priceColor,
             fontFamily: '"System-ui", Courier, monospace',
@@ -215,7 +262,7 @@ export default class HUD extends Phaser.Scene {
         this._itemPanelElements.push(priceText);
 
         // Texto de instrucción para comprar
-        if (canAfford) {
+        if (canAfford && !isPurchased) {
             const buyHint = this.add.text(contentX, currentY + priceText.height + 4, '[E] Buy', {
                 fontSize: '12px',
                 fill: '#aaaaaa',

@@ -113,7 +113,6 @@ export default class Shop extends Phaser.Scene {
 
         for (let i = 0; i < this.pillarStates.length; i++) {
             const state = this.pillarStates[i];
-            if (state.purchased) continue;
 
             const dist = Phaser.Math.Distance.Between(
                 this.player.x, this.player.y,
@@ -132,7 +131,9 @@ export default class Shop extends Phaser.Scene {
                 const state = this.pillarStates[closestIndex];
                 const currentScore = this.registry.get('score') || 0;
                 const canAfford = currentScore >= state.item.price;
-                this.events.emit('showShopItem', state.item, canAfford);
+                const savedTrinkets = this.registry.get('trinkets') || [];
+                const isPurchased = state.purchased || savedTrinkets.some(t => t.id === state.item.id);
+                this.events.emit('showShopItem', state.item, canAfford, isPurchased);
             } else {
                 this.events.emit('hideShopItem');
             }
@@ -144,8 +145,11 @@ export default class Shop extends Phaser.Scene {
             const state = this.pillarStates[closestIndex];
             const currentScore = this.registry.get('score') || 0;
             const canAfford = currentScore >= state.item.price;
+            const savedTrinkets = this.registry.get('trinkets') || [];
+            const isPurchased = state.purchased || savedTrinkets.some(t => t.id === state.item.id);
 
-            this.events.emit('showShopItem', state.item, canAfford);
+            // Emitimos eventos continuamente si canAfford o isPurchased cambia (aunque hud.js filtra)
+            this.events.emit('showShopItem', state.item, canAfford, isPurchased);
         }
 
         const distToPortal = Phaser.Math.Distance.Between(
@@ -158,8 +162,10 @@ export default class Shop extends Phaser.Scene {
             if (this.activePillarIndex >= 0) {
                 const state = this.pillarStates[this.activePillarIndex];
                 const currentScore = this.registry.get('score') || 0;
+                const savedTrinkets = this.registry.get('trinkets') || [];
+                const isPurchased = state.purchased || savedTrinkets.some(t => t.id === state.item.id);
 
-                if (currentScore >= state.item.price && !state.purchased) {
+                if (currentScore >= state.item.price && !isPurchased) {
 
                     const newScore = currentScore - state.item.price;
                     this.registry.set('score', newScore);
@@ -170,13 +176,8 @@ export default class Shop extends Phaser.Scene {
 
                     this.player.addTrinket(state.item);
 
-                    if (state.sprite) {
-                        state.sprite.destroy();
-                        state.sprite = null;
-                    }
-
-                    this.events.emit('hideShopItem');
-                    this.activePillarIndex = -1;
+                    // Refrescar el panel visual actual
+                    this.events.emit('showShopItem', state.item, newScore >= state.item.price, true);
                 }
             }
         }

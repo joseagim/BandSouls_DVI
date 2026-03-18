@@ -140,7 +140,6 @@ export default class Player extends actor {
         item.purchased = true;
         this.trinket.push(item);
 
-        // Guardar en el registro para persistencia entre escenas
         const savedTrinkets = this.scene.registry.get('trinkets') || [];
         savedTrinkets.push({
             id: item.id,
@@ -149,7 +148,8 @@ export default class Player extends actor {
             buffs: item.buffs,
             debuffs: item.debuffs,
             price: item.price,
-            weight: item.weight
+            weight: item.weight,
+            image: item.image
         });
         this.scene.registry.set('trinkets', savedTrinkets);
 

@@ -245,11 +245,11 @@ export default class HUD extends Phaser.Scene {
         currentY += 20;
 
         // Precio (blanco si se puede comprar, rojo si no)
-        let priceTextContent = `Score: ${item.price}`;
+        let priceTextContent = `Puntos: ${item.price}`;
         let priceColor = canAfford ? '#ffffff' : '#ff0000';
 
         if (isPurchased) {
-            priceTextContent = 'Already purchased';
+            priceTextContent = 'objeto equipado';
             priceColor = '#aaaaaa';
         }
 

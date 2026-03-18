@@ -61,34 +61,32 @@ class SoundManager {
     /**
      * Reproducir un sonido
      */
-    play(key, config = {}) {
-        if (this.muted) return null;
+   play(key, config = {}) {
+    if (this.muted) return null;
 
-        const soundConfig = this.sounds[key];
-        if (!soundConfig) {
-            console.warn(`Sonido "${key}" no encontrado`);
-            return null;
-        }
+    const soundConfig = this.sounds[key];
+    if (!soundConfig) {
+        console.warn(`Sonido "${key}" no encontrado`);
+        return null;
+    }
 
-        // Mezclar configuración base con la configuración específica
-        const playConfig = {
-            ...soundConfig,
-            ...config,
-            volume: this.calculateVolume(soundConfig.category, config.volume || soundConfig.volume)
-        };
+    // Mezclar configuración base con la configuración específica
+    const playConfig = {
+        ...soundConfig,
+        ...config,
+        volume: this.calculateVolume(soundConfig.category, config.volume || soundConfig.volume)
+    };
 
-        // Si el sonido ya está sonando y no debe superponerse
-        if (playConfig.restrict && this.isPlaying(key)) {
-            return null;
-        }
+    // IMPORTANTE: Verificar si el audio existe en la caché
+    if (!this.scene.cache.audio.exists(key)) {
+        console.warn(`Audio "${key}" no está cargado en la caché`);
+        return null;
+    }
 
-        // LÓGICA PARA EVITAR DUPLICADOS (Especialmente para caminar/bucles)
-        let sound = this.scene.sound.get(key);
+    // Crear el sonido directamente - NO usar this.scene.sound.get(key)
+    try {
+        const sound = this.scene.sound.add(key, playConfig);
         
-        if (!sound) {
-            sound = this.scene.sound.add(key, playConfig);
-        }
-
         if (!sound.isPlaying) {
             sound.play(playConfig);
         }
@@ -100,8 +98,11 @@ class SoundManager {
         }
 
         return sound;
+    } catch (error) {
+        console.error(`Error reproduciendo sonido "${key}":`, error);
+        return null;
     }
-
+}
     /**
      * Calcular volumen basado en categorías
      */
@@ -219,13 +220,14 @@ class SoundManager {
      * Detener un sonido específico
      */
     stop(key) {
-        
-        const sound = this.scene.sound.get(key);
-        if (sound) {
-            console.log(`Stopping sound: ${key}`);
+    // Detener todos los sonidos con esta key
+    const sounds = this.scene.sound.getAllPlaying();
+    sounds.forEach(sound => {
+        if (sound.key === key) {
             sound.stop();
         }
-    }
+    });
+}
 
     /**
      * Detener todos los sonidos

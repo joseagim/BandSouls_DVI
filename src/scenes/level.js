@@ -22,6 +22,7 @@ export default class Level extends Phaser.Scene {
      */
     constructor(key_nombre) {
         super({ key: key_nombre });
+        this.gettin_hit = false;
     }
 
     /**
@@ -38,7 +39,7 @@ export default class Level extends Phaser.Scene {
             'enemy_hurt': { key: 'enemy_hurt' },
             'get_hit': { key: 'get_hit' },
             'teclado_attk': { key: 'teclado_attk', volume: 0.5 },
-            'bajo_attk': { key: 'bajo_attk', volume: 0.5 },
+            'bajo_attk': { key: 'bajo_attk', volume: 100000 },
             'drum_attk': { key: 'drum_attk', volume: 0.5 }
         })
         const playerStats = this.cache.json.get('data').playerBaseStats;
@@ -53,7 +54,11 @@ export default class Level extends Phaser.Scene {
 
         this.physics.add.overlap(this.player, this.spawner.pool, function(player,enemy){
             if (enemy.active && !player.invincible){
-                this.soundManager.play('get_hit');
+                if(!this.gettin_hit) {
+                    this.soundManager.play('get_hit');
+                    this.gettin_hit = true;
+                    this.time.delayedCall(500, () => { this.gettin_hit = false; }, [], this);
+                }
                 enemy.attack(player);
             }
         }, null, this);

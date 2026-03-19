@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import Enemy from './shadowEnemy';
+import ShadowEnemy from './shadowEnemy';
 
 export default class EnemyFactory {
     constructor(scene, enemyStats) {
@@ -7,7 +7,7 @@ export default class EnemyFactory {
         this.enemyStats = enemyStats;
         console.log("enemyStats:", enemyStats);
         this.factory = {
-            'shadow': (stats) => {return new Enemy(this.scene, 0, 0, stats)}
+            'shadow': (stats) => {return new ShadowEnemy(this.scene, 0, 0, stats)}
         };
     }
 

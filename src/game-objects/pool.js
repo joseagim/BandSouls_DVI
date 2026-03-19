@@ -1,16 +1,12 @@
 import Phaser from 'phaser';
-import Enemy from './shadowEnemy';
+import ShadowEnemy from './shadowEnemy';
 
 export default class Pool {
     constructor(scene, poolsData, factory) {
         this.scene = scene;
         
         this.factory = factory;
-        this.physicsGroup = this.scene.physics.add.group(
-        {
-            classType: Enemy,
-            runChildUpdate: true
-        })
+        this.physicsGroup = this.scene.physics.add.group( {runChildUpdate: true })
 
         this.active = {};
         this.inactive = {};

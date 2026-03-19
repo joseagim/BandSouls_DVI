@@ -15,7 +15,9 @@ export default class Pool {
         this.active = {};
         this.inactive = {};
         // we need to deepcopy to avoid shared references, ask me how I know
-        for (const type in poolsData) {
+        for (const entry of poolsData) {
+            const type = Object.keys(entry)[0];
+
             this.active[type] = [];
             this.inactive[type] = [];
         }
@@ -28,16 +30,17 @@ export default class Pool {
     * or, in case there are none, creates one and returns it
     */
     spawnInactive(type) {
+        if (!Object.hasOwn(this.inactive, type)) return;
+
         let element;
 
         if (this.inactive[type].length == 0) {
-            element = this.factory.createelement(type);
+            element = this.factory.createElement(type);
             this.physicsGroup.add(element);
         } 
         else {
             element = this.inactive[type].pop();
         }
-        let sa = [];
         element.spawn();
         this.active[type].push(element);
 
@@ -50,7 +53,8 @@ export default class Pool {
     * pool this method does nothing
     */
    deactivate(element) {
-        let elementidx = this.active[element.tag].findIndex(element);
+        let elementidx = this.active[element.tag].findIndex(e => e === element);
+        if (elementidx == -1) return;
         this.inactive[element.tag].push(this.active[element.tag].splice(elementidx, 1)[0]);
    }
 }

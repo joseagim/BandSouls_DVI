@@ -5,10 +5,13 @@ export default class EnemyFactory {
     constructor(scene, enemyStats) {
         this.scene = scene;
         this.enemyStats = enemyStats;
-        this.factory = {'shadow': (scene, stats) => {new Enemy(scene, 0, 0, stats)}}
+        console.log("enemyStats:", enemyStats);
+        this.factory = {
+            'shadow': (stats) => {return new Enemy(this.scene, 0, 0, stats)}
+        };
     }
 
-    createEnemy(type) {
-        return this.factory[type](this.scene, this.enemyStats[type]);
+    createElement(type) {
+        return this.factory[type](this.enemyStats[type]);
     }
 }

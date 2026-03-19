@@ -7,7 +7,7 @@ export default class Spawner {
     constructor(scene, poolsData, enemyStats) {
         this.scene = scene;
 
-        this.pool = new Pool(this.scene, poolsData, new EnemyFactory(enemyStats));
+        this.pool = new Pool(this.scene, poolsData, new EnemyFactory(this.scene, enemyStats));
 
         this.shadowStats = this.scene.cache.json.get('data').shadowBaseStats;
     }
@@ -21,6 +21,10 @@ export default class Spawner {
         }
 
         return null;
+    }
+
+    PhysicsGroup() {
+        return this.pool.physicsGroup;
     }
 
     spawnMultiple(config) {

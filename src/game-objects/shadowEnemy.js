@@ -12,21 +12,17 @@ export default class Enemy extends actor {
      * @param {number} x Coordenada X
      * @param {number} y Coordenada Y
      */
-    constructor(scene, x, y) {
-        super(scene, x, y, 'shadow', {   life        : 20,
-                                        speed       : 100,
-                                        defenseMod  : 1, 
-                                        attackMod   : 1   
-        });
+    constructor(scene, x, y, stats) {
+        super(scene, x, y, 'shadow', stats);
 
         // Estadísticas propias del enemigo
-        this.attackDamage = 10;
-        this.attackRange = 80;
-        this.attackRadius = 20;
-        this.attackCooldown = 1000;
-        this.canAttack = true;
-        this.hasDamaged = false
-        this.is_knockback = false;
+        this.attackDamage = stats.attackDamage;
+        this.attackRange = stats.attackRange;
+        this.attackRadius = stats.attackRadius;
+        this.attackCooldown = stats.attackCooldown;
+        this.canAttack = stats.canAttack;
+        this.hasDamaged = stats.hasDamaged;
+        this.is_knockback = stats.is_knockback;
 
         // Animaciones
         this.scene.anims.create({

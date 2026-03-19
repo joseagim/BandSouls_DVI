@@ -55,7 +55,7 @@ export default class Level extends Phaser.Scene {
         this.waveManager = new WaveManager(this, this.spawner);
         this.scene.get('hud').events.once('hud-ready', () => this.waveManager.startNextWave());
 
-        this.physics.add.overlap(this.player, this.spawner.pool, function(player,enemy){
+        this.physics.add.overlap(this.player, this.spawner.PhysicsGroup(), function(player,enemy){
             if (enemy.active && !player.invincible){
                 if(!this.gettin_hit) {
                     this.soundManager.play('get_hit');
@@ -74,7 +74,7 @@ export default class Level extends Phaser.Scene {
 
     setWeaponCollision(weapon) {
         for (let hurtBox of weapon.getHurtboxes()) {
-            this.physics.add.overlap(hurtBox, this.spawner.pool, (hurtbox, enemy) => {
+            this.physics.add.overlap(hurtBox, this.spawner.PhysicsGroup(), (hurtbox, enemy) => {
                 if (!enemy.invincible) {
                     this.soundManager.playWithPitch('enemy_hurt');
                     weapon.attack(enemy, this.player.attackMod, hurtbox);

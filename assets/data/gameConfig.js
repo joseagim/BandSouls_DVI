@@ -1,6 +1,6 @@
 const gameConfig = {
     enemyStats: {
-        shadowStats: {
+        shadow: {
             life: 20,
             speed: 100,
             defenseMod: 1,
@@ -14,7 +14,7 @@ const gameConfig = {
             is_knockback: false,
         },
 
-        redVelvetStats: {
+        redVelvet: {
             life: 500,
             speed: 20,
             defenseMod: 1,

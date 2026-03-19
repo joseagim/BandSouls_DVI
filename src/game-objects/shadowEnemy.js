@@ -72,46 +72,12 @@ export default class ShadowEnemy extends Enemy {
     }
 
     spawn(x, y) {
-        this.isDead = false;
-        this.setActive(true);
-        this.setVisible(true);
-        this.setPosition(x, y);
-        this.body.enable = true;
-
-        if (this.body) {
-            this.body.enable = true;
-            this.body.checkCollision.none = false; 
-        }
-
-        this.life = this.maxHP;
+        super.spawn(x, y);
         this.setTexture('enemy_walk');
-
-        // Resetear pathfinding
-        this.currentPath = null;
-        this.pathIndex = 0;
-        this.pathfindingCooldown = false;
-        this._lastPos = { x: this.body.center.x, y: this.body.center.y };
-        this._stuckTimer = 0;
     }
 
     die() {
-        if(this.isDead) return;
-        this.isDead = true;
-
-        if (this.body) {
-            this.body.checkCollision.none = true;
-            this.body.stop(); // Detenemos movimiento errático
-        }
-
-        const angle = Phaser.Math.Angle.Between(this.scene.player.x, this.scene.player.y, this.x, this.y);
-        const knockbackForce = 100;
-
-       // console.log("La velocidad aqui es %d %d",Math.cos(angle) * knockbackForce,Math.sin(angle) * knockbackForce);
-        this.body.setVelocityX(Math.cos(angle) * knockbackForce);
-          
-        this.body.setVelocityY(Math.sin(angle) * knockbackForce);
-        //this.body.stop();
-        this.is_knockback = false;
+        super.die();
         this.setTexture('enemy_die');
         this.play('enemy_die');
         //this.body.enable = false;

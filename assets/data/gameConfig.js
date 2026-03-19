@@ -57,11 +57,6 @@ const gameConfig = {
         enemies: [{ type: "shadow", count: 3, spawnDelay: 3000 }],
         delay: 5000,
         },
-        {
-        waveNumber: 3,
-        enemies: [{ type: "shadow", count: 100, spawnDelay: 500 }],
-        delay: 5000,
-        },
     ],
 
     //...

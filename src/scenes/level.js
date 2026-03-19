@@ -23,6 +23,7 @@ export default class Level extends Phaser.Scene {
     constructor(key_nombre) {
         super({ key: key_nombre });
         this.gettin_hit = false;
+        this.enemy_hurt
     }
 
     /**
@@ -40,7 +41,8 @@ export default class Level extends Phaser.Scene {
             'get_hit': { key: 'get_hit' },
             'teclado_attk': { key: 'teclado_attk', volume: 0.5 },
             'bajo_attk': { key: 'bajo_attk', volume: 100000 },
-            'drum_attk': { key: 'drum_attk', volume: 0.5 }
+            'drum_attk': { key: 'drum_attk', volume: 0.5 },
+            'level1_music': { key: 'level1_music', loop: true, volume: 0.7, category: 'music' }
         })
         const playerStats = this.cache.json.get('data').playerBaseStats;
         this.player = new Player(this, 400, 400, playerStats);
@@ -57,11 +59,13 @@ export default class Level extends Phaser.Scene {
                 if(!this.gettin_hit) {
                     this.soundManager.play('get_hit');
                     this.gettin_hit = true;
-                    this.time.delayedCall(500, () => { this.gettin_hit = false; }, [], this);
+                    this.time.delayedCall(1000, () => { this.gettin_hit = false; }, [], this);
                 }
                 enemy.attack(player);
             }
         }, null, this);
+
+        this.cameras.main.setZoom(1); // Ventana de visualización
 
         this.setWeaponCollision(this.player.guitar);
         this.setWeaponCollision(this.player.bajo);
@@ -73,7 +77,12 @@ export default class Level extends Phaser.Scene {
         for (let hurtBox of weapon.getHurtboxes()) {
             this.physics.add.overlap(hurtBox, this.spawner.pool, (hurtbox, enemy) => {
                 if (!enemy.invincible) {
-                    this.soundManager.playWithPitch('enemy_hurt');
+                    if(!this.enemy_hurt) {
+                        this.soundManager.play('enemy_hurt');
+                        this.enemy_hurt = true;
+                        this.time.delayedCall(500, () => { this.enemy_hurt = false; }, [], this);
+                    }
+                    //this.soundManager.playWithPitch('enemy_hurt');
                     weapon.attack(enemy, this.player.attackMod, hurtbox);
                     if (enemy.life <= 0) {
                         this.waveManager.enemyDies();

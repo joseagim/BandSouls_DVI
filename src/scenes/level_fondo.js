@@ -27,6 +27,8 @@ export default class Level_Fondo extends Level {
      */
     create() {
         //this.stars = 10;
+
+
         var map = this.make.tilemap({ key: 'map' });
         var tiles = map.addTilesetImage('city_tileset', 'city_tiles');
 
@@ -45,6 +47,7 @@ export default class Level_Fondo extends Level {
 
         super.create();
 
+        this.soundManager.play('level1_music');
 
         this.physics.add.collider(this.player, layer_edif);
         this.physics.add.collider(this.player, layer_deco);
@@ -80,7 +83,6 @@ export default class Level_Fondo extends Level {
 
         // Configurar cámara
         this.cameras.main.setBounds(0, 0, 1280, 720);
-        this.cameras.main.setZoom(1); // Ventana de visualización
         this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
 
         // Opcional: agregar bordes para visualizar la cámara

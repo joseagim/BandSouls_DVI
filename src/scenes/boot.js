@@ -71,10 +71,13 @@ import dash from '../../assets/sounds/fx/dash.mp3';
 import guitar_attk from '../../assets/sounds/fx/guitar-attk.mp3';
 import get_hit from '../../assets/sounds/fx/get-hit.mp3';
 import enemy_hurt_fx from '../../assets/sounds/fx/enemy_hurt.mp3';
-import menu_music from '../../assets/sounds/music/menu-music.mp3';
 import teclado_attk from '../../assets/sounds/fx/teclado-attk.mp3';
 import bajo_attk from '../../assets/sounds/fx/bajo-attk.mp3';
 import drum_attk from '../../assets/sounds/fx/drum-attk.mp3';
+
+//musica
+import menu_music from '../../assets/sounds/music/menu-music.mp3';
+import level1_music from '../../assets/sounds/music/level1-music.mp3';
 
 
 /**
@@ -161,6 +164,7 @@ export default class Boot extends Phaser.Scene {
     this.load.audio('teclado_attk', teclado_attk);
     this.load.audio('bajo_attk', bajo_attk);
     this.load.audio('drum_attk', drum_attk);
+    this.load.audio('level1_music', level1_music);
 
     this.soundManager = new SoundManager(this);
     this.soundManager.addSounds({
@@ -252,7 +256,7 @@ export default class Boot extends Phaser.Scene {
       if (this.activeOption == this.startText) {
         this.soundManager.fadeOutMusic(500);
         this.time.delayedCall(500, () => {
-          this.scene.start('level_2'); //esto deberia ser level_fondo, DEBUG de mati
+          this.scene.start('level_fondo'); 
         });
       } else if (this.activeOption == this.optionsText) {
         alert("se mostraria menu de opciones: audio, brillo, etc...")

@@ -97,7 +97,7 @@ export default class Enemy extends actor {
 
     playHit() {
         if (this.life <= 0) return;
-        this.play('enemy_hit', true);
+        //this.play('enemy_hit', true);
     }
 
     knockback() {
@@ -132,7 +132,7 @@ export default class Enemy extends actor {
             this._moveWithPathfinding(dt);
         } else {
             this.scene.physics.moveToObject(this, this.scene.player, this.speed);
-            this.play('enemy_walk', true);
+            //this.play('enemy_walk', true);
         }
     }
 
@@ -208,7 +208,7 @@ export default class Enemy extends actor {
             this.scene.physics.moveToObject(this, this.scene.player, this.speed);
         }
 
-        this.play('enemy_walk', true);
+        //this.play('enemy_walk', true);
     }
 
 }

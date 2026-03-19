@@ -30,6 +30,7 @@ import cooldownResetVisualCueSheet from '../../assets/animations/laude/CooldownR
 import cooldownResetVisualCueJSON from '../../assets/animations/laude/CooldownResetVisualCue.json'
 
 import deathScreen from '../../assets/sprites/title-screen/death-screen.png'
+
 import enemyIdle from '../../assets/animations/basic-enemy/Idle.png'
 import enemyIdleJSON from '../../assets/animations/basic-enemy/enemy_idle_atlas.json'
 import enemyWalk from '../../assets/animations/basic-enemy/move.png'
@@ -38,6 +39,10 @@ import enemyHit from '../../assets/animations/basic-enemy/enemy_hit.png'
 import enemyHitJSON from '../../assets/animations/basic-enemy/enemy_hit_atlas.json'
 import enemyDie from '../../assets/animations/basic-enemy/enemy_die.png'
 import enemyDieJSON from '../../assets/animations/basic-enemy/enemy_die_atlas.json'
+
+import redVelvetWalk from '../../assets/animations/redVelvet/redVelvetWalking-Sheet.png'
+import redVelvetWalkJSON from '../../assets/animations/redVelvet/redVelvetWalking.json'
+
 import HUDhealthBorder from '../../assets/animations/hud/health-bar/border.png'
 import HUDhealthBar from '../../assets/animations/hud/health-bar/bar.png'
 import roundNumbers from '../../assets/sprites/round-numbers/numbers.png'
@@ -115,6 +120,8 @@ export default class Boot extends Phaser.Scene {
     this.load.image('weapon-selected', weaponSelected);
     this.load.image('weapon-unselected', weaponUnselected);
 
+    console.log(typeof enemyIdleJSON); // "string" or "object"
+    console.log(typeof redVelvetWalkJSON);
     this.load.image('death',deathScreen);
     this.load.tilemapTiledJSON('map',city_json);
     this.load.image('city_tiles', city_tileset);
@@ -139,10 +146,14 @@ export default class Boot extends Phaser.Scene {
     this.load.atlas('cooldownResetVisualCue', cooldownResetVisualCueSheet, cooldownResetVisualCueJSON);
     this.cache.json.add('data', data);
     this.cache.json.add('items', itemsData);
+
     this.load.atlas('enemy_idle', enemyIdle, enemyIdleJSON);
     this.load.atlas('enemy_walk', enemyWalk, enemyWalkJSON);
     this.load.atlas('enemy_hit', enemyHit, enemyHitJSON);
     this.load.atlas('enemy_die', enemyDie, enemyDieJSON);
+
+    this.load.atlas('redVelvet_walk', redVelvetWalk, redVelvetWalkJSON);
+
     this.load.image('hud_health_border', HUDhealthBorder);
     this.load.image('hud_health_bar', HUDhealthBar);
     this.load.spritesheet('round_numbers', roundNumbers, { frameWidth: 24, frameHeight: 32 });

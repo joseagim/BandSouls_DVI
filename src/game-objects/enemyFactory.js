@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import ShadowEnemy from './shadowEnemy';
+import RedVelvetEnemy from './redVelvetEnemy';
 
 export default class EnemyFactory {
     constructor(scene, enemyStats) {
@@ -7,7 +8,8 @@ export default class EnemyFactory {
         this.enemyStats = enemyStats;
         console.log("enemyStats:", enemyStats);
         this.factory = {
-            'shadow': (stats) => {return new ShadowEnemy(this.scene, 0, 0, stats)}
+            'shadow': (stats) => {return new ShadowEnemy(this.scene, 0, 0, stats)},
+            'redVelvet': (stats) => {return new RedVelvetEnemy(this.scene, 0, 0, stats)},
         };
     }
 

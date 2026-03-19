@@ -49,7 +49,7 @@ const gameConfig = {
     waves: [
         {
         waveNumber: 1,
-        enemies: [{ type: "shadow", count: 1, spawnDelay: 2000 }],
+        enemies: [{ type: "shadow", count: 1, spawnDelay: 2000 }, { type: "redVelvet", count: 1, spawnDelay: 2000 }],
         delay: 3000,
         },
         {

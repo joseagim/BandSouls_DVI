@@ -42,7 +42,6 @@ export default class Level_Fondo extends Level {
         layer_deco.setCollisionByExclusion([-1], true);
         layer_obj.setCollisionByExclusion([-1], true);
 
-
         this.bases = this.add.group();
 
         super.create();

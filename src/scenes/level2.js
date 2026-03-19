@@ -47,7 +47,7 @@ export default class Level_Fondo extends Level {
                 
         this.physics.add.collider(this.player,layer_objetos);
 
-        this.physics.add.collider(this.spawner.pool,layer_objetos);
+        this.physics.add.collider(this.spawner.physicsGroup(),layer_objetos);
 
         // Inicializar pathfinding A* con el grid del tilemap
         const gridWidth = map.width;

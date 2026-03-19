@@ -1,21 +1,19 @@
 import Phaser from 'phaser';
 import Enemy from './enemy.js';
+import Pool from './pool.js';
+import EnemyFactory from './enemyFactory.js';
 
 export default class Spawner {
-    constructor(scene) {
+    constructor(scene, poolsData, enemyStats) {
         this.scene = scene;
 
-        this.pool = this.scene.physics.add.group({
-            classType: Enemy,
-            maxSize: -1,
-            runChildUpdate: true
-        })
+        this.pool = new Pool(this.scene, poolsData, new EnemyFactory(enemyStats));
 
         this.shadowStats = this.scene.cache.json.get('data').shadowBaseStats;
     }
 
     spawn(x, y) {
-        const enemy = this.pool.get(x, y);
+        const enemy = this.pool.spawnInactive('shadow');
 
         if (enemy) {
             enemy.spawn(x, y);

@@ -1,16 +1,33 @@
 const gameConfig = {
-    shadowBaseStats: {
-    life: 20,
-    speed: 100,
-    defenseMod: 1,
-    attackMod: 1,
-    attackDamage: 10,
-    attackRange: 80,
-    attackRadius: 20,
-    attackCooldown: 1000,
-    canAttack: true,
-    hasDamaged: false,
-    is_knockback: false,
+    enemyStats: {
+        shadowStats: {
+            life: 20,
+            speed: 100,
+            defenseMod: 1,
+            attackMod: 1,
+            attackDamage: 10,
+            attackRange: 80,
+            attackRadius: 20,
+            attackCooldown: 1000,
+            canAttack: true,
+            hasDamaged: false,
+            is_knockback: false,
+        },
+
+        redVelvetStats: {
+            life: 500,
+            speed: 20,
+            defenseMod: 1,
+            attackMod: 1,
+            attackDamage: 30,
+            attackRange: 80,
+            attackRadius: 20,
+            attackCooldown: 1000,
+            canAttack: true,
+            hasDamaged: false,
+            is_knockback: false,
+        },
+
     },
 
     playerBaseStats: {

@@ -42,12 +42,18 @@ import HUDhealthBorder from '../../assets/animations/hud/health-bar/border.png'
 import HUDhealthBar from '../../assets/animations/hud/health-bar/bar.png'
 import roundNumbers from '../../assets/sprites/round-numbers/numbers.png'
 
+//mapas
 import city_tileset from '../../assets/map/rogueLike_city.png';
 import city_json from '../../assets/map/city_map.json'
 import shop_tileset from '../../assets/map/gj.png'
 import shop_json from '../../assets/map/garajefinal.json'
 import portalSpritesheet from '../../assets/animations/portal/portal-spritesheet.png'
 import portalJSON from '../../assets/animations/portal/portaljson.json'
+import tileset_grassland_grass from '../../assets/map/tileset-grassland-grass.png';
+import tileset_grassland_paths from '../../assets/map/tileset-grassland-paths.png';
+import tileset_grassland_props from '../../assets/map/tileset-grassland-props.png';
+import tileset_grassland_water from '../../assets/map/tileset-grassland-water.png';
+import level2JSON from '../../assets/map/level2.json';
 
 // data
 import data from '../../assets/data/gameConfig';
@@ -105,7 +111,7 @@ export default class Boot extends Phaser.Scene {
     this.load.image('bass-icon', bassIcon);
     this.load.image('weapon-selected', weaponSelected);
     this.load.image('weapon-unselected', weaponUnselected);
-    this.load.image('city_tiles',city_tileset);
+
     this.load.image('death',deathScreen);
     this.load.tilemapTiledJSON('map',city_json);
     this.load.image('city_tiles', city_tileset);
@@ -116,6 +122,7 @@ export default class Boot extends Phaser.Scene {
     this.load.tilemapTiledJSON('shop_map', shop_json);
     this.load.image('death', deathScreen);
     this.load.tilemapTiledJSON('map', city_json);
+
     this.load.image('platform', platform);
     this.load.image('base', base);
     this.load.image('player', player);
@@ -160,6 +167,14 @@ export default class Boot extends Phaser.Scene {
       'menu_music': { key: 'menu_music', loop: true, category: 'music' },
     })
 
+    //mapa
+    this.load.image('city_tiles',city_tileset);
+    this.load.tilemapTiledJSON('map', city_json);
+    this.load.tilemapTiledJSON('level2', level2JSON);
+    this.load.image('tileset_grassland_grass', tileset_grassland_grass);
+    this.load.image('tileset_grassland_paths', tileset_grassland_paths);
+    this.load.image('tileset_grassland_props', tileset_grassland_props);
+    this.load.image('tileset_grassland_water', tileset_grassland_water);
   }
 
   /**
@@ -237,7 +252,7 @@ export default class Boot extends Phaser.Scene {
       if (this.activeOption == this.startText) {
         this.soundManager.fadeOutMusic(500);
         this.time.delayedCall(500, () => {
-          this.scene.start('level_fondo');
+          this.scene.start('level_2'); //esto deberia ser level_fondo, DEBUG de mati
         });
       } else if (this.activeOption == this.optionsText) {
         alert("se mostraria menu de opciones: audio, brillo, etc...")

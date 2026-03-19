@@ -5,6 +5,7 @@ import Level from './scenes/level-ataque-guitar.js';
 import HUD from './scenes/hud.js';
 import Shop from './scenes/shop.js';
 import Level_Fondo from './scenes/level_fondo.js';
+import Level2 from './scenes/level2.js';
 
 /**
  * Inicio del juego en Phaser. Creamos el archivo de configuración del juego y creamos
@@ -22,7 +23,7 @@ let config = {
         autoCenter: Phaser.Scale.CENTER_BOTH
     },
     pixelArt: true,
-    scene: [Boot, Level_Fondo, Shop, End, HUD],
+    scene: [Boot,Level_Fondo, Level2, End, HUD],
     physics: {
         default: 'arcade',
         arcade: {

@@ -61,34 +61,15 @@ export default class GunManager {
     }
 
     _setupUI() {
-        const slotSpacing = 50;
-        const startX = 450;
-        const y = 44;
-
-        this._slots = this.weapons.map((weapon, i) => {
-            const x = startX + i * slotSpacing;
-            const isSelected = i === this.currentIndex;
-
-            const frame = this.scene.add.image(x, y, isSelected ? 'weapon-selected' : 'weapon-unselected')
-                .setScrollFactor(0)
-                .setDepth(100)
-                .setScale(1.3);
-
-            let icon = null;
-            if (this.iconKeys[i]) {
-                icon = this.scene.add.image(x, y, this.iconKeys[i])
-                    .setScrollFactor(0)
-                    .setDepth(101)
-                    .setScale(1.3);
-            }
-
-            return { frame, icon };
+        this.scene.registry.set('weaponSelectorData', {
+            iconKeys: this.iconKeys,
+            currentIndex: this.currentIndex
         });
+        this.scene.events.emit('weaponSelectorInit');
     }
 
     _updateUI() {
-        this._slots.forEach((slot, i) => {
-            slot.frame.setTexture(i === this.currentIndex ? 'weapon-selected' : 'weapon-unselected');
-        });
+        this.scene.registry.set('weaponSelectorIndex', this.currentIndex);
+        this.scene.events.emit('weaponChanged', this.currentIndex);
     }
 }

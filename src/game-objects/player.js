@@ -265,6 +265,7 @@ export default class Player extends actor {
         this.soundManager.play('dash');
         this.isDashing = true;
         this.canDash = false;
+        this.scene.game.events.emit('dashStart', this.dashCooldown);
 
         // velocidad en función del vector dirección del jugador
         this.body.velocity.normalize().scale(this.dashSpeed);
@@ -285,6 +286,7 @@ export default class Player extends actor {
             let dashColor = 0x00ffff;
             this.showCooldownCue(dashColor);
             this.canDash = true;
+            this.scene.game.events.emit('dashReady');
         });
     }
 

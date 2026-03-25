@@ -1,9 +1,5 @@
 import Phaser from 'phaser'
 
-import platform from '../../assets/sprites/platform.png'
-import base from '../../assets/sprites/base.png'
-import player from '../../assets/sprites/player.png'
-import bajo from '../../assets/sprites/bajo.png'
 import titleScreen from '../../assets/sprites/title-screen/lopk.png'
 import laudeSpritesheet from '../../assets/animations/laude/sprite.png'
 import laudeGuitarSpriteSheet from '../../assets/animations/laude/guitar-sprite.png'
@@ -38,9 +34,13 @@ import enemyHit from '../../assets/animations/basic-enemy/enemy_hit.png'
 import enemyHitJSON from '../../assets/animations/basic-enemy/enemy_hit_atlas.json'
 import enemyDie from '../../assets/animations/basic-enemy/enemy_die.png'
 import enemyDieJSON from '../../assets/animations/basic-enemy/enemy_die_atlas.json'
-import HUDhealthBorder from '../../assets/animations/hud/health-bar/border.png'
-import HUDhealthBar from '../../assets/animations/hud/health-bar/bar.png'
-import roundNumbers from '../../assets/sprites/round-numbers/numbers.png'
+import HUDhealthBorder from '../../assets/sprites/hud/health-bar/border.png'
+import HUDhealthBar from '../../assets/sprites/hud/health-bar/bar.png'
+import roundNumbers from '../../assets/sprites/hud/round-numbers.png'
+import dashButton from '../../assets/sprites/hud/buttons/dash-button.png'
+import dashButtonDisabled from '../../assets/sprites/hud/buttons/dash-button-disabled.png'
+import guitarVibeButton from '../../assets/sprites/hud/buttons/guitar-vibe-button.png'
+import guitarVibeButtonDisabled from '../../assets/sprites/hud/buttons/guitar-vibe-button-disabled.png'
 
 //mapas
 import city_tileset from '../../assets/map/rogueLike_city.png';
@@ -115,21 +115,10 @@ export default class Boot extends Phaser.Scene {
     this.load.image('weapon-selected', weaponSelected);
     this.load.image('weapon-unselected', weaponUnselected);
 
-    this.load.image('death',deathScreen);
-    this.load.tilemapTiledJSON('map',city_json);
-    this.load.image('city_tiles', city_tileset);
-    this.load.image('death', deathScreen);
-    this.load.tilemapTiledJSON('map', city_json);
     this.load.image('city_tiles', city_tileset);
     this.load.image('shop_tiles', shop_tileset);
     this.load.tilemapTiledJSON('shop_map', shop_json);
-    this.load.image('death', deathScreen);
-    this.load.tilemapTiledJSON('map', city_json);
 
-    this.load.image('platform', platform);
-    this.load.image('base', base);
-    this.load.image('player', player);
-    this.load.image('bajo', bajo);
     this.load.atlas('optionsSelected', optionsSelected, optionsJSON);
     this.load.atlas('startSelected', startSelected, startJSON);
     this.load.atlas('laude', laudeSpritesheet, laudeAtlas);
@@ -146,6 +135,10 @@ export default class Boot extends Phaser.Scene {
     this.load.image('hud_health_border', HUDhealthBorder);
     this.load.image('hud_health_bar', HUDhealthBar);
     this.load.spritesheet('round_numbers', roundNumbers, { frameWidth: 24, frameHeight: 32 });
+    this.load.image('dash-button', dashButton);
+    this.load.image('dash-button-disabled', dashButtonDisabled);
+    this.load.image('guitar-vibe-button', guitarVibeButton);
+    this.load.image('guitar-vibe-button-disabled', guitarVibeButtonDisabled);
     this.load.atlas('portal', portalSpritesheet, portalJSON);
 
     this.load.image('assets/sprites/items/tubescreamer.png', item_tubescreamer);
@@ -172,7 +165,6 @@ export default class Boot extends Phaser.Scene {
     })
 
     //mapa
-    this.load.image('city_tiles',city_tileset);
     this.load.tilemapTiledJSON('map', city_json);
     this.load.tilemapTiledJSON('level2', level2JSON);
     this.load.image('tileset_grassland_grass', tileset_grassland_grass);

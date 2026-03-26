@@ -31,31 +31,36 @@ const gameConfig = {
     },
 
     playerBaseStats: {
-    life: 100,
-    speed: 150,
-    defenseMod: 1,
-    attackMod: 1,
-    dashSpeed: 2000,
-    dashDuration: 50,
-    dashCooldown: 1000,
+        life: 100,
+        speed: 150,
+        defenseMod: 1,
+        attackMod: 1,
+        dashSpeed: 2000,
+        dashDuration: 50,
+        dashCooldown: 1000,
     },
 
     // This tells the pool for the wave manager which enemies to keep track of
     poolData: [
-        {shadow: [] },
-        {redVelvet: [] },
+        { shadow: [] },
+        { redVelvet: [] },
     ],
 
     waves: [
         {
-        waveNumber: 1,
-        enemies: [{ type: "shadow", count: 1, spawnDelay: 2000 }],
-        delay: 3000,
+            waveNumber: 1,
+            enemies: [{ type: "shadow", count: 1, spawnDelay: 2000 }],
+            delay: 3000,
         },
         {
-        waveNumber: 2,
-        enemies: [{ type: "shadow", count: 3, spawnDelay: 3000 }],
-        delay: 5000,
+            waveNumber: 2,
+            enemies: [{ type: "shadow", count: 3, spawnDelay: 3000 }],
+            delay: 5000,
+        },
+        {
+            waveNumber: 3,
+            enemies: [{ type: "shadow", count: 100, spawnDelay: 2000 }],
+            delay: 3000,
         },
     ],
 

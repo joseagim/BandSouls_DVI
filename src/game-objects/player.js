@@ -4,6 +4,7 @@ import actor from './actor';
 import Guitar from './guitar';
 import Drum from './drum';
 import Bass from './bass';
+import Keyboard from './keyboard';
 import Item from './item';
 import SoundManager from './sound-manager';
 import GunManager from './gun-manager';
@@ -75,10 +76,11 @@ export default class Player extends actor {
                 } else if (this.arma === this.drum) {
                     this.arma.startAttack();
                     this.soundManager.playWithPitch('drum_attk');
+                } else if (this.arma === this.teclado) {
+                    this.arma.startCharge();
+                    this.isAttacking = true;
                 } else {
                     this.soundManager.playWithPitch('guitar_attk');
-
-                    //this.soundManager.playWithPitch('teclado_attk');
                     this.arma.activateWeapon();
                     this.canAttack = false;
                     this.isAttacking = true;
@@ -106,14 +108,16 @@ export default class Player extends actor {
             }
         });
 
-        this.guitar = new Guitar(this.scene, this.x, this.y, this);
-        this.bajo = new Bass(this.scene, this.x, this.y, this);
-        this.drum = new Drum(this.scene, this.x, this.y, this);
+        this.guitar  = new Guitar(this.scene, this.x, this.y, this);
+        this.bajo    = new Bass(this.scene, this.x, this.y, this);
+        this.drum    = new Drum(this.scene, this.x, this.y, this);
+        this.teclado = new Keyboard(this.scene, this.x, this.y, this);
 
         this.gunManager = new GunManager(this.scene, this, [
-            { weapon: this.guitar, iconKey: 'guitar-icon' },
-            { weapon: this.drum,   iconKey: 'drum-icon' },
-            { weapon: this.bajo,   iconKey: 'bass-icon' },
+            { weapon: this.guitar,  iconKey: 'guitar-icon' },
+            { weapon: this.drum,    iconKey: 'drum-icon' },
+            { weapon: this.bajo,    iconKey: 'bass-icon' },
+            { weapon: this.teclado, iconKey: 'drum-icon' },
         ]);
 
         this.soundManager = SoundManager.getInstance(this.scene);
@@ -611,6 +615,68 @@ export default class Player extends actor {
         });
         this.scene.anims.create({
             key: 'run-right-drum',
+            frames: this.anims.generateFrameNames('laude_drum', {
+                prefix: 'run_right_',
+                start: 1,
+                end: 4
+            }),
+            frameRate: 8,
+            repeat: -1
+        });
+
+        // Animaciones teclado
+        this.scene.anims.create({
+            key: 'idle-down-keyboard',
+            frames: this.anims.generateFrameNames('laude_drum', {
+                prefix: 'idle_down_',
+                start: 1,
+                end: 4
+            }),
+            frameRate: 4,
+            repeat: -1
+        });
+        this.scene.anims.create({
+            key: 'idle-up-keyboard',
+            frames: this.anims.generateFrameNames('laude_drum', {
+                prefix: 'idle_up_',
+                start: 1,
+                end: 4
+            }),
+            frameRate: 4,
+            repeat: -1
+        });
+        this.scene.anims.create({
+            key: 'idle-right-keyboard',
+            frames: this.anims.generateFrameNames('laude_drum', {
+                prefix: 'idle_right_',
+                start: 1,
+                end: 4
+            }),
+            frameRate: 4,
+            repeat: -1
+        });
+        this.scene.anims.create({
+            key: 'run-down-keyboard',
+            frames: this.anims.generateFrameNames('laude_drum', {
+                prefix: 'run_down_',
+                start: 1,
+                end: 4
+            }),
+            frameRate: 8,
+            repeat: -1
+        });
+        this.scene.anims.create({
+            key: 'run-up-keyboard',
+            frames: this.anims.generateFrameNames('laude_drum', {
+                prefix: 'run_up_',
+                start: 1,
+                end: 4
+            }),
+            frameRate: 8,
+            repeat: -1
+        });
+        this.scene.anims.create({
+            key: 'run-right-keyboard',
             frames: this.anims.generateFrameNames('laude_drum', {
                 prefix: 'run_right_',
                 start: 1,

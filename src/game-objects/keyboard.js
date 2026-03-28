@@ -83,9 +83,20 @@ export default class Keyboard extends Arma {
         this.player.canDash = false;
 
         // atacar cuando pase el tiempo de carga
-        this.scene.time.delayedCall(this.chargeTime, () => {
+        this._chargeTimer = this.scene.time.delayedCall(this.chargeTime, () => {
             this._fireProjectile();
         });
+    }
+
+    // Cancela la carga sin disparar (llamado por GunManager al cambiar de arma)
+    cancelCharge() {
+        if (!this.isCharging) return;
+        this._chargeTimer?.remove();
+        this._chargeTimer = null;
+        this.isCharging = false;
+        this.isAttacking = false;
+        this.player.speed = this._normalSpeed;
+        this.player.canDash = true;
     }
 
     _fireProjectile() {
@@ -127,12 +138,8 @@ export default class Keyboard extends Arma {
     }
 
     deactivateWeapon() {
-        // si se interrumpe le dejamos como antes
-        if (this.isCharging && this._normalSpeed !== undefined) {
-            this.player.speed = this._normalSpeed;
-            this.player.canDash = true;
-            this.isCharging = false;
-        }
+        // si se interrumpe le dejamos como antes (usa cancelCharge para no duplicar lógica)
+        this.cancelCharge();
         this.hurtboxPool?.forEach(h => {
             h.body?.enable && (h.body.enable = false);
             h.body?.setVelocity(0, 0);

@@ -4,6 +4,7 @@ import actor from './actor';
 import Guitar from './guitar';
 import Drum from './drum';
 import Bass from './bass';
+import Keyboard from './keyboard';
 import Item from './item';
 import SoundManager from './sound-manager';
 import GunManager from './gun-manager';
@@ -75,10 +76,10 @@ export default class Player extends actor {
                 } else if (this.arma === this.drum) {
                     this.arma.startAttack();
                     this.soundManager.playWithPitch('drum_attk');
+                } else if (this.arma === this.teclado) {
+                    this.arma.startCharge();
                 } else {
                     this.soundManager.playWithPitch('guitar_attk');
-
-                    //this.soundManager.playWithPitch('teclado_attk');
                     this.arma.activateWeapon();
                     this.canAttack = false;
                     this.isAttacking = true;
@@ -109,11 +110,13 @@ export default class Player extends actor {
         this.guitar = new Guitar(this.scene, this.x, this.y, this);
         this.bajo = new Bass(this.scene, this.x, this.y, this);
         this.drum = new Drum(this.scene, this.x, this.y, this);
+        this.teclado = new Keyboard(this.scene, this.x, this.y, this);
 
         this.gunManager = new GunManager(this.scene, this, [
             { weapon: this.guitar, iconKey: 'guitar-icon' },
-            { weapon: this.drum,   iconKey: 'drum-icon' },
-            { weapon: this.bajo,   iconKey: 'bass-icon' },
+            { weapon: this.drum, iconKey: 'drum-icon' },
+            { weapon: this.bajo, iconKey: 'bass-icon' },
+            { weapon: this.teclado, iconKey: 'keyboard-icon' },
         ]);
 
         this.soundManager = SoundManager.getInstance(this.scene);
@@ -177,24 +180,24 @@ export default class Player extends actor {
 
         let isHorizontal = false;
         this.updateVisualCues();
-        
+
         if (this.dashEaseout) {
             this.body.velocity.scale(this.easeOutScale);
-            
+
             if (this.body.velocity.length() < 15) {
                 this.dashEaseout = false;
                 this.body.setVelocity(0);
             }
         }
-                // Si estamos haciendo dash y chocamos contra algo (pared o objeto sólido)
+        // Si estamos haciendo dash y chocamos contra algo (pared o objeto sólido)
         if (this.isDashing && (this.body.blocked.left || this.body.blocked.right || this.body.blocked.up || this.body.blocked.down)) {
             this.stopDash();
             if (this.dashTimer) this.dashTimer.remove(); // Cancelamos el timer de duración
             return; // No procesamos más movimiento mientras hacemos dash
         }
-        
+
         if (this.isDashing || this.dashEaseout) return;
-       
+
         this.body.setVelocity(0);
 
         if (this.keyA.isDown) {
@@ -248,9 +251,9 @@ export default class Player extends actor {
     }
 
     showCooldownCue(color) {
-        this.cdAnim.clearTint();   
-        this.cdAnim.setTintFill(color); 
-        
+        this.cdAnim.clearTint();
+        this.cdAnim.setTintFill(color);
+
         this.cdAnim.setVisible(true);
         this.cdAnim.play('cooldown_reset', true);
 
@@ -269,12 +272,12 @@ export default class Player extends actor {
         // velocidad en función del vector dirección del jugador
         this.body.velocity.normalize().scale(this.dashSpeed);
         this.invincible = true;
-        
+
         // ease out del dash
-        this.scene.time.delayedCall(1/4 * this.dashDuration, () => {
+        this.scene.time.delayedCall(1 / 4 * this.dashDuration, () => {
             this.dashEaseout = true;
         });
-        
+
         // cuando termine el dash
         this.scene.time.delayedCall(this.dashDuration, () => {
             this.stopDash();
@@ -329,6 +332,30 @@ export default class Player extends actor {
         // para evitar todo el rato this.body.velocity
         const vel = this.body.velocity;
         const suffix = this.arma.getAnimSuffix();
+
+        // si el teclado está cargando, animación de keyboard attack
+        if (this.arma.isCharging) {
+            switch (this.lastDirection) {
+                case 'left':
+                    this.flipX = true;
+                    this.play('attack-right-keyboard', true);
+                    break;
+                case 'right':
+                    this.flipX = false;
+                    this.play('attack-right-keyboard', true);
+                    break;
+                case 'up':
+                    this.flipX = false;
+                    this.play('attack-up-keyboard', true);
+                    break;
+                case 'down':
+                default:
+                    this.flipX = false;
+                    this.play('attack-down-keyboard', true);
+                    break;
+            }
+            return;
+        }
 
         // si se está moviendo
         if (vel.length() > 0) {
@@ -620,6 +647,100 @@ export default class Player extends actor {
             repeat: -1
         });
 
+        // Animaciones teclado (idle, run y attack, son 3 png distintos)
+        this.scene.anims.create({
+            key: 'idle-down-keyboard',
+            frames: this.anims.generateFrameNames('laude_keyboard_idle', {
+                prefix: 'idle_down_',
+                start: 0,
+                end: 3
+            }),
+            frameRate: 4,
+            repeat: -1
+        });
+        this.scene.anims.create({
+            key: 'idle-up-keyboard',
+            frames: this.anims.generateFrameNames('laude_keyboard_idle', {
+                prefix: 'idle_up_',
+                start: 0,
+                end: 3
+            }),
+            frameRate: 4,
+            repeat: -1
+        });
+        this.scene.anims.create({
+            key: 'idle-right-keyboard',
+            frames: this.anims.generateFrameNames('laude_keyboard_idle', {
+                prefix: 'idle_right_',
+                start: 0,
+                end: 3
+            }),
+            frameRate: 4,
+            repeat: -1
+        });
+        // run usa laude_keyboard_run (frames 0-indexed, 4 frames)
+        this.scene.anims.create({
+            key: 'run-down-keyboard',
+            frames: this.anims.generateFrameNames('laude_keyboard_run', {
+                prefix: 'run_down_',
+                start: 0,
+                end: 3
+            }),
+            frameRate: 8,
+            repeat: -1
+        });
+        this.scene.anims.create({
+            key: 'run-up-keyboard',
+            frames: this.anims.generateFrameNames('laude_keyboard_run', {
+                prefix: 'run_up_',
+                start: 0,
+                end: 3
+            }),
+            frameRate: 8,
+            repeat: -1
+        });
+        this.scene.anims.create({
+            key: 'run-right-keyboard',
+            frames: this.anims.generateFrameNames('laude_keyboard_run', {
+                prefix: 'run_right_',
+                start: 0,
+                end: 3
+            }),
+            frameRate: 8,
+            repeat: -1
+        });
+        // attack usa laude_keyboard_attack (frames 0-indexed, 7 frames)
+        this.scene.anims.create({
+            key: 'attack-down-keyboard',
+            frames: this.anims.generateFrameNames('laude_keyboard_attack', {
+                prefix: 'attack_down_',
+                start: 0,
+                end: 6
+            }),
+            frameRate: 8,
+            repeat: -1
+        });
+        this.scene.anims.create({
+            key: 'attack-up-keyboard',
+            frames: this.anims.generateFrameNames('laude_keyboard_attack', {
+                prefix: 'attack_up_',
+                start: 0,
+                end: 6
+            }),
+            frameRate: 8,
+            repeat: -1
+        });
+        this.scene.anims.create({
+            key: 'attack-right-keyboard',
+            frames: this.anims.generateFrameNames('laude_keyboard_attack', {
+                prefix: 'attack_right_',
+                start: 0,
+                end: 6
+            }),
+            frameRate: 8,
+            repeat: -1
+        });
+
         this.scene.anims.create({
             key: 'cooldown_reset',
             frames: this.anims.generateFrameNames('cooldownResetVisualCue', {
@@ -628,8 +749,8 @@ export default class Player extends actor {
                 start: 0,
                 end: 9
             }),
-            frameRate:   35,
-            repeat: 0     
+            frameRate: 35,
+            repeat: 0
         });
 
     }

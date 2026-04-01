@@ -73,6 +73,7 @@ export default class Level extends Phaser.Scene {
         this.setWeaponCollision(this.player.guitar);
         this.setWeaponCollision(this.player.bajo);
         this.setWeaponCollision(this.player.drum);
+        this.setWeaponCollision(this.player.teclado);
 
     }
 

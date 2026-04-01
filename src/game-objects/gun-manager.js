@@ -49,10 +49,10 @@ export default class GunManager {
     }
 
     _setupInput() {
-        this.scene.input.keyboard.on('keydown-ONE',   () => this.switchTo(0));
-        this.scene.input.keyboard.on('keydown-TWO',   () => this.switchTo(1));
+        this.scene.input.keyboard.on('keydown-ONE', () => this.switchTo(0));
+        this.scene.input.keyboard.on('keydown-TWO', () => this.switchTo(1));
         this.scene.input.keyboard.on('keydown-THREE', () => this.switchTo(2));
-        this.scene.input.keyboard.on('keydown-FOUR',  () => this.switchTo(3));
+        this.scene.input.keyboard.on('keydown-FOUR', () => this.switchTo(3));
 
         this.scene.input.on('wheel', (pointer, gameObjects, deltaX, deltaY) => {
             if (deltaY > 0) this.switchNext();

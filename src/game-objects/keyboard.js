@@ -3,7 +3,7 @@ import Arma from './arma.js'
 
 export default class Keyboard extends Arma {
     constructor(scene, x, y, player) {
-        super(scene, x, y, 'drumSticks', {
+        super(scene, x, y, 'keyboard_projectile', {
             damage: 20,
             cooldown: 1000,
             duration: 2000
@@ -15,16 +15,31 @@ export default class Keyboard extends Arma {
         this.chargeTime = 1000;
         this.chargeSpeedModifier = 0.20;
 
+        // crea la animación del proyectil
+        if (!this.scene.anims.exists('keyboard_projectile_anim')) {
+            this.scene.anims.create({
+                key: 'keyboard_projectile_anim',
+                frames: this.scene.anims.generateFrameNames('keyboard_projectile', {
+                    prefix: 'projectile_',
+                    start: 0,
+                    end: 15
+                }),
+                frameRate: 20,
+                repeat: -1
+            });
+        }
+
         const POOL_SIZE = 1;
         this.hurtboxPool = Array.from({ length: POOL_SIZE }, () => {
-            const hb = this.scene.add.circle(0, 0, 6, 0x00ffff);
+            const hb = this.scene.add.circle(0, 0, 14, 0x00ffff);
             hb.visible = false;
             hb.active = false;
             hb.enemiesHit = new Set();
             this.scene.physics.add.existing(hb);
             hb.body.enable = false;
 
-            const sprite = this.scene.add.image(0, 0, 'drumSticks');
+            const sprite = this.scene.add.sprite(0, 0, 'keyboard_projectile');
+            sprite.setScale(4);
             sprite.visible = false;
             hb.sprite = sprite;
 
@@ -51,8 +66,9 @@ export default class Keyboard extends Arma {
 
     weaponAttackAnimation(hurtbox, angle) {
         hurtbox.sprite.setPosition(hurtbox.x, hurtbox.y);
-        hurtbox.sprite.setRotation(angle);
+        hurtbox.sprite.setRotation(angle + Math.PI / 2);
         hurtbox.sprite.visible = true;
+        hurtbox.sprite.play('keyboard_projectile_anim', true);
     }
 
     attack(enemy, attackMod, hurtbox) {
@@ -88,7 +104,7 @@ export default class Keyboard extends Arma {
         });
     }
 
-    // Cancela la carga sin disparar (llamado por GunManager al cambiar de arma)
+    // cancela la carga y no dispara
     cancelCharge() {
         if (!this.isCharging) return;
         this._chargeTimer?.remove();

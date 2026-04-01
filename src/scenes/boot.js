@@ -9,6 +9,12 @@ import laudeSpritesheet from '../../assets/animations/laude/sprite.png'
 import laudeGuitarSpriteSheet from '../../assets/animations/laude/guitar-sprite.png'
 import laudeDrumSpriteSheet from '../../assets/animations/laude/drum-sprite.png'
 import laudeBassSpritesheet from '../../assets/animations/laude/bass-sprite.png'
+import laudeKeyboardIdleSheet from '../../assets/animations/laude/keyboard-idle.png'
+import laudeKeyboardAttackSheet from '../../assets/animations/laude/keyboard-attack.png'
+import laudeKeyboardRunSheet from '../../assets/animations/laude/keyboard-run.png'
+import laudeKeyboardIdleAtlas from '../../assets/animations/laude/keyboard-idle.json'
+import laudeKeyboardAttackAtlas from '../../assets/animations/laude/keyboard-attack.json'
+import laudeKeyboardRunAtlas from '../../assets/animations/laude/keyboard-run.json'
 import laudeAtlas from '../../assets/animations/laude/laude_atlas.json'
 import laudeBassAtlas from '../../assets/animations/laude/bass-sprite.json'
 import start from '../../assets/sprites/title-screen/start-text.png'
@@ -24,6 +30,9 @@ import guitarIcon from '../../assets/sprites/weapons/guitar/guitar-icon.png'
 import drumIcon from '../../assets/sprites/weapons/drum/drum-icon.png'
 import bassSprite from '../../assets/sprites/weapons/bass/bass-sprite.png'
 import bassIcon from '../../assets/sprites/weapons/bass/bass-icon.png'
+import keyboardIcon from '../../assets/sprites/weapons/keyboard/keyboard-icon.png'
+import keyboardProjectileSheet from '../../assets/sprites/weapons/keyboard/keyboard-projectile.png'
+import keyboardProjectileAtlas from '../../assets/sprites/weapons/keyboard/keyboard-projectile.json'
 import weaponSelected from '../../assets/sprites/weapons/selected-frame.png'
 import weaponUnselected from '../../assets/sprites/weapons/unselected-frame.png'
 import cooldownResetVisualCueSheet from '../../assets/animations/laude/CooldownResetVisualCue-Sheet.png'
@@ -112,6 +121,8 @@ export default class Boot extends Phaser.Scene {
     this.load.image('drum-icon', drumIcon);
     this.load.image('bass-sprite', bassSprite);
     this.load.image('bass-icon', bassIcon);
+    this.load.image('keyboard-icon', keyboardIcon);
+    this.load.atlas('keyboard_projectile', keyboardProjectileSheet, keyboardProjectileAtlas);
     this.load.image('weapon-selected', weaponSelected);
     this.load.image('weapon-unselected', weaponUnselected);
 
@@ -136,6 +147,9 @@ export default class Boot extends Phaser.Scene {
     this.load.atlas('laude_guitar', laudeGuitarSpriteSheet, laudeAtlas);
     this.load.atlas('laude_drum', laudeDrumSpriteSheet, laudeAtlas);
     this.load.atlas('laude_bass', laudeBassSpritesheet, laudeBassAtlas);
+    this.load.atlas('laude_keyboard_idle', laudeKeyboardIdleSheet, laudeKeyboardIdleAtlas);
+    this.load.atlas('laude_keyboard_attack', laudeKeyboardAttackSheet, laudeKeyboardAttackAtlas);
+    this.load.atlas('laude_keyboard_run', laudeKeyboardRunSheet, laudeKeyboardRunAtlas);
     this.load.atlas('cooldownResetVisualCue', cooldownResetVisualCueSheet, cooldownResetVisualCueJSON);
     this.cache.json.add('data', data);
     this.cache.json.add('items', itemsData);

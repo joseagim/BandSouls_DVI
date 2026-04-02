@@ -1,5 +1,4 @@
 import Phaser from 'phaser';
-import Enemy from './enemy.js';
 import Pool from './pool.js';
 import EnemyFactory from './enemyFactory.js';
 
@@ -12,8 +11,8 @@ export default class Spawner {
         this.shadowStats = this.scene.cache.json.get('data').shadowBaseStats;
     }
 
-    spawn(x, y) {
-        const enemy = this.pool.spawnInactive('shadow');
+    spawn(x, y, type) {
+        const enemy = this.pool.spawnInactive(type);
 
         if (enemy) {
             enemy.spawn(x, y);
@@ -34,10 +33,9 @@ export default class Spawner {
                 callback: () => {
                     const x = Phaser.Math.Between(50, 750);
                     const y = Phaser.Math.Between(50, 550);
-                    
-                    this.spawn(x, y);
+                    this.spawn(x, y, config.type);
                 }
-            })
+            });
         }
     }
 }

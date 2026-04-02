@@ -1,39 +1,57 @@
 import Phaser from 'phaser'
 
+// title screen
 import titleScreen from '../../assets/sprites/title-screen/lopk.png'
+import deathScreen from '../../assets/sprites/title-screen/death-screen.png'
+import start from '../../assets/sprites/title-screen/start-text.png'
+import startJSON from '../../assets/sprites/title-screen/start-selected-atlas.json'
+import startSelected from '../../assets/sprites/title-screen/start-selected-sheet.png'
+import options from '../../assets/sprites/title-screen/options-text.png'
+import optionsJSON from '../../assets/sprites/title-screen/options-selected-atlas.json'
+import optionsSelected from '../../assets/sprites/title-screen/options-selected-sheet.png'
+import selectionPick from '../../assets/sprites/title-screen/selection-pick.png'
+
+// player (laude)
 import laudeSpritesheet from '../../assets/animations/laude/sprite.png'
 import laudeGuitarSpriteSheet from '../../assets/animations/laude/guitar-sprite.png'
 import laudeDrumSpriteSheet from '../../assets/animations/laude/drum-sprite.png'
 import laudeBassSpritesheet from '../../assets/animations/laude/bass-sprite.png'
 import laudeAtlas from '../../assets/animations/laude/laude_atlas.json'
 import laudeBassAtlas from '../../assets/animations/laude/bass-sprite.json'
-import start from '../../assets/sprites/title-screen/start-text.png'
-import startJSON from '../../assets/sprites/title-screen/start-selected-atlas.json'
-import options from '../../assets/sprites/title-screen/options-text.png'
-import optionsJSON from '../../assets/sprites/title-screen/options-selected-atlas.json'
-import optionsSelected from '../../assets/sprites/title-screen/options-selected-sheet.png'
-import startSelected from '../../assets/sprites/title-screen/start-selected-sheet.png'
-import selectionPick from '../../assets/sprites/title-screen/selection-pick.png'
+import cooldownResetVisualCueSheet from '../../assets/animations/laude/CooldownResetVisualCue-Sheet.png'
+import cooldownResetVisualCueJSON from '../../assets/animations/laude/CooldownResetVisualCue.json'
+
+// weapons
 import guitarSprite from '../../assets/sprites/weapons/guitar/guitar-sprite.png'
-import drumSticks from '../../assets/sprites/weapons/drum/drum-sticks.png'
 import guitarIcon from '../../assets/sprites/weapons/guitar/guitar-icon.png'
+import drumSticks from '../../assets/sprites/weapons/drum/drum-sticks.png'
 import drumIcon from '../../assets/sprites/weapons/drum/drum-icon.png'
 import bassSprite from '../../assets/sprites/weapons/bass/bass-sprite.png'
 import bassIcon from '../../assets/sprites/weapons/bass/bass-icon.png'
 import weaponSelected from '../../assets/sprites/weapons/selected-frame.png'
 import weaponUnselected from '../../assets/sprites/weapons/unselected-frame.png'
-import cooldownResetVisualCueSheet from '../../assets/animations/laude/CooldownResetVisualCue-Sheet.png'
-import cooldownResetVisualCueJSON from '../../assets/animations/laude/CooldownResetVisualCue.json'
 
-import deathScreen from '../../assets/sprites/title-screen/death-screen.png'
-import enemyIdle from '../../assets/animations/basic-enemy/Idle.png'
-import enemyIdleJSON from '../../assets/animations/basic-enemy/enemy_idle_atlas.json'
-import enemyWalk from '../../assets/animations/basic-enemy/move.png'
-import enemyWalkJSON from '../../assets/animations/basic-enemy/enemy_walk_atlas.json'
-import enemyHit from '../../assets/animations/basic-enemy/enemy_hit.png'
-import enemyHitJSON from '../../assets/animations/basic-enemy/enemy_hit_atlas.json'
-import enemyDie from '../../assets/animations/basic-enemy/enemy_die.png'
-import enemyDieJSON from '../../assets/animations/basic-enemy/enemy_die_atlas.json'
+// enemies - shadow
+import shadowIdle from '../../assets/animations/enemy_shadow/shadow_idle.png'
+import shadowIdleJSON from '../../assets/animations/enemy_shadow/enemy_idle_atlas.json'
+import shadowWalk from '../../assets/animations/enemy_shadow/shadow_move.png'
+import shadowWalkJSON from '../../assets/animations/enemy_shadow/enemy_walk_atlas.json'
+import shadowHit from '../../assets/animations/enemy_shadow/shadow_hit.png'
+import shadowHitJSON from '../../assets/animations/enemy_shadow/enemy_hit_atlas.json'
+import shadowDie from '../../assets/animations/enemy_shadow/shadow_die.png'
+import shadowDieJSON from '../../assets/animations/enemy_shadow/enemy_die_atlas.json'
+
+// enemies - thief
+import thiefIdle from '../../assets/animations/enemy_thief/thief_idle.png'
+import thiefIdleJSON from '../../assets/animations/enemy_thief/enemy_idle_atlas.json'
+import thiefWalk from '../../assets/animations/enemy_thief/thief_move.png'
+import thiefWalkJSON from '../../assets/animations/enemy_thief/enemy_walk_atlas.json'
+import thiefHit from '../../assets/animations/enemy_thief/thief_hit.png'
+import thiefHitJSON from '../../assets/animations/enemy_thief/enemy_hit_atlas.json'
+import thiefDie from '../../assets/animations/enemy_thief/thief_die.png'
+import thiefDieJSON from '../../assets/animations/enemy_thief/enemy_die_atlas.json'
+
+// hud
 import HUDhealthBorder from '../../assets/sprites/hud/health-bar/border.png'
 import HUDhealthBar from '../../assets/sprites/hud/health-bar/bar.png'
 import roundNumbers from '../../assets/sprites/hud/round-numbers.png'
@@ -41,6 +59,12 @@ import dashButton from '../../assets/sprites/hud/buttons/dash-button.png'
 import dashButtonDisabled from '../../assets/sprites/hud/buttons/dash-button-disabled.png'
 import guitarVibeButton from '../../assets/sprites/hud/buttons/guitar-vibe-button.png'
 import guitarVibeButtonDisabled from '../../assets/sprites/hud/buttons/guitar-vibe-button-disabled.png'
+import bassGrenadeButton from '../../assets/sprites/hud/buttons/bass-grenade-button.png'
+import bassGrenadeButtonDisabled from '../../assets/sprites/hud/buttons/bass-grenade-button-disabled.png'
+import drumSmashButton from '../../assets/sprites/hud/buttons/drum-smash-button.png'
+import drumSmashButtonDisabled from '../../assets/sprites/hud/buttons/drum-smash-button-disabled.png'
+import keyboardMinigunButton from '../../assets/sprites/hud/buttons/keyboard-minigun-button.png'
+import keyboardMinigunButtonDisabled from '../../assets/sprites/hud/buttons/keyboard-minigun-button-disabled.png'
 
 //mapas
 import city_tileset from '../../assets/map/rogueLike_city.png';
@@ -99,39 +123,45 @@ export default class Boot extends Phaser.Scene {
    * Carga de los assets del juego
    */
   preload() {
-    // Con setPath podemos establecer el prefijo que se añadirá a todos los load que aparecen a continuación
-    //this.load.setPath('assets/sprites/');
-    this.load.image('start', start);
+    // title screen
     this.load.image('title', titleScreen);
     this.load.image('death', deathScreen);
+    this.load.image('start', start);
+    this.load.atlas('startSelected', startSelected, startJSON);
     this.load.image('options', options);
+    this.load.atlas('optionsSelected', optionsSelected, optionsJSON);
     this.load.image('selectionPick', selectionPick);
+
+    // player (laude)
+    this.load.atlas('laude', laudeSpritesheet, laudeAtlas);
+    this.load.atlas('laude_guitar', laudeGuitarSpriteSheet, laudeAtlas);
+    this.load.atlas('laude_drum', laudeDrumSpriteSheet, laudeAtlas);
+    this.load.atlas('laude_bass', laudeBassSpritesheet, laudeBassAtlas);
+    this.load.atlas('cooldownResetVisualCue', cooldownResetVisualCueSheet, cooldownResetVisualCueJSON);
+
+    // weapons
     this.load.image('guitarSprite', guitarSprite);
-    this.load.image('drumSticks', drumSticks);
     this.load.image('guitar-icon', guitarIcon);
+    this.load.image('drumSticks', drumSticks);
     this.load.image('drum-icon', drumIcon);
     this.load.image('bass-sprite', bassSprite);
     this.load.image('bass-icon', bassIcon);
     this.load.image('weapon-selected', weaponSelected);
     this.load.image('weapon-unselected', weaponUnselected);
 
-    this.load.image('city_tiles', city_tileset);
-    this.load.image('shop_tiles', shop_tileset);
-    this.load.tilemapTiledJSON('shop_map', shop_json);
+    // enemies - shadow
+    this.load.atlas('shadow_idle', shadowIdle, shadowIdleJSON);
+    this.load.atlas('shadow_walk', shadowWalk, shadowWalkJSON);
+    this.load.atlas('shadow_hit', shadowHit, shadowHitJSON);
+    this.load.atlas('shadow_die', shadowDie, shadowDieJSON);
 
-    this.load.atlas('optionsSelected', optionsSelected, optionsJSON);
-    this.load.atlas('startSelected', startSelected, startJSON);
-    this.load.atlas('laude', laudeSpritesheet, laudeAtlas);
-    this.load.atlas('laude_guitar', laudeGuitarSpriteSheet, laudeAtlas);
-    this.load.atlas('laude_drum', laudeDrumSpriteSheet, laudeAtlas);
-    this.load.atlas('laude_bass', laudeBassSpritesheet, laudeBassAtlas);
-    this.load.atlas('cooldownResetVisualCue', cooldownResetVisualCueSheet, cooldownResetVisualCueJSON);
-    this.cache.json.add('data', data);
-    this.cache.json.add('items', itemsData);
-    this.load.atlas('enemy_idle', enemyIdle, enemyIdleJSON);
-    this.load.atlas('enemy_walk', enemyWalk, enemyWalkJSON);
-    this.load.atlas('enemy_hit', enemyHit, enemyHitJSON);
-    this.load.atlas('enemy_die', enemyDie, enemyDieJSON);
+    // enemies - thief
+    this.load.atlas('thief_idle', thiefIdle, thiefIdleJSON);
+    this.load.atlas('thief_walk', thiefWalk, thiefWalkJSON);
+    this.load.atlas('thief_hit', thiefHit, thiefHitJSON);
+    this.load.atlas('thief_die', thiefDie, thiefDieJSON);
+
+    // hud
     this.load.image('hud_health_border', HUDhealthBorder);
     this.load.image('hud_health_bar', HUDhealthBar);
     this.load.spritesheet('round_numbers', roundNumbers, { frameWidth: 24, frameHeight: 32 });
@@ -139,24 +169,41 @@ export default class Boot extends Phaser.Scene {
     this.load.image('dash-button-disabled', dashButtonDisabled);
     this.load.image('guitar-vibe-button', guitarVibeButton);
     this.load.image('guitar-vibe-button-disabled', guitarVibeButtonDisabled);
+    this.load.image('bass-grenade-button', bassGrenadeButton);
+    this.load.image('bass-grenade-button-disabled', bassGrenadeButtonDisabled);
+    this.load.image('drum-smash-button', drumSmashButton);
+    this.load.image('drum-smash-button-disabled', drumSmashButtonDisabled);
+    this.load.image('keyboard-minigun-button', keyboardMinigunButton);
+    this.load.image('keyboard-minigun-button-disabled', keyboardMinigunButtonDisabled);
+
+    // mapas
+    this.load.image('city_tiles', city_tileset);
+    this.load.image('shop_tiles', shop_tileset);
+    this.load.tilemapTiledJSON('shop_map', shop_json);
     this.load.atlas('portal', portalSpritesheet, portalJSON);
 
+    // data
+    this.cache.json.add('data', data);
+    this.cache.json.add('items', itemsData);
+
+    // items
     this.load.image('assets/sprites/items/tubescreamer.png', item_tubescreamer);
     this.load.image('assets/sprites/items/mask.png', item_mask);
     this.load.image('assets/sprites/items/bumble_pick.png', item_bumble_pick);
     this.load.image('assets/sprites/items/metronome.png', item_metronome);
 
-    //sonidos
-
+    // sonidos
     this.load.audio('movement', movement);
     this.load.audio('dash', dash);
     this.load.audio('guitar_attk', guitar_attk);
-    this.load.audio('enemy_hurt', enemy_hurt_fx);
-    this.load.audio('menu_music', menu_music);
     this.load.audio('get_hit', get_hit);
+    this.load.audio('enemy_hurt', enemy_hurt_fx);
     this.load.audio('teclado_attk', teclado_attk);
     this.load.audio('bajo_attk', bajo_attk);
     this.load.audio('drum_attk', drum_attk);
+
+    // música
+    this.load.audio('menu_music', menu_music);
     this.load.audio('level1_music', level1_music);
 
     this.soundManager = new SoundManager(this);

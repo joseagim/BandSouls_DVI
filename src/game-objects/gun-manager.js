@@ -65,11 +65,11 @@ export default class GunManager {
             iconKeys: this.iconKeys,
             currentIndex: this.currentIndex
         });
-        this.scene.events.emit('weaponSelectorInit');
+        this.scene.game.events.emit('weaponSelectorInit');
     }
 
     _updateUI() {
         this.scene.registry.set('weaponSelectorIndex', this.currentIndex);
-        this.scene.events.emit('weaponChanged', this.currentIndex);
+        this.scene.game.events.emit('weaponChanged', this.currentIndex);
     }
 }

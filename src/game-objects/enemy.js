@@ -86,6 +86,8 @@ export default class Enemy extends actor {
 
         if (this.scene.player.x <= this.x) {
             this.setFlip(true, false);
+        } else {
+            this.setFlip(false, false);
         }
         if (!this.scene.physics.overlap(this, this.scene.player) && !this.is_knockback) {
             this.move(dt);

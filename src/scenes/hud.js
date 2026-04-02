@@ -53,11 +53,8 @@ export default class HUD extends Phaser.Scene {
         this._roundDigits = [];
         this._showRound(1);
 
-        // pillamos la escena para escuchar eventos y actualizar el hud
-        const mainLevel = this.scene.get('level_fondo');
-
         // evento: actualizar salud del jugador
-        mainLevel.events.on('updateHealth', (player) => {
+        this.game.events.on('updateHealth', (player) => {
             const percentage = player.life / player.maxHP;
             this.healthBar.setValue(percentage);
         });
@@ -83,17 +80,17 @@ export default class HUD extends Phaser.Scene {
         });
 
         // evento: actualizar número de oleada
-        mainLevel.events.on('nextWave', (waveNumber) => {
+        this.game.events.on('nextWave', (waveNumber) => {
             this._showRound(waveNumber);
         });
 
         // evento: actualizar enemigos restantes
-        mainLevel.events.on('enemyDead', (enemiesLeft) => {
+        this.game.events.on('enemyDead', (enemiesLeft) => {
             this.remainingEnemies.setText('Enemigos restantes: ' + enemiesLeft);
         });
 
         // evento: mensaje de espera para la siguiente oleada
-        mainLevel.events.on('finishWave', (waveDelay) => {
+        this.game.events.on('finishWave', (waveDelay) => {
             let timeLeft = Math.floor(waveDelay / 1000);
 
             this.waitingNextWave.visible = true;
@@ -167,11 +164,11 @@ export default class HUD extends Phaser.Scene {
             if (data) this._createWeaponSelector(data.iconKeys, data.currentIndex);
         };
 
-        mainLevel.events.on('weaponSelectorInit', buildWeaponSelector);
+        this.game.events.on('weaponSelectorInit', buildWeaponSelector);
         // Por si ya se emitió antes de que el HUD estuviera listo
         buildWeaponSelector();
 
-        mainLevel.events.on('weaponChanged', (index) => {
+        this.game.events.on('weaponChanged', (index) => {
             this._updateWeaponSelector(index);
             if (this._ultiButton && this._weaponIconKeys) {
                 const key = this._ultiKeyMap[this._weaponIconKeys[index]];
@@ -260,32 +257,53 @@ export default class HUD extends Phaser.Scene {
     }
 
     _updateTrinketsDisplay(trinkets) {
-        this.trinketIcons.forEach(icon => icon.destroy());
+        this.trinketIcons.forEach(el => el.destroy());
         this.trinketIcons = [];
 
         if (!trinkets || trinkets.length === 0) return;
 
         const startX = 20;
-        const startY = 125;
+        const startY = 150;
         const iconSize = 40;
         const gap = 5;
-        const maxPerRow = 5;
+        const maxPerRow = 3;
+        const rowHeight = iconSize + gap;
 
-        trinkets.forEach((t, i) => {
+        if (this._trinketExpanded === undefined) this._trinketExpanded = false;
+
+        const visibleRows = this._trinketExpanded ? Math.ceil(trinkets.length / maxPerRow) : 1;
+        const visibleCount = visibleRows * maxPerRow;
+        const hasMore = trinkets.length > maxPerRow;
+
+        trinkets.slice(0, visibleCount).forEach((t, i) => {
             if (!t.image) return;
-            const row = Math.floor(i / maxPerRow);
             const col = i % maxPerRow;
-            const x = startX + col * (iconSize + gap);
-            const y = startY + row * (iconSize + gap);
-
-            const icon = this.add.image(x, y, t.image)
+            const row = Math.floor(i / maxPerRow);
+            const icon = this.add.image(startX + col * (iconSize + gap), startY + row * rowHeight, t.image)
                 .setOrigin(0, 0)
                 .setDisplaySize(iconSize, iconSize)
                 .setAlpha(0.6)
                 .setScrollFactor(0);
-
             this.trinketIcons.push(icon);
         });
+
+        if (hasMore) {
+            const dotsRow = this._trinketExpanded ? Math.ceil(trinkets.length / maxPerRow) : 1;
+            const dotsText = this.add.text(startX, startY + dotsRow * rowHeight, '...', {
+                fontSize: '20px',
+                fill: '#ffffff',
+                fontFamily: 'Arial',
+                stroke: '#000000',
+                strokeThickness: 3
+            }).setScrollFactor(0).setInteractive({ useHandCursor: true });
+
+            dotsText.on('pointerdown', () => {
+                this._trinketExpanded = !this._trinketExpanded;
+                this._updateTrinketsDisplay(this.registry.get('trinkets') || []);
+            });
+
+            this.trinketIcons.push(dotsText);
+        }
     }
 
     /**

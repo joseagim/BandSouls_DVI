@@ -1,7 +1,7 @@
 {
     "frames": [
         {
-            "filename": "walk-1",
+            "filename": "move-1",
             "frame": {
                 "w": 32,
                 "h": 32,
@@ -14,7 +14,7 @@
             }
         },
         {
-            "filename": "walk-2",
+            "filename": "move-2",
             "frame": {
                 "w": 32,
                 "h": 32,
@@ -27,7 +27,7 @@
             }
         },
         {
-            "filename": "walk-3",
+            "filename": "move-3",
             "frame": {
                 "w": 32,
                 "h": 32,
@@ -40,7 +40,7 @@
             }
         },
         {
-            "filename": "walk-4",
+            "filename": "move-4",
             "frame": {
                 "w": 32,
                 "h": 32,
@@ -53,7 +53,7 @@
             }
         },
         {
-            "filename": "walk-5",
+            "filename": "move-5",
             "frame": {
                 "w": 32,
                 "h": 32,
@@ -66,7 +66,7 @@
             }
         },
         {
-            "filename": "walk-6",
+            "filename": "move-6",
             "frame": {
                 "w": 32,
                 "h": 32,
@@ -79,7 +79,7 @@
             }
         },
         {
-            "filename": "walk-7",
+            "filename": "move-7",
             "frame": {
                 "w": 32,
                 "h": 32,
@@ -92,7 +92,7 @@
             }
         },
         {
-            "filename": "walk-8",
+            "filename": "move-8",
             "frame": {
                 "w": 32,
                 "h": 32,
@@ -105,7 +105,7 @@
             }
         },
         {
-            "filename": "walk-9",
+            "filename": "move-9",
             "frame": {
                 "w": 32,
                 "h": 32,

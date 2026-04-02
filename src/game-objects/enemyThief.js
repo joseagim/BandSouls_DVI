@@ -1,21 +1,11 @@
 import Phaser from 'phaser';
 import Enemy from './enemy';
 
-/**
- * Clase que representa el primer enemigo del juego. Es un enemigo de prueba que persigue al jugador.
- */
-export default class ShadowEnemy extends Enemy {
+export default class EnemyThief extends Enemy {
 
-    /**
-     * Constructor del jugador
-     * @param {Phaser.Scene} scene Escena a la que pertenece el jugador
-     * @param {number} x Coordenada X
-     * @param {number} y Coordenada Y
-     */
     constructor(scene, x, y, stats) {
-        super(scene, x, y, 'shadow', stats);
+        super(scene, x, y, 'thief', stats);
 
-        // Estadísticas propias del enemigo
         this.attackDamage = stats.attackDamage;
         this.attackRange = stats.attackRange;
         this.attackRadius = stats.attackRadius;
@@ -26,90 +16,82 @@ export default class ShadowEnemy extends Enemy {
 
         // Animaciones
         this.scene.anims.create({
-            key : 'shadow_idle',
-            frames: this.anims.generateFrameNames('shadow_idle',{ prefix: 'idle-', start: 1, end: 2 } ),
+            key: 'thief_idle',
+            frames: this.anims.generateFrameNames('thief_idle', { prefix: 'idle-', start: 1, end: 5 }),
             frameRate: 5,
-            repeat : -1
+            repeat: -1
         });
 
         this.scene.anims.create({
-            key : 'shadow_walk',
-            frames: this.anims.generateFrameNames('shadow_walk',{ prefix: 'walk-', start: 1, end: 9 } ),
+            key: 'thief_move',
+            frames: this.anims.generateFrameNames('thief_move', { prefix: 'move-', start: 1, end: 9 }),
             frameRate: 10,
-            repeat : -1
+            repeat: -1
         });
 
         this.scene.anims.create({
-            key : 'shadow_hit',
-            frames: this.anims.generateFrameNames('shadow_hit',{ prefix: 'hit-', start: 1, end: 3 } ),
+            key: 'thief_hit',
+            frames: this.anims.generateFrameNames('thief_hit', { prefix: 'hit-', start: 1, end: 3 }),
             frameRate: 4,
-            repeat : -1
+            repeat: -1
         });
-        
-        this.scene.anims.create({
-            key: 'shadow_die',
-            frames: this.anims.generateFrameNames('shadow_die',{ prefix: 'die-', start: 1, end: 16 } ),
-            frameRate: 20,
-            repeat : 0
-        })
 
-        this.on('animationcomplete', (anim) =>{
-            if(anim.key =='shadow_die'){
+        this.scene.anims.create({
+            key: 'thief_die',
+            frames: this.anims.generateFrameNames('thief_die', { prefix: 'die-', start: 1, end: 8 }),
+            frameRate: 20,
+            repeat: 0
+        });
+
+        this.on('animationcomplete', (anim) => {
+            if (anim.key === 'thief_die') {
                 this.setActive(false);
                 this.setVisible(false);
                 this.body.enable = false;
             }
-        })
-    
-        // bs escalado extraño para los colliders
+        });
+
         this.setScale(1.5);
         this.isDead = false;
         this.body.setSize(16, 16);
         this.body.setOffset(9, 15);
-        this.play('shadow_idle',true);
+        this.play('thief_idle', true);
         this.is_moving = false;
-        this.label = this.scene.add.text(1080,10,"",{fontSize: 20});
+        this.hasStolen = false;
+        this.label = this.scene.add.text(1080, 10, '', { fontSize: 20 });
     }
 
     spawn(x, y) {
         super.spawn(x, y);
-        this.setTexture('shadow_walk');
+        this.hasStolen = false;
+        this.setTexture('thief_move');
     }
 
     die() {
         super.die();
-        this.setTexture('shadow_die');
-        this.play('shadow_die');
-        //this.body.enable = false;
-
-        /*
-        this.death_timer = this.scene.time.delayedCall(800,() => {
-            this.setActive(false);
-            this.setVisible(false);
-
-
-            //this.play('shadow_idle');
-        }) 
-            */
- 
-
+        this.setTexture('thief_die');
+        this.play('thief_die');
     }
 
     attack(player) {
         if (this.canAttack) {
+            if (!this.hasStolen && player.trinket.length > 0) {
+                const idx = Math.floor(Math.random() * player.trinket.length);
+                player.removeTrinket(player.trinket[idx]);
+                this.hasStolen = true;
+            }
+
             player.getDamage(this.attackDamage * this.attackMod);
             this.canAttack = false;
-            
-
             this.scene.time.delayedCall(this.attackCooldown, () => {
                 this.canAttack = true;
-            })
+            });
         }
     }
 
     playHit() {
         if (this.life <= 0) return;
-        this.play('shadow_hit', true);
+        this.play('thief_hit', true);
     }
 
     move(dt) {
@@ -117,7 +99,7 @@ export default class ShadowEnemy extends Enemy {
             this._moveWithPathfinding(dt);
         } else {
             this.scene.physics.moveToObject(this, this.scene.player, this.speed);
-            this.play('shadow_walk', true);
+            this.play('thief_move', true);
         }
     }
 
@@ -128,7 +110,6 @@ export default class ShadowEnemy extends Enemy {
         const endX = Math.floor(this.scene.player.body.center.x / tileSize);
         const endY = Math.floor(this.scene.player.body.center.y / tileSize);
 
-        // Detección de atasco: si el enemigo no se ha movido más de 4px en 600ms, resetea el path
         this._stuckTimer += dt;
         if (this._stuckTimer >= 600) {
             const moved = Phaser.Math.Distance.Between(this.body.center.x, this.body.center.y, this._lastPos.x, this._lastPos.y);
@@ -189,7 +170,6 @@ export default class ShadowEnemy extends Enemy {
             this.scene.physics.moveToObject(this, this.scene.player, this.speed);
         }
 
-        this.play('shadow_walk', true);
+        this.play('thief_move', true);
     }
-
 }

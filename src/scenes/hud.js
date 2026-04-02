@@ -7,8 +7,8 @@ export default class HUD extends Phaser.Scene {
     }
 
     create() {
-        // crear la barra arriba a la izquierda
-        this.healthBar = new Bar(this, 20, 20, 'hud_health_border', 'hud_health_bar');
+        // crear la barra abajo a la izquierda
+        this.healthBar = new Bar(this, 20, this.scale.height - 50, 'hud_health_border', 'hud_health_bar');
         this.healthBar.setScale(3);
         this.healthBar.setScrollFactor(0);
 
@@ -32,24 +32,24 @@ export default class HUD extends Phaser.Scene {
         });
 
         // crear el texto de info oleadas
-        this.remainingEnemies = this.add.text(20, 80, 'Enemigos restantes: X', {
-            fontSize: '32px',
+        this.remainingEnemies = this.add.text(20, 120, 'Enemigos restantes: X', {
+            fontSize: '22px',
             fill: '#ffffff',
             fontFamily: 'Arial',
             stroke: '#000000',
             strokeThickness: 4
-        });
+        }).setScrollFactor(0);
 
-        this.waitingNextWave = this.add.text(400, 150, 'La siguiente oleada comenzará en X', {
+        this.waitingNextWave = this.add.text(this.scale.width / 2, 180, 'La siguiente oleada comenzará en X', {
             fontSize: '32px',
             fill: '#ffffff',
             fontFamily: 'Arial',
             stroke: '#000000',
             strokeThickness: 4
-        });
+        }).setOrigin(0.5, 0).setScrollFactor(0);
         this.waitingNextWave.visible = false;
 
-        // Display de número de oleada (esquina superior derecha)
+        // Display de número de oleada (esquina superior izquierda)
         this._roundDigits = [];
         this._showRound(1);
 
@@ -60,6 +60,26 @@ export default class HUD extends Phaser.Scene {
         mainLevel.events.on('updateHealth', (player) => {
             const percentage = player.life / player.maxHP;
             this.healthBar.setValue(percentage);
+        });
+
+        // El botón de dash se crea en _createWeaponSelector para posicionarlo a su derecha
+        this._dashButton = null;
+        this.game.events.on('dashStart', (cooldown) => {
+            if (this._dashButton) this._dashButton.setTexture('dash-button-disabled');
+            if (this._dashCooldownBar) this._dashCooldownBar.setVisible(true);
+            this._dashCooldownFill = { value: 0 };
+            this._redrawDashBar();
+            this.tweens.add({
+                targets: this._dashCooldownFill,
+                value: 1,
+                duration: cooldown,
+                ease: 'Linear',
+                onUpdate: () => this._redrawDashBar()
+            });
+        });
+        this.game.events.on('dashReady', () => {
+            if (this._dashButton) this._dashButton.setTexture('dash-button');
+            if (this._dashCooldownBar) this._dashCooldownBar.setVisible(false);
         });
 
         // evento: actualizar número de oleada
@@ -139,7 +159,104 @@ export default class HUD extends Phaser.Scene {
             this._updateTrinketsDisplay(values);
         });
 
+        // --- Weapon selector ---
+        this._weaponSlots = [];
+
+        const buildWeaponSelector = () => {
+            const data = this.registry.get('weaponSelectorData');
+            if (data) this._createWeaponSelector(data.iconKeys, data.currentIndex);
+        };
+
+        mainLevel.events.on('weaponSelectorInit', buildWeaponSelector);
+        // Por si ya se emitió antes de que el HUD estuviera listo
+        buildWeaponSelector();
+
+        mainLevel.events.on('weaponChanged', (index) => {
+            this._updateWeaponSelector(index);
+            if (this._ultiButton && this._weaponIconKeys) {
+                const key = this._ultiKeyMap[this._weaponIconKeys[index]];
+                if (key) this._ultiButton.setTexture(key);
+            }
+        });
+
         this.events.emit('hud-ready');
+    }
+
+    _createWeaponSelector(iconKeys, currentIndex) {
+        this._weaponSlots.forEach(s => { s.frame.destroy(); if (s.icon) s.icon.destroy(); });
+        this._weaponSlots = [];
+
+        const slotSpacing = 70;
+        const startX = 60;
+        const y = 70;
+
+        this._ultiKeyMap = {
+            'guitar-icon':   'guitar-vibe-button',
+            'drum-icon':     'drum-smash-button',
+            'bass-icon':     'bass-grenade-button',
+            'keyboard-icon': 'keyboard-minigun-button',
+        };
+        this._weaponIconKeys = iconKeys;
+
+        // Botones de habilidad a la derecha del último slot
+        if (this._dashButton) this._dashButton.destroy();
+        if (this._ultiButton) this._ultiButton.destroy();
+        if (this._dashCooldownBar) this._dashCooldownBar.destroy();
+        const dashX = startX + iconKeys.length * slotSpacing + 10;
+        const dashY = y - 35;
+
+        this._dashButton = this.add.image(dashX, dashY, 'dash-button')
+            .setScrollFactor(0)
+            .setDepth(100)
+            .setScale(1.3);
+
+        const initialUltiKey = this._ultiKeyMap[iconKeys[currentIndex]] || 'guitar-vibe-button';
+        this._ultiButton = this.add.image(dashX, y + 25, initialUltiKey)
+            .setScrollFactor(0)
+            .setDepth(100)
+            .setScale(1.3);
+
+        // Barra de cooldown del dash (a la derecha del botón, carga de abajo a arriba)
+        this._dashBarBounds = { x: dashX + 25, y: dashY - 20, w: 5, h: 40 };
+        this._dashCooldownFill = { value: 0 };
+        this._dashCooldownBar = this.add.graphics().setScrollFactor(0).setDepth(100).setVisible(false);
+        this._redrawDashBar();
+
+        // Panel translúcido detrás de los iconos (ajustado dinámicamente al número de slots)
+        if (this._hudTopPanel) this._hudTopPanel.destroy();
+        const panelLeft = startX - 45;
+        const panelRight = startX + (iconKeys.length - 1) * slotSpacing + 45;
+        this._hudTopPanel = this.add.graphics()
+            .fillStyle(0x000000, 0.4)
+            .fillRoundedRect(panelLeft, 14, panelRight - panelLeft, 105, 8)
+            .setDepth(-1)
+            .setScrollFactor(0);
+
+        this._weaponSlots = iconKeys.map((iconKey, i) => {
+            const x = startX + i * slotSpacing;
+            const isSelected = i === currentIndex;
+
+            const frame = this.add.image(x, y, isSelected ? 'weapon-selected' : 'weapon-unselected')
+                .setScrollFactor(0)
+                .setDepth(100)
+                .setScale(1.8);
+
+            let icon = null;
+            if (iconKey) {
+                icon = this.add.image(x, y, iconKey)
+                    .setScrollFactor(0)
+                    .setDepth(101)
+                    .setScale(1.8);
+            }
+
+            return { frame, icon };
+        });
+    }
+
+    _updateWeaponSelector(currentIndex) {
+        this._weaponSlots.forEach((slot, i) => {
+            slot.frame.setTexture(i === currentIndex ? 'weapon-selected' : 'weapon-unselected');
+        });
     }
 
     _updateTrinketsDisplay(trinkets) {
@@ -280,15 +397,26 @@ export default class HUD extends Phaser.Scene {
         this._itemPanelElements = [];
     }
 
+    _redrawDashBar() {
+        if (!this._dashCooldownBar || !this._dashBarBounds) return;
+        const { x, y, w, h } = this._dashBarBounds;
+        this._dashCooldownBar.clear();
+        // Fondo oscuro
+        this._dashCooldownBar.fillStyle(0x222222, 0.8);
+        this._dashCooldownBar.fillRect(x, y, w, h);
+        // Relleno de abajo a arriba
+        const fillH = h * this._dashCooldownFill.value;
+        this._dashCooldownBar.fillStyle(0x00ccff, 1);
+        this._dashCooldownBar.fillRect(x, y + h - fillH, w, fillH);
+    }
+
     _showRound(number) {
         // Destruir dígitos anteriores
         this._roundDigits.forEach(img => img.destroy());
         this._roundDigits = [];
         // Comprobamos si estamos en la tienda (this.scene.key aquí siempre sería 'hud')
         if (this.scene.manager.isActive("shop")) {
-            const rightEdge = this.scale.width - 20;
-            const y = 20;
-            const shopText = this.add.text(rightEdge, y, 'SHOP', {
+            const shopText = this.add.text(this.scale.width - 20, 20, 'SHOP', {
                 fontSize: '40px',
                 fill: '#ff0000',
                 fontFamily: '"System-ui", Courier, monospace',
@@ -303,9 +431,9 @@ export default class HUD extends Phaser.Scene {
         const digits = String(number).split('');
         const scale = 3;
         const digitWidth = 24 * scale;
-        const gap = 4;
-        const totalWidth = digits.length * digitWidth + (digits.length - 1) * gap;
+        const gap = -5;
         const rightEdge = this.scale.width - 20;
+        const totalWidth = digits.length * digitWidth + (digits.length - 1) * gap;
         const y = 20;
 
         digits.forEach((d, i) => {

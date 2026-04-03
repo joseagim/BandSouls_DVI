@@ -60,6 +60,13 @@ import thiefHitJSON from '../../assets/animations/enemy_thief/thief_hit_atlas.js
 import thiefDie from '../../assets/animations/enemy_thief/thief_die.png'
 import thiefDieJSON from '../../assets/animations/enemy_thief/thief_die_atlas.json'
 
+// boss - beethoven
+import beethovenSprite from '../../assets/bosses/beethoven/beethoven.png'
+import beethovenAlert from '../../assets/bosses/beethoven/alert.png'
+import beethovenAttackSheet from '../../assets/bosses/beethoven/attack.png'
+import beethovenAttackAtlas from '../../assets/bosses/beethoven/attack.json'
+import bossPatterns from '../../assets/bosses/beethoven/bossPatterns.json'
+
 // hud
 import HUDhealthBorder from '../../assets/sprites/hud/health-bar/border.png'
 import HUDhealthBar from '../../assets/sprites/hud/health-bar/bar.png'
@@ -175,6 +182,12 @@ export default class Boot extends Phaser.Scene {
     this.load.atlas('thief_move', thiefMove, thiefMoveJSON);
     this.load.atlas('thief_hit', thiefHit, thiefHitJSON);
     this.load.atlas('thief_die', thiefDie, thiefDieJSON);
+
+    // boss - beethoven
+    this.load.image('beethoven',        beethovenSprite);
+    this.load.image('beethoven_alert',  beethovenAlert);
+    this.load.atlas('beethoven_attack', beethovenAttackSheet, beethovenAttackAtlas);
+    this.cache.json.add('bossPatterns', bossPatterns);
 
     // hud
     this.load.image('hud_health_border', HUDhealthBorder);

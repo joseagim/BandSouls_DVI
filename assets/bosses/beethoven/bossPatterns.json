@@ -1,0 +1,96 @@
+{
+    "patterns": [
+        {
+            "id": "prueba",
+            "description": "Uno en cada altura",
+            "attacks": [
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 1
+                },
+                {
+                    "wait": 100,
+                    "alert": 1000,
+                    "pos": 2
+                },
+                {
+                    "wait": 200,
+                    "alert": 1000,
+                    "pos": 3
+                },
+                {
+                    "wait": 300,
+                    "alert": 1000,
+                    "pos": 4
+                },
+                {
+                    "wait": 400,
+                    "alert": 1000,
+                    "pos": 5
+                },
+                {
+                    "wait": 500,
+                    "alert": 1000,
+                    "pos": 6
+                },
+                {
+                    "wait": 600,
+                    "alert": 1000,
+                    "pos": 7
+                },
+                {
+                    "wait": 700,
+                    "alert": 1000,
+                    "pos": 8
+                }
+            ]
+        },
+        {
+            "id": "prueba",
+            "description": "Uno en cada altura",
+            "attacks": [
+                {
+                    "wait": 700,
+                    "alert": 1000,
+                    "pos": 1
+                },
+                {
+                    "wait": 600,
+                    "alert": 1000,
+                    "pos": 2
+                },
+                {
+                    "wait": 500,
+                    "alert": 1000,
+                    "pos": 3
+                },
+                {
+                    "wait": 400,
+                    "alert": 1000,
+                    "pos": 4
+                },
+                {
+                    "wait": 300,
+                    "alert": 1000,
+                    "pos": 5
+                },
+                {
+                    "wait": 200,
+                    "alert": 1000,
+                    "pos": 6
+                },
+                {
+                    "wait": 100,
+                    "alert": 1000,
+                    "pos": 7
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 8
+                }
+            ]
+        }
+    ]
+}

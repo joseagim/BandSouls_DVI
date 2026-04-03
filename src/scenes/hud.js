@@ -59,6 +59,79 @@ export default class HUD extends Phaser.Scene {
             this.healthBar.setValue(percentage);
         });
 
+        // ─── Barra de vida del Boss (abajo a la derecha) ────────────────────────
+        this._bossBarContainer = this.add.container(0, 0).setScrollFactor(0).setVisible(false);
+        this._bossBarContainer.setDepth(200);
+
+        const barW   = 280;  // ancho total de la barra
+        const barH   = 18;
+        const barX   = this.scale.width  - barW - 20;  // borde derecho con margen
+        const barY   = this.scale.height - 60;          // mismo nivel que la barra del jugador
+
+        // Fondo semitransparente detrás de toda la sección
+        const bgPanel = this.add.graphics()
+            .fillStyle(0x000000, 0.55)
+            .fillRoundedRect(barX - 10, barY - 28, barW + 20, barH + 42, 6);
+
+        // Etiqueta con el nombre del boss
+        const bossLabel = this.add.text(barX, barY - 24, 'BEETHOVEN', {
+            fontSize: '14px',
+            fill: '#ffcc00',
+            fontFamily: '"System-ui", Courier, monospace',
+            fontStyle: 'bold',
+            stroke: '#000000',
+            strokeThickness: 3
+        }).setOrigin(0, 0);
+
+        // Fondo rojo oscuro de la barra
+        const barBg = this.add.graphics()
+            .fillStyle(0x550000, 1)
+            .fillRect(barX, barY, barW, barH);
+
+        // Relleno rojo brillante (vida actual)
+        this._bossHealthFill = this.add.graphics();
+        this._bossHealthFill.fillStyle(0xff2222, 1);
+        this._bossHealthFill.fillRect(barX, barY, barW, barH);
+
+        // Borde de la barra
+        const barBorder = this.add.graphics()
+            .lineStyle(2, 0xffffff, 0.8)
+            .strokeRect(barX, barY, barW, barH);
+
+        // Texto de porcentaje de vida
+        this._bossHealthText = this.add.text(barX + barW / 2, barY + barH / 2, '100%', {
+            fontSize: '12px',
+            fill: '#ffffff',
+            fontFamily: '"System-ui", Courier, monospace',
+            stroke: '#000000',
+            strokeThickness: 2
+        }).setOrigin(0.5, 0.5);
+
+        this._bossBarBounds = { x: barX, y: barY, w: barW, h: barH };
+
+        this._bossBarContainer.add([bgPanel, bossLabel, barBg, this._bossHealthFill, barBorder, this._bossHealthText]);
+
+        // Escuchar actualizaciones de vida del boss
+        this.game.events.on('bossHealthUpdate', (current, max) => {
+            this._bossBarContainer.setVisible(true);
+            const pct    = Math.max(0, Math.min(1, current / max));
+            const { x, y, w, h } = this._bossBarBounds;
+            this._bossHealthFill.clear();
+            // Color: verde > 50%, amarillo > 25%, rojo <= 25%
+            const color = pct > 0.5 ? 0xff2222 : pct > 0.25 ? 0xff8800 : 0xff0000;
+            this._bossHealthFill.fillStyle(color, 1);
+            this._bossHealthFill.fillRect(x, y, w * pct, h);
+            this._bossHealthText.setText(Math.ceil(pct * 100) + '%');
+        });
+
+        // Al morir el boss, ocultar la barra tras un breve delay
+        this.game.events.on('bossDefeated', () => {
+            this.time.delayedCall(2000, () => {
+                this._bossBarContainer.setVisible(false);
+            });
+        });
+
+
         // El botón de dash se crea en _createWeaponSelector para posicionarlo a su derecha
         this._dashButton = null;
         this.game.events.on('dashStart', (cooldown) => {

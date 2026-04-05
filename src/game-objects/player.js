@@ -160,6 +160,23 @@ export default class Player extends actor {
         this.updateHealth();
     }
 
+    /**
+     * Elimina un trinket del jugador, revierte sus efectos y actualiza el registro.
+     * @param {Item} item
+     */
+    removeTrinket(item) {
+        const idx = this.trinket.indexOf(item);
+        if (idx === -1) return;
+
+        item.removeFrom(this);
+        this.trinket.splice(idx, 1);
+
+        const savedTrinkets = this.scene.registry.get('trinkets') || [];
+        const regIdx = savedTrinkets.findIndex(t => t.id === item.id);
+        if (regIdx !== -1) savedTrinkets.splice(regIdx, 1);
+        this.scene.registry.set('trinkets', savedTrinkets);
+    }
+
     get arma() {
         return this.gunManager.currentWeapon;
     }
@@ -243,7 +260,7 @@ export default class Player extends actor {
     }
 
     updateHealth() {
-        this.scene.events.emit('updateHealth', this);
+        this.scene.game.events.emit('updateHealth', this);
     }
 
     die() {

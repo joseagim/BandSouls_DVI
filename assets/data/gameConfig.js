@@ -14,6 +14,20 @@ const gameConfig = {
             is_knockback: false,
         },
 
+        thief: {
+            life: 20,
+            speed: 100,
+            defenseMod: 1,
+            attackMod: 1,
+            attackDamage: 10,
+            attackRange: 80,
+            attackRadius: 20,
+            attackCooldown: 1000,
+            canAttack: true,
+            hasDamaged: false,
+            is_knockback: false,
+        },
+
         redVelvet: {
             life: 500,
             speed: 20,
@@ -43,23 +57,32 @@ const gameConfig = {
     // This tells the pool for the wave manager which enemies to keep track of
     poolData: [
         { shadow: [] },
+        { thief: [] },
         { redVelvet: [] },
     ],
 
     waves: [
         {
             waveNumber: 1,
-            enemies: [{ type: "shadow", count: 1, spawnDelay: 2000 }],
+            enemies: [
+                { type: "shadow", count: 1, spawnDelay: 2000 }
+            ],
             delay: 3000,
         },
         {
             waveNumber: 2,
-            enemies: [{ type: "shadow", count: 3, spawnDelay: 3000 }],
+            enemies: [
+                { type: "shadow", count: 3, spawnDelay: 3000 }, 
+                { type: "thief", count: 1, spawnDelay: 3000 }
+            ],
             delay: 5000,
         },
         {
             waveNumber: 3,
-            enemies: [{ type: "shadow", count: 100, spawnDelay: 2000 }],
+            enemies: [
+                { type: "shadow", count: 5, spawnDelay: 2000 }, 
+                { type: "thief", count: 3, spawnDelay: 2000 }
+            ],
             delay: 3000,
         },
     ],

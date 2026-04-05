@@ -217,25 +217,27 @@ export default class Player extends actor {
 
         this.body.setVelocity(0);
 
+        const lockDirection = this.arma.getAnimSuffix() === '-keyboard' && this.arma.isCharging;
+
         if (this.keyA.isDown) {
             isHorizontal = true;
-            this.lastDirection = 'left';
+            if (!lockDirection) this.lastDirection = 'left';
             this.body.setVelocityX(-this.speed);
 
         } else if (this.keyD.isDown) {
             isHorizontal = true;
-            this.lastDirection = 'right';
+            if (!lockDirection) this.lastDirection = 'right';
             this.body.setVelocityX(this.speed);
         }
 
 
         if (this.keyW.isDown) {
             isHorizontal = false;
-            this.lastDirection = 'up';
+            if (!lockDirection) this.lastDirection = 'up';
             this.body.setVelocityY(-this.speed);
         } else if (this.keyS.isDown) {
             isHorizontal = false;
-            this.lastDirection = 'down';
+            if (!lockDirection) this.lastDirection = 'down';
             this.body.setVelocityY(this.speed);;
         }
 
@@ -352,8 +354,11 @@ export default class Player extends actor {
         const vel = this.body.velocity;
         const suffix = this.arma.getAnimSuffix();
 
-        // si el teclado está cargando, animación de keyboard attack
-        if (this.arma.isCharging && suffix === '-keyboard') {
+        // si el teclado está cargando, animación de keyboard attack (sin reiniciarla si ya está en curso)
+        if (this.arma.getAnimSuffix() === '-keyboard' && this.arma.isCharging) {
+            const currentKey = this.anims.currentAnim?.key;
+            if (currentKey && currentKey.endsWith('-keyboard') && currentKey.startsWith('attack-')) return;
+
             switch (this.lastDirection) {
                 case 'left':
                     this.flipX = true;
@@ -736,7 +741,7 @@ export default class Player extends actor {
                 start: 0,
                 end: 6
             }),
-            frameRate: 8,
+            frameRate: 6.5,
             repeat: -1
         });
         this.scene.anims.create({
@@ -746,7 +751,7 @@ export default class Player extends actor {
                 start: 0,
                 end: 6
             }),
-            frameRate: 8,
+            frameRate: 6.5,
             repeat: -1
         });
         this.scene.anims.create({
@@ -756,7 +761,7 @@ export default class Player extends actor {
                 start: 0,
                 end: 6
             }),
-            frameRate: 8,
+            frameRate: 6.5,
             repeat: -1
         });
 

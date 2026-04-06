@@ -74,6 +74,7 @@ export default class Keyboard extends Arma {
     attack(enemy, attackMod, hurtbox) {
         // para poder atravesar enemigos y que no se pare
         if (hurtbox.enemiesHit.has(enemy)) return;
+
         enemy.getDamage(this.damage * attackMod);
         enemy.knockback();
         hurtbox.enemiesHit.add(enemy);
@@ -118,6 +119,7 @@ export default class Keyboard extends Arma {
     _fireProjectile() {
         this.isCharging = false;
 
+        this.scene.soundManager.playWithPitch('teclado_attk');
         // le ponemos la velocidad que tenía antes
         this.player.speed = this._normalSpeed;
         this.player.canDash = true;

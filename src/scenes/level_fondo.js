@@ -103,7 +103,7 @@ export default class Level_Fondo extends Level {
             });
         }
 
-        this.events.on('allWavesComplete', () => {
+        this.game.events.on('allWavesComplete', () => {
             // Un poco más arriba del centro del mapa (asumiendo 1280x720 como tamaño)
             const mapCenterX = 1280 / 2;
             const mapCenterY = 736 / 2 - 150;

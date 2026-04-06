@@ -1,0 +1,195 @@
+import Phaser from 'phaser';
+import Enemy from './enemy';
+
+/**
+ * Clase que representa el primer enemigo del juego. Es un enemigo de prueba que persigue al jugador.
+ */
+export default class EnemyShadow extends Enemy {
+
+    /**
+     * Constructor del jugador
+     * @param {Phaser.Scene} scene Escena a la que pertenece el jugador
+     * @param {number} x Coordenada X
+     * @param {number} y Coordenada Y
+     */
+    constructor(scene, x, y, stats) {
+        super(scene, x, y, 'shadow', stats);
+
+        // Estadísticas propias del enemigo
+        this.attackDamage = stats.attackDamage;
+        this.attackRange = stats.attackRange;
+        this.attackRadius = stats.attackRadius;
+        this.attackCooldown = stats.attackCooldown;
+        this.canAttack = stats.canAttack;
+        this.hasDamaged = stats.hasDamaged;
+        this.is_knockback = stats.is_knockback;
+
+        // Animaciones
+        this.scene.anims.create({
+            key : 'shadow_idle',
+            frames: this.anims.generateFrameNames('shadow_idle',{ prefix: 'idle-', start: 1, end: 2 } ),
+            frameRate: 5,
+            repeat : -1
+        });
+
+        this.scene.anims.create({
+            key : 'shadow_move',
+            frames: this.anims.generateFrameNames('shadow_move',{ prefix: 'move-', start: 1, end: 9 } ),
+            frameRate: 10,
+            repeat : -1
+        });
+
+        this.scene.anims.create({
+            key : 'shadow_hit',
+            frames: this.anims.generateFrameNames('shadow_hit',{ prefix: 'hit-', start: 1, end: 3 } ),
+            frameRate: 4,
+            repeat : -1
+        });
+        
+        this.scene.anims.create({
+            key: 'shadow_die',
+            frames: this.anims.generateFrameNames('shadow_die',{ prefix: 'die-', start: 1, end: 16 } ),
+            frameRate: 20,
+            repeat : 0
+        })
+
+        this.on('animationcomplete', (anim) =>{
+            if(anim.key =='shadow_die'){
+                this.setActive(false);
+                this.setVisible(false);
+                this.body.enable = false;
+            }
+        })
+    
+        // bs escalado extraño para los colliders
+        this.setScale(1.5);
+        this.isDead = false;
+        this.body.setSize(16, 16);
+        this.body.setOffset(9, 15);
+        this.play('shadow_idle',true);
+        this.is_moving = false;
+        this.label = this.scene.add.text(1080,10,"",{fontSize: 20});
+    }
+
+    spawn(x, y) {
+        super.spawn(x, y);
+        this.setTexture('shadow_move');
+    }
+
+    die() {
+        super.die();
+        this.setTexture('shadow_die');
+        this.play('shadow_die');
+        //this.body.enable = false;
+
+        /*
+        this.death_timer = this.scene.time.delayedCall(800,() => {
+            this.setActive(false);
+            this.setVisible(false);
+
+
+            //this.play('shadow_idle');
+        }) 
+            */
+ 
+
+    }
+
+    attack(player) {
+        if (this.canAttack) {
+            player.getDamage(this.attackDamage * this.attackMod);
+            this.canAttack = false;
+            
+
+            this.scene.time.delayedCall(this.attackCooldown, () => {
+                this.canAttack = true;
+            })
+        }
+    }
+
+    playHit() {
+        if (this.life <= 0) return;
+        this.play('shadow_hit', true);
+    }
+
+    move(dt) {
+        if (this.scene.easystar) {
+            this._moveWithPathfinding(dt);
+        } else {
+            this.scene.physics.moveToObject(this, this.scene.player, this.speed);
+            this.play('shadow_move', true);
+        }
+    }
+
+    _moveWithPathfinding(dt) {
+        const tileSize = this.scene.pathfinderTileSize;
+        const startX = Math.floor(this.body.center.x / tileSize);
+        const startY = Math.floor(this.body.center.y / tileSize);
+        const endX = Math.floor(this.scene.player.body.center.x / tileSize);
+        const endY = Math.floor(this.scene.player.body.center.y / tileSize);
+
+        // Detección de atasco: si el enemigo no se ha movido más de 4px en 600ms, resetea el path
+        this._stuckTimer += dt;
+        if (this._stuckTimer >= 600) {
+            const moved = Phaser.Math.Distance.Between(this.body.center.x, this.body.center.y, this._lastPos.x, this._lastPos.y);
+            if (moved < 4) {
+                this.currentPath = null;
+                this.pathfindingCooldown = false;
+            }
+            this._lastPos = { x: this.body.center.x, y: this.body.center.y };
+            this._stuckTimer = 0;
+        }
+
+        if (!this.pathfindingCooldown) {
+            this.pathfindingCooldown = true;
+            this.scene.easystar.findPath(startX, startY, endX, endY, (path) => {
+                if (path && path.length > 1) {
+                    this.currentPath = path;
+                    this.pathIndex = 1;
+                } else {
+                    this.currentPath = null;
+                }
+            });
+            this.scene.time.delayedCall(400, () => {
+                if (this.active) this.pathfindingCooldown = false;
+            });
+        }
+
+        if (this.currentPath && this.pathIndex < this.currentPath.length) {
+            const node = this.currentPath[this.pathIndex];
+            const targetX = node.x * tileSize + tileSize / 2;
+            const targetY = node.y * tileSize + tileSize / 2;
+
+            if (Phaser.Math.Distance.Between(this.body.center.x, this.body.center.y, targetX, targetY) < tileSize * 0.6) {
+                this.pathIndex++;
+            }
+
+            if (this.pathIndex < this.currentPath.length) {
+                const next = this.currentPath[this.pathIndex];
+                const nextX = next.x * tileSize + tileSize / 2;
+                const nextY = next.y * tileSize + tileSize / 2;
+
+                let dx = nextX - this.body.center.x;
+                let dy = nextY - this.body.center.y;
+                const len = Math.sqrt(dx * dx + dy * dy);
+                if (len > 0) { dx /= len; dy /= len; }
+
+                if ((this.body.blocked.left && dx < 0) || (this.body.blocked.right && dx > 0)) dx = 0;
+                if ((this.body.blocked.up && dy < 0) || (this.body.blocked.down && dy > 0)) dy = 0;
+
+                const newLen = Math.sqrt(dx * dx + dy * dy);
+                if (newLen > 0) {
+                    this.body.setVelocity(dx / newLen * this.speed, dy / newLen * this.speed);
+                } else {
+                    this.currentPath = null;
+                    this.pathfindingCooldown = false;
+                }
+            }
+        } else {
+            this.scene.physics.moveToObject(this, this.scene.player, this.speed);
+        }
+
+        this.play('shadow_move', true);
+    }
+
+}

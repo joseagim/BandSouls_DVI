@@ -43,8 +43,8 @@ import weaponUnselected from '../../assets/sprites/weapons/unselected-frame.png'
 // enemies - shadow
 import shadowIdle from '../../assets/animations/enemy_shadow/shadow_idle.png'
 import shadowIdleJSON from '../../assets/animations/enemy_shadow/shadow_idle_atlas.json'
-import shadowWalk from '../../assets/animations/enemy_shadow/shadow_move.png'
-import shadowWalkJSON from '../../assets/animations/enemy_shadow/shadow_move_atlas.json'
+import shadowMove from '../../assets/animations/enemy_shadow/shadow_move.png'
+import shadowMoveJSON from '../../assets/animations/enemy_shadow/shadow_move_atlas.json'
 import shadowHit from '../../assets/animations/enemy_shadow/shadow_hit.png'
 import shadowHitJSON from '../../assets/animations/enemy_shadow/shadow_hit_atlas.json'
 import shadowDie from '../../assets/animations/enemy_shadow/shadow_die.png'
@@ -53,8 +53,8 @@ import shadowDieJSON from '../../assets/animations/enemy_shadow/shadow_die_atlas
 // enemies - thief
 import thiefIdle from '../../assets/animations/enemy_thief/thief_idle.png'
 import thiefIdleJSON from '../../assets/animations/enemy_thief/thief_idle_atlas.json'
-import thiefWalk from '../../assets/animations/enemy_thief/thief_move.png'
-import thiefWalkJSON from '../../assets/animations/enemy_thief/thief_move_atlas.json'
+import thiefMove from '../../assets/animations/enemy_thief/thief_move.png'
+import thiefMoveJSON from '../../assets/animations/enemy_thief/thief_move_atlas.json'
 import thiefHit from '../../assets/animations/enemy_thief/thief_hit.png'
 import thiefHitJSON from '../../assets/animations/enemy_thief/thief_hit_atlas.json'
 import thiefDie from '../../assets/animations/enemy_thief/thief_die.png'
@@ -166,13 +166,13 @@ export default class Boot extends Phaser.Scene {
 
     // enemies - shadow
     this.load.atlas('shadow_idle', shadowIdle, shadowIdleJSON);
-    this.load.atlas('shadow_walk', shadowWalk, shadowWalkJSON);
+    this.load.atlas('shadow_move', shadowMove, shadowMoveJSON);
     this.load.atlas('shadow_hit', shadowHit, shadowHitJSON);
     this.load.atlas('shadow_die', shadowDie, shadowDieJSON);
 
     // enemies - thief
     this.load.atlas('thief_idle', thiefIdle, thiefIdleJSON);
-    this.load.atlas('thief_walk', thiefWalk, thiefWalkJSON);
+    this.load.atlas('thief_move', thiefMove, thiefMoveJSON);
     this.load.atlas('thief_hit', thiefHit, thiefHitJSON);
     this.load.atlas('thief_die', thiefDie, thiefDieJSON);
 

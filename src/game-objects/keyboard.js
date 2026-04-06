@@ -94,6 +94,16 @@ export default class Keyboard extends Arma {
         this.isCharging = true;
         this.isAttacking = true;
 
+        // fijar la dirección del sprite según hacia dónde apunta el mouse
+        const pointer = this.scene.input.activePointer;
+        const worldPoint = pointer.positionToCamera(this.scene.cameras.main);
+        const angle = Phaser.Math.Angle.Between(this.player.x, this.player.y, worldPoint.x, worldPoint.y);
+        const deg = Phaser.Math.RadToDeg(angle);
+        if (deg > -45 && deg <= 45) this.player.lastDirection = 'right';
+        else if (deg > 45 && deg <= 135) this.player.lastDirection = 'down';
+        else if (deg > 135 || deg <= -135) this.player.lastDirection = 'left';
+        else this.player.lastDirection = 'up';
+
         // bajar la velocidad del personaje cuando vaya a atacar
         this._normalSpeed = this.player.speed;
         this.player.speed *= this.chargeSpeedModifier;

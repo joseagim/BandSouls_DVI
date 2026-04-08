@@ -135,6 +135,11 @@ export default class Enemy extends actor {
 
     }
 
+    getDamage(dmg) {
+        super.getDamage(dmg);
+        this.knockback();
+    }
+
     move(dt) {
         if (this.scene.easystar) {
             this._moveWithPathfinding(dt);

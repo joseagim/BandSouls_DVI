@@ -78,23 +78,20 @@ export default class RedVelvetEnemy extends Enemy {
         if (!this.canAttackRanged) return;
         this.canAttackRanged = false;
         this.isAttacking = true;
- 
+
         const beamLength = this.rangedAttackRange;
         const beamThickness = 40;
         const warningDuration = 600;  // ms before beam fires
         const beamDuration = 400;     // ms beam stays active
+        const circleRadius = 12;      // small collision circles
+        const numCircles = Math.ceil(beamLength / (circleRadius * 2)); // number of circles along beam
 
         const playerX = this.scene.player.x;
         const playerY = this.scene.player.y;
- 
-        // Snapshot the angle to the player at the moment of casting
-        const angle = Phaser.Math.Angle.Between(
-            this.x, this.y,
-            playerX, playerY
-        );
- 
-        // --- Phase 1: warning rectangle ---
-        // Centered halfway along the beam direction from the enemy's position
+
+        const angle = Phaser.Math.Angle.Between(this.x, this.y, playerX, playerY);
+
+        // --- Warning graphics ---
         const warningGfx = this.scene.add.rectangle(
             this.x + Math.cos(angle) * beamLength / 2,
             this.y + Math.sin(angle) * beamLength / 2,
@@ -105,8 +102,7 @@ export default class RedVelvetEnemy extends Enemy {
         );
         warningGfx.setRotation(angle);
         warningGfx.setDepth(5);
- 
-        // Pulse the warning alpha so it's clearly telegraphed
+
         this.scene.tweens.add({
             targets: warningGfx,
             alpha: { from: 0.15, to: 0.55 },
@@ -114,17 +110,14 @@ export default class RedVelvetEnemy extends Enemy {
             yoyo: true,
             repeat: Math.floor(warningDuration / 360)
         });
- 
-        // --- Phase 2: actual beam ---
+
         this.scene.time.delayedCall(warningDuration, () => {
             warningGfx.destroy();
             if (!this.active) return;
- 
-            const fireAngle = Phaser.Math.Angle.Between(
-                this.x, this.y,
-                playerX, playerY
-            );
- 
+
+            const fireAngle = Phaser.Math.Angle.Between(this.x, this.y, playerX, playerY);
+
+            // Visual beam
             const beamGfx = this.scene.add.rectangle(
                 this.x + Math.cos(fireAngle) * beamLength / 2,
                 this.y + Math.sin(fireAngle) * beamLength / 2,
@@ -135,28 +128,36 @@ export default class RedVelvetEnemy extends Enemy {
             );
             beamGfx.setRotation(fireAngle);
             beamGfx.setDepth(5);
- 
-            // Physics body on the beam for overlap detection
-            this.scene.physics.add.existing(beamGfx);
-            beamGfx.body.setSize(beamLength, beamThickness - 5);
-            beamGfx.body.allowGravity = false;
-            beamGfx.body.immovable = true;
-            beamGfx._hasHit = false;
- 
-            const beamOverlap = this.scene.physics.add.overlap(beamGfx, this.scene.player, (beam, player) => {
-                if (beam._hasHit) return;
-                beam._hasHit = true;
-                player.getDamage(this.attackDamage * this.attackMod);
-            });
- 
-            // Destroy beam after its active window
+
+            // --- Create multiple circle hurtboxes along the beam ---
+            const beamHurtboxes = [];
+            for (let i = 0; i < numCircles; i++) {
+                const offset = (i + 0.5) * (beamLength / numCircles);
+                const spawnX = this.x + Math.cos(fireAngle) * offset;
+                const spawnY = this.y + Math.sin(fireAngle) * offset;
+
+                const circle = this.scene.add.circle(spawnX, spawnY, circleRadius, 0xff4444, 0);
+                this.scene.physics.add.existing(circle);
+                circle.body.allowGravity = false;
+                circle.body.immovable = true;
+                circle._hasHit = false;
+                beamHurtboxes.push(circle);
+
+                this.scene.physics.add.overlap(circle, this.scene.player, (c, player) => {
+                    if (c._hasHit) return;
+                    c._hasHit = true;
+                    player.getDamage(this.attackDamage * this.attackMod);
+                });
+            }
+
+            // Remove after beamDuration
             this.scene.time.delayedCall(beamDuration, () => {
-                this.scene.physics.world.removeCollider(beamOverlap);
                 beamGfx.destroy();
+                beamHurtboxes.forEach(c => c.destroy());
                 this.isAttacking = false;
             });
- 
-            // Restore ranged attack after full cooldown (timed from when the beam fires)
+
+            // Restore ranged attack after cooldown
             this.scene.time.delayedCall(this.rangedAttackCooldown, () => {
                 this.canAttackRanged = true;
             });
@@ -269,7 +270,6 @@ export default class RedVelvetEnemy extends Enemy {
         }
 
         // uptade state
-        
         this.updateState();
 
         if (!this.is_knockback && this.state !== this.states.MOVING) {
@@ -286,7 +286,9 @@ export default class RedVelvetEnemy extends Enemy {
         }
 
         else if (this.state === this.states.FLEEING) {
-            this.flee(dt);
+            if (!this.is_knockback) {
+                this.flee(dt);
+            }
         }
 
         else {

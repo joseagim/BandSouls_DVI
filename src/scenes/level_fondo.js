@@ -79,6 +79,8 @@ export default class Level_Fondo extends Level {
         this.easystar.enableDiagonals();
         this.easystar.disableCornerCutting();
         this.pathfinderTileSize = map.tileWidth;
+        this.gridWidth = map.width;
+        this.gridHeight = map.height;
 
         // Configurar cámara
         this.cameras.main.setBounds(0, 0, 1280, 720);

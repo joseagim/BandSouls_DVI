@@ -15,6 +15,7 @@ export default class Enemy extends actor {
     constructor(scene, x, y, tag, stats) {
         super(scene, x, y, tag, stats);
         this.ContactDamage = 10;
+        this.contacAttackCooldown = 1000;
         this.canContactAttack = true;
     }
 
@@ -78,7 +79,7 @@ export default class Enemy extends actor {
             this.canContactAttack = false;
             
 
-            this.scene.time.delayedCall(this.attackCooldown, () => {
+            this.scene.time.delayedCall(this.contacAttackCooldown, () => {
                 this.canContactAttack = true;
             })
         }
@@ -100,12 +101,7 @@ export default class Enemy extends actor {
         
 
 
-        if (!this.scene.physics.overlap(this, this.scene.player) && !this.is_knockback) {
-            this.move(dt);
-        }
-        else {//this.body.setVelocity(0);
-            this.is_moving = false;
-        }
+
     }
 
     playHit() {

@@ -66,6 +66,12 @@ import kamikazeWalkJSON from '../../assets/animations/enemy_kamikaze/kamikaze_wa
 import kamikazeDie from '../../assets/animations/enemy_kamikaze/kamikaze_die.png'
 import kamikazeDieJSON from '../../assets/animations/enemy_kamikaze/kamikaze_die_atlas.json'
 
+// boss - beethoven
+import beethovenSprite from '../../assets/bosses/beethoven/beethoven.png'
+import beethovenAlert from '../../assets/bosses/beethoven/alert.png'
+import beethovenAttackSheet from '../../assets/bosses/beethoven/attack.png'
+import beethovenAttackAtlas from '../../assets/bosses/beethoven/attack.json'
+import bossPatterns from '../../assets/bosses/beethoven/bossPatterns.json'
 
 // hud
 import HUDhealthBorder from '../../assets/sprites/hud/health-bar/border.png'
@@ -107,7 +113,7 @@ import item_bumble_pick from '../../assets/sprites/items/bumble_pick.png';
 import item_metronome from '../../assets/sprites/items/metronome.png';
 
 // sound-fx
-import SoundManager from '../game-objects/sound-manager.js'; 
+import SoundManager from '../game-objects/sound-manager.js';
 import movement from '../../assets/sounds/fx/movement-player.mp3';
 import dash from '../../assets/sounds/fx/dash.mp3';
 import guitar_attk from '../../assets/sounds/fx/guitar-attk.mp3';
@@ -189,6 +195,11 @@ export default class Boot extends Phaser.Scene {
     // enemy - kamikaze
     this.load.atlas('kamikaze_walk', kamikazeWalk, kamikazeWalkJSON);
     this.load.atlas('kamikaze_die', kamikazeDie, kamikazeDieJSON);
+    // boss - beethoven
+    this.load.image('beethoven', beethovenSprite);
+    this.load.image('beethoven_alert', beethovenAlert);
+    this.load.atlas('beethoven_attack', beethovenAttackSheet, beethovenAttackAtlas);
+    this.cache.json.add('bossPatterns', bossPatterns);
 
     // hud
     this.load.image('hud_health_border', HUDhealthBorder);
@@ -328,7 +339,7 @@ export default class Boot extends Phaser.Scene {
       if (this.activeOption == this.startText) {
         this.soundManager.fadeOutMusic(500);
         this.time.delayedCall(500, () => {
-          this.scene.start('level_fondo'); 
+          this.scene.start('level_fondo');
         });
       } else if (this.activeOption == this.optionsText) {
         alert("se mostraria menu de opciones: audio, brillo, etc...")

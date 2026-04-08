@@ -1,7 +1,8 @@
 import Phaser from 'phaser';
-import EnemyShadow from './enemyShadow';
-import EnemyThief from './enemyThief';
-import KamikazeEnemy from './kamikaze_enemy';
+import EnemyShadow from './enemies/enemyShadow';
+import EnemyThief from './enemies/enemyThief';
+import KamikazeEnemy from './enemies/kamikaze_enemy';
+import EnemyBeethoven from './enemies/bossBeethoven';
 
 export default class EnemyFactory {
     constructor(scene, enemyStats) {
@@ -10,8 +11,9 @@ export default class EnemyFactory {
         console.log("enemyStats:", enemyStats);
         this.factory = {
             'shadow': (stats) => { return new EnemyShadow(this.scene, 0, 0, stats) },
-            'thief':  (stats) => { return new EnemyThief(this.scene, 0, 0, stats) },
+            'thief': (stats) => { return new EnemyThief(this.scene, 0, 0, stats) },
             'kamikaze': (stats) => { return new KamikazeEnemy(this.scene, 0, 0, stats) },
+            'beethoven': (stats) => { return new EnemyBeethoven(this.scene, 0, 0, stats) },
         };
     }
 

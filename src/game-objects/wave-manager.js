@@ -33,6 +33,12 @@ export default class WaveManager {
     }
 
     enemyDies() {
+        // Guardia contra doble llamada: la física a 120fps puede disparar
+        // el callback de overlap 2 veces por frame de render para el mismo
+        // par arma-enemigo. Sin esta guardia, la siguiente oleada se inicia
+        // dos veces, generando dos instancias del boss simultáneas.
+        if (this.enemies <= 0) return;
+
         // cuando un enemigo muera compruebo si he eliminado a todos y sigo con la siguiente oleada
         this.enemies--;
 

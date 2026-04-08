@@ -56,6 +56,21 @@ const gameConfig = {
             is_knockback: false,
         },
 
+        beethoven: {
+            life: 300,
+            speed: 0,
+            defenseMod: 1,
+            attackMod: 1,
+            attackDamage: 20,      // daño de sus proyectiles
+            collisionDamage: 5,   // daño por contacto
+            attackRange: 0,
+            attackRadius: 0,
+            attackCooldown: 3000,  // ms entre patrones
+            canAttack: true,
+            hasDamaged: false,
+            is_knockback: false,
+        },
+
     },
 
     playerBaseStats: {
@@ -75,20 +90,21 @@ const gameConfig = {
         { thief: [] },
         { kamikaze: [] },
         { redVelvet: [] },
+        { beethoven: [] },
     ],
 
     waves: [
         {
             waveNumber: 1,
             enemies: [
-                { type: "shadow", count: 1, spawnDelay: 2000 }
+                { type: "beethoven", count: 1, spawnDelay: 0 }
             ],
             delay: 3000,
         },
         {
             waveNumber: 2,
             enemies: [
-                { type: "shadow", count: 3, spawnDelay: 3000 }, 
+                { type: "shadow", count: 3, spawnDelay: 3000 },
                 { type: "thief", count: 1, spawnDelay: 3000 },
                 { type: "kamikaze", count: 2, spawnDelay: 4000 }
             ],
@@ -97,8 +113,15 @@ const gameConfig = {
         {
             waveNumber: 3,
             enemies: [
-                { type: "shadow", count: 5, spawnDelay: 2000 }, 
-                { type: "thief", count: 3, spawnDelay: 2000 }
+                { type: "beethoven", count: 1, spawnDelay: 0 }
+            ],
+            delay: 5000,
+        },
+        {
+            waveNumber: 4,
+            enemies: [
+                { type: "shadow", count: 5, spawnDelay: 2000 },
+                { type: "thief", count: 3, spawnDelay: 3000 }
             ],
             delay: 3000,
         },

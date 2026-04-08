@@ -37,10 +37,12 @@ export default class Level extends Phaser.Scene {
             'guitar_attk': { key: 'guitar_attk', volume: 0.5 },
             'enemy_hurt': { key: 'enemy_hurt' },
             'get_hit': { key: 'get_hit' },
-            'teclado_attk': { key: 'teclado_attk', volume: 0.5 },
+            'teclado_attk': { key: 'teclado_attk', volume: 1 },
             'bajo_attk': { key: 'bajo_attk', volume: 100000 },
             'drum_attk': { key: 'drum_attk', volume: 0.5 },
-            'level1_music': { key: 'level1_music', loop: true, volume: 0.7, category: 'music' }
+            'level1_music': { key: 'level1_music', loop: true, volume: 0.7, category: 'music' },
+            'fuse_kamikaze': { key: 'fuse_kamikaze', volume: 0.5 },
+            'explosion_kamikaze': { key: 'explosion_kamikaze', volume: 0.7 }
         })
         const playerStats = this.cache.json.get('data').playerBaseStats;
         this.player = new Player(this, 400, 400, playerStats);

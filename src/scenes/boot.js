@@ -60,6 +60,13 @@ import thiefHitJSON from '../../assets/animations/enemy_thief/thief_hit_atlas.js
 import thiefDie from '../../assets/animations/enemy_thief/thief_die.png'
 import thiefDieJSON from '../../assets/animations/enemy_thief/thief_die_atlas.json'
 
+// enemy - kamikaze
+import kamikazeWalk from '../../assets/animations/enemy_kamikaze/kamikaze_walk.png'
+import kamikazeWalkJSON from '../../assets/animations/enemy_kamikaze/kamikaze_walk_atlas.json'
+import kamikazeDie from '../../assets/animations/enemy_kamikaze/kamikaze_die.png'
+import kamikazeDieJSON from '../../assets/animations/enemy_kamikaze/kamikaze_die_atlas.json'
+
+
 // hud
 import HUDhealthBorder from '../../assets/sprites/hud/health-bar/border.png'
 import HUDhealthBar from '../../assets/sprites/hud/health-bar/bar.png'
@@ -109,6 +116,8 @@ import enemy_hurt_fx from '../../assets/sounds/fx/enemy_hurt.mp3';
 import teclado_attk from '../../assets/sounds/fx/teclado-attk.mp3';
 import bajo_attk from '../../assets/sounds/fx/bajo-attk.mp3';
 import drum_attk from '../../assets/sounds/fx/drum-attk.mp3';
+import fuse_kamikaze from '../../assets/sounds/fx/fuse-kamikaze.mp3';
+import explosion_kamikaze from '../../assets/sounds/fx/explosion-kamikaze.mp3';
 
 //musica
 import menu_music from '../../assets/sounds/music/menu-music.mp3';
@@ -177,6 +186,10 @@ export default class Boot extends Phaser.Scene {
     this.load.atlas('thief_hit', thiefHit, thiefHitJSON);
     this.load.atlas('thief_die', thiefDie, thiefDieJSON);
 
+    // enemy - kamikaze
+    this.load.atlas('kamikaze_walk', kamikazeWalk, kamikazeWalkJSON);
+    this.load.atlas('kamikaze_die', kamikazeDie, kamikazeDieJSON);
+
     // hud
     this.load.image('hud_health_border', HUDhealthBorder);
     this.load.image('hud_health_bar', HUDhealthBar);
@@ -218,6 +231,9 @@ export default class Boot extends Phaser.Scene {
     this.load.audio('teclado_attk', teclado_attk);
     this.load.audio('bajo_attk', bajo_attk);
     this.load.audio('drum_attk', drum_attk);
+    this.load.audio('fuse_kamikaze', fuse_kamikaze);
+    this.load.audio('explosion_kamikaze', explosion_kamikaze);
+
 
     // música
     this.load.audio('menu_music', menu_music);

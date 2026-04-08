@@ -44,6 +44,8 @@ export default class Level_Fondo extends Level {
 
         super.create();
 
+        this.spawner.spawn(500, 500, 'kamikaze');
+
         this.soundManager.play('level1_music');
 
         this.physics.add.collider(this.player, layer_edif);
@@ -77,6 +79,8 @@ export default class Level_Fondo extends Level {
         this.easystar.enableDiagonals();
         this.easystar.disableCornerCutting();
         this.pathfinderTileSize = map.tileWidth;
+        this.gridWidth = gridWidth;
+        this.gridHeight = gridHeight;
 
         // Configurar cámara
         this.cameras.main.setBounds(0, 0, 1280, 720);

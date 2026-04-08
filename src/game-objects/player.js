@@ -77,6 +77,7 @@ export default class Player extends actor {
                     this.soundManager.playWithPitch('drum_attk');
                 } else if (this.arma === this.teclado) {
                     this.arma.startCharge();
+                    //this.soundManager.playWithPitch('keyboard_attk');
                 } else {
                     this.soundManager.playWithPitch('guitar_attk');
                     this.arma.activateWeapon();

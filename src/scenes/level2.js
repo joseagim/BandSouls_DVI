@@ -44,6 +44,8 @@ export default class Level_Fondo extends Level {
         
         super.create();
 
+        // Spawn manual de kamikaze para probar
+
                 
         this.physics.add.collider(this.player,layer_objetos);
 
@@ -68,6 +70,8 @@ export default class Level_Fondo extends Level {
         this.easystar.enableDiagonals();
         this.easystar.disableCornerCutting();
         this.pathfinderTileSize = map.tileWidth;
+        this.gridWidth = gridWidth;
+        this.gridHeight = gridHeight;
 
         // Configurar cámara
         this.cameras.main.setBounds(0, 0, 1280, 720);

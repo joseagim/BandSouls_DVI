@@ -28,6 +28,20 @@ const gameConfig = {
             is_knockback: false,
         },
 
+        kamikaze: {
+            life: 1, // Vida muy baja para que muera al primer golpe
+            speed: 150,
+            defenseMod: 1,
+            attackMod: 1,
+            attackDamage: 50,
+            attackRange: 50,
+            attackRadius: 100,  // Radio de explosión
+            attackCooldown: 2000,
+            canAttack: true,
+            hasDamaged: false,
+            is_knockback: false,
+        },
+
         redVelvet: {
             life: 500,
             speed: 20,
@@ -59,6 +73,7 @@ const gameConfig = {
     poolData: [
         { shadow: [] },
         { thief: [] },
+        { kamikaze: [] },
         { redVelvet: [] },
     ],
 
@@ -74,7 +89,8 @@ const gameConfig = {
             waveNumber: 2,
             enemies: [
                 { type: "shadow", count: 3, spawnDelay: 3000 }, 
-                { type: "thief", count: 1, spawnDelay: 3000 }
+                { type: "thief", count: 1, spawnDelay: 3000 },
+                { type: "kamikaze", count: 2, spawnDelay: 4000 }
             ],
             delay: 5000,
         },

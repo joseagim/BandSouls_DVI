@@ -85,7 +85,7 @@ export default class Level extends Phaser.Scene {
                     this.gettin_hit = true;
                     this.time.delayedCall(1000, () => { this.gettin_hit = false; }, [], this);
                 }
-                enemy.attack(player);
+                enemy.attackOnContact(player);
             }
         }, null, this);
 

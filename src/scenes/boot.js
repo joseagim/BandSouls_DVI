@@ -66,6 +66,10 @@ import kamikazeWalkJSON from '../../assets/animations/enemy_kamikaze/kamikaze_wa
 import kamikazeDie from '../../assets/animations/enemy_kamikaze/kamikaze_die.png'
 import kamikazeDieJSON from '../../assets/animations/enemy_kamikaze/kamikaze_die_atlas.json'
 
+// enemy - redVelvet
+import redVelvetWalk from '../../assets/animations/redVelvet/redVelvetWalking-Sheet.png'
+import redVelvetWalkJSON from '../../assets/animations/redVelvet/redVelvetWalking.json'
+
 // boss - beethoven
 import beethovenSprite from '../../assets/bosses/beethoven/beethoven.png'
 import beethovenAlert from '../../assets/bosses/beethoven/alert.png'
@@ -195,6 +199,10 @@ export default class Boot extends Phaser.Scene {
     // enemy - kamikaze
     this.load.atlas('kamikaze_walk', kamikazeWalk, kamikazeWalkJSON);
     this.load.atlas('kamikaze_die', kamikazeDie, kamikazeDieJSON);
+
+    // enemy - redVelvet
+    this.load.atlas('redVelvet_walk', redVelvetWalk, redVelvetWalkJSON);
+
     // boss - beethoven
     this.load.image('beethoven', beethovenSprite);
     this.load.image('beethoven_alert', beethovenAlert);

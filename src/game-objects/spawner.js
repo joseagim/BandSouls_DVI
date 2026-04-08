@@ -51,6 +51,7 @@ export default class Spawner {
                 callback: () => {
                     const x = Phaser.Math.Between(50, 750);
                     const y = Phaser.Math.Between(50, 550);
+                    
                     this.spawn(x, y, config.type);
                 }
             });

@@ -95,6 +95,19 @@ export default class EnemyShadow extends Enemy {
 
     }
 
+               
+    attackOnContact(player) {
+        if (this.canContactAttack) {
+            player.getDamage(this.ContactDamage * this.attackMod);
+            this.canContactAttack = false;
+            
+
+            this.scene.time.delayedCall(this.contacAttackCooldown, () => {
+                this.canContactAttack = true;
+            })
+        }
+    }
+
     attack(player) {
         if (this.canAttack) {
             player.getDamage(this.attackDamage * this.attackMod);
@@ -111,6 +124,25 @@ export default class EnemyShadow extends Enemy {
         if (this.life <= 0) return;
         this.play('shadow_hit', true);
     }
+
+    preUpdate(t, dt) {
+        super.preUpdate(t, dt);
+
+        if (!this.active || this.life <= 0 || this.isDead) return;
+
+        if (this.scene.player.x <= this.x) {
+            this.setFlip(true, false);
+        } else {
+            this.setFlip(false, false);
+        }
+        if (!this.scene.physics.overlap(this, this.scene.player) && !this.is_knockback) {
+            this.move(dt);
+        }
+        else {//this.body.setVelocity(0);
+            this.is_moving = false;
+        }
+    }
+
 
     move(dt) {
         if (this.scene.easystar) {

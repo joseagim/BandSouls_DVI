@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
-import EnemyShadow from './enemyShadow';
-import EnemyThief from './enemyThief';
-import KamikazeEnemy from './kamikaze_enemy';
+import EnemyShadow from './enemies/enemyShadow';
+import EnemyThief from './enemies/enemyThief';
+import KamikazeEnemy from './enemies/enemyKamikaze';
 
 export default class EnemyFactory {
     constructor(scene, enemyStats) {

@@ -24,4 +24,5 @@ export default class RedVelvetEnemy extends Enemy {
 
         this.play('redVelvet_walk');
     }
+
 }

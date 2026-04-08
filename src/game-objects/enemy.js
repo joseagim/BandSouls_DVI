@@ -14,6 +14,7 @@ export default class Enemy extends actor {
      */
     constructor(scene, x, y, tag, stats) {
         super(scene, x, y, tag, stats);
+        this.ContactDamage = 10;
     }
 
     spawn(x, y) {
@@ -69,6 +70,19 @@ export default class Enemy extends actor {
             */
     }
 
+               
+    attackOnContact(player) {
+        if (this.canAttack) {
+            player.getDamage(this.attackDamage * this.attackMod);
+            this.canAttack = false;
+            
+
+            this.scene.time.delayedCall(this.attackCooldown, () => {
+                this.canAttack = true;
+            })
+        }
+    }
+
     attack(player) {
 
     }
@@ -97,7 +111,7 @@ export default class Enemy extends actor {
 
     playHit() {
         if (this.life <= 0) return;
-        //this.play('enemy_hit', true);
+        this.play('enemy_hit', true);
     }
 
     knockback() {
@@ -132,7 +146,7 @@ export default class Enemy extends actor {
             this._moveWithPathfinding(dt);
         } else {
             this.scene.physics.moveToObject(this, this.scene.player, this.speed);
-            //this.play('enemy_walk', true);
+            this.play('enemy_walk', true);
         }
     }
 
@@ -208,7 +222,7 @@ export default class Enemy extends actor {
             this.scene.physics.moveToObject(this, this.scene.player, this.speed);
         }
 
-        //this.play('enemy_walk', true);
+        this.play('enemy_walk', true);
     }
 
 }

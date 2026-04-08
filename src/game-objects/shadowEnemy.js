@@ -96,15 +96,7 @@ export default class ShadowEnemy extends Enemy {
     }
 
     attack(player) {
-        if (this.canAttack) {
-            player.getDamage(this.attackDamage * this.attackMod);
-            this.canAttack = false;
-            
 
-            this.scene.time.delayedCall(this.attackCooldown, () => {
-                this.canAttack = true;
-            })
-        }
     }
 
     /**

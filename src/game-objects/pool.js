@@ -37,7 +37,6 @@ export default class Pool {
         else {
             element = this.inactive[type].pop();
         }
-        element.spawn();
         this.active[type].push(element);
 
         return element;

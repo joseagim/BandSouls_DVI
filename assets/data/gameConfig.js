@@ -50,7 +50,7 @@ const gameConfig = {
             attackDamage: 20,      // daño de sus proyectiles
             attackRange: 0,
             attackRadius: 0,
-            attackCooldown: 5000,  // ms entre patrones
+            attackCooldown: 3000,  // ms entre patrones
             canAttack: true,
             hasDamaged: false,
             is_knockback: false,

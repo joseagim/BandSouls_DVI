@@ -21,11 +21,13 @@ export default class EnemyBeethoven extends Enemy {
     constructor(scene, x, y, stats) {
         super(scene, x, y, 'beethoven', stats);
 
+        this.numAttacks = 1;
+
         // ── Estadísticas propias ──────────────────────────────────────────
-        this.attackDamage   = stats.attackDamage   ?? 20;
-        this.attackCooldown = stats.attackCooldown ?? 5000;   // ms entre patrones
-        this.canAttack      = stats.canAttack      ?? true;
-        this.is_knockback   = false;
+        this.attackDamage = stats.attackDamage ?? 20;
+        this.attackCooldown = stats.attackCooldown ?? 3000;   // ms entre patrones
+        this.canAttack = stats.canAttack ?? true;
+        this.is_knockback = false;
 
         // ── Visual ───────────────────────────────────────────────────────
         this.setScale(4);
@@ -42,7 +44,7 @@ export default class EnemyBeethoven extends Enemy {
         this.body.allowGravity = false;
 
         // ── Patrones de ataque ────────────────────────────────────────────
-        const patternsData   = scene.cache.json.get('bossPatterns');
+        const patternsData = scene.cache.json.get('bossPatterns');
         this.patterns = patternsData ? patternsData.patterns : [];
 
 
@@ -50,17 +52,18 @@ export default class EnemyBeethoven extends Enemy {
         // Máximo 10 proyectiles simultáneos: cubre los 8 carriles más margen
         // para futuros patrones. Con 5 se perdían silenciosamente los ataques
         // de los carriles 6-8 cuando se lanzaban 8 a la vez.
-        this.projectilePool = new BossProjectile(scene, 10, this.attackDamage);
+        this.projectilePool = new BossProjectile(scene, 20, this.attackDamage);
 
         // ── Pool de alertas ───────────────────────────────────────────────
         // Mismo tamaño que el pool de proyectiles: 10 slots.
         this._alerts = [];
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 20; i++) {
             const alert = scene.add.image(0, 0, 'beethoven_alert');
             alert.setVisible(false);
             alert.setAlpha(0);
             alert.setDepth(10);
-            alert.setScale(4);   // x4 para que sea visible
+            alert.setScale(3);
+            alert._inUse = false;   // flag explícito de disponibilidad del slot
             this._alerts.push(alert);
         }
 
@@ -79,8 +82,8 @@ export default class EnemyBeethoven extends Enemy {
     // ─────────────────────────────────────────────────────────────────────────
     spawn(_x, _y) {
         // El boss siempre aparece en el centro de la pantalla (en coordenadas de mundo)
-        const cam     = this.scene.cameras.main;
-        const centerX = cam.scrollX + this.scene.scale.width  / 2;
+        const cam = this.scene.cameras.main;
+        const centerX = cam.scrollX + this.scene.scale.width / 2;
         const centerY = cam.scrollY + this.scene.scale.height / 2;
         super.spawn(centerX, centerY);
 
@@ -120,54 +123,58 @@ export default class EnemyBeethoven extends Enemy {
         const pattern = Phaser.Utils.Array.GetRandom(this.patterns);
 
         for (const attack of pattern.attacks) {
+            console.log("[Cargar] Ataque " + this.numAttacks + " | Pos: " + attack.pos);
             const t = this.scene.time.delayedCall(attack.wait, () => {
                 if (!this.active || this.isDead) return;
                 this._scheduleAttack(attack);
             });
             this._activeTimers.push(t);
         }
+        this.numAttacks++;
     }
 
     _scheduleAttack(attack) {
         const laneY = this._laneY(attack.pos);
 
         // Constantes de timing (alert nunca será < 100ms)
-        const FADE_IN  = 30;  // ms para aparecer
+        const FADE_IN = 30;  // ms para aparecer
         const FADE_OUT = 30;  // ms para desaparecer
-        const REST     = 20;  // ms de reposo antes del disparo
+        const REST = 20;  // ms de reposo antes del disparo
         // hold = tiempo que el sprite se mantiene completamente visible
         const hold = Math.max(0, attack.alert - FADE_IN - FADE_OUT - REST);
 
         // ── 1. Mostrar alerta ─────────────────────────────────────────────
         const alertSprite = this._getInactiveAlert();
         if (alertSprite) {
-            const cam     = this.scene.cameras.main;
+            alertSprite._inUse = true;   // marcar como ocupado
+            const cam = this.scene.cameras.main;
             const screenW = this.scene.scale.width;
             // Anchura visual del sprite (textura × escala)
-            const alertW  = alertSprite.width * alertSprite.scaleX;
-            const alertX  = cam.scrollX + screenW - 20 - alertW / 2;
-            const alertY  = cam.scrollY + laneY;
+            const alertW = alertSprite.width * alertSprite.scaleX;
+            const alertX = cam.scrollX + screenW - 20 - alertW / 2;
+            const alertY = cam.scrollY + laneY;
 
             alertSprite.setPosition(alertX, alertY);
             alertSprite.setVisible(true);
             alertSprite.setAlpha(0);
+            console.log("[Atacar] Pos: " + attack.pos);
 
             // Fase 1: fade in (30 ms)
             this.scene.tweens.add({
-                targets:  alertSprite,
-                alpha:    1,
+                targets: alertSprite,
+                alpha: 1,
                 duration: FADE_IN,
                 onComplete: () => {
                     // Fase 2: hold — el sprite está completamente visible
                     const holdT = this.scene.time.delayedCall(hold, () => {
                         // Fase 3: fade out (30 ms)
                         this.scene.tweens.add({
-                            targets:  alertSprite,
-                            alpha:    0,
+                            targets: alertSprite,
+                            alpha: 0,
                             duration: FADE_OUT,
                             onComplete: () => {
                                 alertSprite.setVisible(false);
-                                // Fase 4: REST (20 ms) ya está cubierto por el timer de disparo
+                                alertSprite._inUse = false;  // liberar slot
                             }
                         });
                     });
@@ -194,7 +201,8 @@ export default class EnemyBeethoven extends Enemy {
     }
 
     _getInactiveAlert() {
-        return this._alerts.find(a => !a.visible) || null;
+        // Usa _inUse en vez de visible: resiste interrupciones de tweens
+        return this._alerts.find(a => !a._inUse) || null;
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -202,10 +210,10 @@ export default class EnemyBeethoven extends Enemy {
     // ─────────────────────────────────────────────────────────────────────────
 
     /** El boss no se mueve. */
-    move(_dt) {}
+    move(_dt) { }
 
     /** El boss no recibe knockback. */
-    knockback() {}
+    knockback() { }
 
     /** preUpdate: sólo gestiona el flip del sprite y actualiza proyectiles. */
     preUpdate(t, dt) {
@@ -225,7 +233,7 @@ export default class EnemyBeethoven extends Enemy {
     }
 
     /** Ataque por contacto: el boss no hace daño cuerpo a cuerpo (sólo proyectiles). */
-    attack(_player) {}
+    attack(_player) { }
 
     /** Sobreescribimos getDamage para emitir el evento de vida al HUD. */
     getDamage(dmg) {
@@ -258,6 +266,7 @@ export default class EnemyBeethoven extends Enemy {
             this.scene.tweens.killTweensOf(alert);
             alert.setVisible(false);
             alert.setAlpha(0);
+            alert._inUse = false;   // liberar slot para la próxima invocación
         }
 
         // Notificar al HUD (vida = 0)
@@ -273,12 +282,12 @@ export default class EnemyBeethoven extends Enemy {
         // ── Animación de muerte: se aleja hacia atrás (encoge + fade) durante 2s ──
         const DEATH_DURATION = 2000;
         this.scene.tweens.add({
-            targets:  this,
-            scaleX:   0,
-            scaleY:   0,
-            alpha:    0,
+            targets: this,
+            scaleX: 0,
+            scaleY: 0,
+            alpha: 0,
             duration: DEATH_DURATION,
-            ease:     'Cubic.easeIn',   // acelera al final, da sensación de alejarse
+            ease: 'Cubic.easeIn',   // acelera al final, da sensación de alejarse
             onComplete: () => {
                 // Desactivar el sprite y la física una vez terminada la animación
                 this.setActive(false);

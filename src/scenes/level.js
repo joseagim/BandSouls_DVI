@@ -51,7 +51,7 @@ export default class Level extends Phaser.Scene {
 
         const enemyPoolsData = this.cache.json.get('data').poolData;
         const enemyStats = this.cache.json.get('data').enemyStats;
-        
+
         this.spawner = new Spawner(this, enemyPoolsData, enemyStats);
 
         this.waveManager = new WaveManager(this, this.spawner);
@@ -78,9 +78,9 @@ export default class Level extends Phaser.Scene {
             );
         });
 
-        this.physics.add.overlap(this.player, this.spawner.PhysicsGroup(), function(player,enemy){
-            if (enemy.active && !player.invincible){
-                if(!this.gettin_hit) {
+        this.physics.add.overlap(this.player, this.spawner.PhysicsGroup(), function (player, enemy) {
+            if (enemy.active && !player.invincible) {
+                if (!this.gettin_hit) {
                     this.soundManager.play('get_hit');
                     this.gettin_hit = true;
                     this.time.delayedCall(1000, () => { this.gettin_hit = false; }, [], this);
@@ -102,7 +102,7 @@ export default class Level extends Phaser.Scene {
         for (let hurtBox of weapon.getHurtboxes()) {
             this.physics.add.overlap(hurtBox, this.spawner.PhysicsGroup(), (hurtbox, enemy) => {
                 if (!enemy.invincible) {
-                    if(!this.enemy_hurt) {
+                    if (!this.enemy_hurt) {
                         this.soundManager.play('enemy_hurt');
                         this.enemy_hurt = true;
                         this.time.delayedCall(500, () => { this.enemy_hurt = false; }, [], this);

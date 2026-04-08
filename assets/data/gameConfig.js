@@ -19,7 +19,8 @@ const gameConfig = {
             speed: 40,
             defenseMod: 1,
             attackMod: 1,
-            attackDamage: 30,
+            rangedAttackDamage: 45,
+            meleeAttackDamage: 15,
             rangedAttackRange: 300,
             meleeAttackRange: 150,
             attackRadius: 20,
@@ -102,7 +103,7 @@ const gameConfig = {
             enemies: [
                 { type: "shadow", count: 2, spawnDelay: 3000 },
                 { type: "thief", count: 2, spawnDelay: 3500 },
-                { type: "kamikaze", count: 1, spawnDelay: 4000 }
+                { type: "redVelvet", count: 1, spawnDelay: 4000 }
             ],
             delay: 3000,
         },

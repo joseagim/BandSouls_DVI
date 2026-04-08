@@ -14,6 +14,9 @@ export default class Enemy extends actor {
      */
     constructor(scene, x, y, tag, stats) {
         super(scene, x, y, tag, stats);
+        this.ContactDamage = 10;
+        this.contacAttackCooldown = 1000;
+        this.canContactAttack = true;
     }
 
     spawn(x, y) {
@@ -69,6 +72,18 @@ export default class Enemy extends actor {
             */
     }
 
+    attackOnContact(player) {
+        if (this.canContactAttack) {
+            player.getDamage(this.ContactDamage * this.attackMod);
+            this.canContactAttack = false;
+            
+
+            this.scene.time.delayedCall(this.contacAttackCooldown, () => {
+                this.canContactAttack = true;
+            })
+        }
+    }
+
     attack(player) {
 
     }
@@ -81,20 +96,6 @@ export default class Enemy extends actor {
      */
     preUpdate(t, dt) {
         super.preUpdate(t, dt);
-
-        if (!this.active || this.life <= 0 || this.isDead) return;
-
-        if (this.scene.player.x <= this.x) {
-            this.setFlip(true, false);
-        } else {
-            this.setFlip(false, false);
-        }
-        if (!this.scene.physics.overlap(this, this.scene.player) && !this.is_knockback) {
-            this.move(dt);
-        }
-        else {//this.body.setVelocity(0);
-            this.is_moving = false;
-        }
     }
 
     playHit() {}
@@ -124,6 +125,11 @@ export default class Enemy extends actor {
         //  console.log("La velocidad aqui es %d",this.speed);
 
 
+    }
+
+    getDamage(dmg) {
+        super.getDamage(dmg);
+        this.knockback();
     }
 
     move(_dt) {}

@@ -74,6 +74,25 @@ export default class ShadowEnemy extends Enemy {
         }
     }
 
+    preUpdate(t, dt) {
+        super.preUpdate(t, dt);
+
+        if (!this.active || this.life <= 0 || this.isDead) return;
+
+        if (this.scene.player.x <= this.x) {
+            this.setFlip(true, false);
+        } else {
+            this.setFlip(false, false);
+        }
+        if (!this.scene.physics.overlap(this, this.scene.player) && !this.is_knockback) {
+            this.move(dt);
+        }
+        else {//this.body.setVelocity(0);
+            this.is_moving = false;
+        }
+    }
+
+
     move(dt) {
         if (this.scene.easystar) {
             this._moveWithPathfinding(dt);

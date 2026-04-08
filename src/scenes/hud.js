@@ -28,7 +28,7 @@ export default class HUD extends Phaser.Scene {
 
         // Escuchar cambios en el registry para actualizar el score
         this.registry.events.on('changedata-score', (_parent, value) => {
-            this.scoreText.setText(String(value));
+                this.scoreText.setText(String(value) ?? "0");
         });
 
         // crear el texto de info oleadas

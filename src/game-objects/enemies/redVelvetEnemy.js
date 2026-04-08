@@ -6,7 +6,8 @@ export default class RedVelvetEnemy extends Enemy {
         super(scene, x, y, 'redVelvet', stats);
     
         // Estadísticas propias del enemigo
-        this.attackDamage = stats.attackDamage;
+        this.rangedAttackDamage = stats.rangedAttackDamage;
+        this.meleeAttackDamage = stats.meleeAttackDamage
         this.rangedAttackRange = stats.rangedAttackRange;
         this.meleeAttackRange = stats.meleeAttackRange;
         this.attackRadius = stats.attackRadius;
@@ -129,7 +130,10 @@ export default class RedVelvetEnemy extends Enemy {
             beamGfx.setRotation(fireAngle);
             beamGfx.setDepth(5);
 
-            // --- Create multiple circle hurtboxes along the beam ---
+            // --- Beam hit logic: only hit player once ---
+            let beamHit = false;
+
+            // Create circle hurtboxes along the beam
             const beamHurtboxes = [];
             for (let i = 0; i < numCircles; i++) {
                 const offset = (i + 0.5) * (beamLength / numCircles);
@@ -140,13 +144,12 @@ export default class RedVelvetEnemy extends Enemy {
                 this.scene.physics.add.existing(circle);
                 circle.body.allowGravity = false;
                 circle.body.immovable = true;
-                circle._hasHit = false;
                 beamHurtboxes.push(circle);
 
                 this.scene.physics.add.overlap(circle, this.scene.player, (c, player) => {
-                    if (c._hasHit) return;
-                    c._hasHit = true;
-                    player.getDamage(this.attackDamage * this.attackMod);
+                    if (beamHit) return;  // ignore after first hit
+                    beamHit = true;
+                    player.getDamage(this.rangedAttackDamage * this.attackMod);
                 });
             }
 
@@ -190,6 +193,9 @@ export default class RedVelvetEnemy extends Enemy {
             this.scene.time.delayedCall(thrustDelay * t, () => {
                 if (!this.active) return;
 
+                // Track if this thrust already hit
+                let thrustHit = false;
+
                 // --- small lunge per thrust ---
                 this.body.setVelocity(
                     Math.cos(baseAngle) * dashSpeed,
@@ -200,10 +206,9 @@ export default class RedVelvetEnemy extends Enemy {
                     if (this.active) this.body.setVelocity(0);
                 });
 
-                // --- spawn full blade at once ---
+                // --- spawn full blade hurtboxes for this thrust ---
                 for (let i = 0; i < bladeSegments; i++) {
                     const offset = bladeLength * (i + 1);
-
                     const spawnX = this.x + Math.cos(baseAngle) * offset;
                     const spawnY = this.y + Math.sin(baseAngle) * offset;
 
@@ -221,7 +226,6 @@ export default class RedVelvetEnemy extends Enemy {
                     circle.setActive(true);
                     circle.setVisible(true);
                     circle.setPosition(spawnX, spawnY);
-                    circle._hasHit = false;
 
                     if (circle.body) {
                         circle.body.reset(spawnX, spawnY);
@@ -230,11 +234,21 @@ export default class RedVelvetEnemy extends Enemy {
                         circle.body.immovable = true;
                     }
 
-                    this.scene.time.delayedCall(stabDuration, () => {
+                    // Only allow one hit per thrust
+                    this.scene.physics.add.overlap(circle, this.scene.player, (c, player) => {
+                        if (thrustHit) return;
+                        thrustHit = true;
+                        player.getDamage(this.meleeAttackDamage * this.attackMod);
+                    });
+                }
+
+                // Hide all hurtboxes after stabDuration
+                this.scene.time.delayedCall(stabDuration, () => {
+                    this.stabHurtboxes.children.each(circle => {
                         circle.setActive(false);
                         circle.setVisible(false);
                     });
-                }
+                });
             });
         }
 
@@ -243,12 +257,12 @@ export default class RedVelvetEnemy extends Enemy {
             this.isAttacking = false;
         });
 
+        // Reset cooldown
         this.scene.time.delayedCall(this.meleeAttackCooldown, () => {
             this.canAttackMelee = true;
             this.hasDamaged = false;
         });
     }
-
     flee(dt) {
         const dist = Phaser.Math.Distance.Between(this.x, this.y, this.fleeX, this.fleeY);
 
@@ -300,4 +314,80 @@ export default class RedVelvetEnemy extends Enemy {
 
     }
 
+    move(dt) {
+        if (this.scene.easystar) {
+            this._moveWithPathfinding(dt);
+        } else {
+            this.scene.physics.moveToObject(this, this.scene.player, this.speed);
+            this.play('thief_move', true);
+        }
+    }
+
+    _moveWithPathfinding(dt) {
+        const tileSize = this.scene.pathfinderTileSize;
+        const startX = Math.floor(this.body.center.x / tileSize);
+        const startY = Math.floor(this.body.center.y / tileSize);
+        const endX = Math.floor(this.scene.player.body.center.x / tileSize);
+        const endY = Math.floor(this.scene.player.body.center.y / tileSize);
+
+        this._stuckTimer += dt;
+        if (this._stuckTimer >= 600) {
+            const moved = Phaser.Math.Distance.Between(this.body.center.x, this.body.center.y, this._lastPos.x, this._lastPos.y);
+            if (moved < 4) {
+                this.currentPath = null;
+                this.pathfindingCooldown = false;
+            }
+            this._lastPos = { x: this.body.center.x, y: this.body.center.y };
+            this._stuckTimer = 0;
+        }
+
+        if (!this.pathfindingCooldown) {
+            this.pathfindingCooldown = true;
+            this.scene.easystar.findPath(startX, startY, endX, endY, (path) => {
+                if (path && path.length > 1) {
+                    this.currentPath = path;
+                    this.pathIndex = 1;
+                } else {
+                    this.currentPath = null;
+                }
+            });
+            this.scene.time.delayedCall(400, () => {
+                if (this.active) this.pathfindingCooldown = false;
+            });
+        }
+
+        if (this.currentPath && this.pathIndex < this.currentPath.length) {
+            const node = this.currentPath[this.pathIndex];
+            const targetX = node.x * tileSize + tileSize / 2;
+            const targetY = node.y * tileSize + tileSize / 2;
+
+            if (Phaser.Math.Distance.Between(this.body.center.x, this.body.center.y, targetX, targetY) < tileSize * 0.6) {
+                this.pathIndex++;
+            }
+
+            if (this.pathIndex < this.currentPath.length) {
+                const next = this.currentPath[this.pathIndex];
+                const nextX = next.x * tileSize + tileSize / 2;
+                const nextY = next.y * tileSize + tileSize / 2;
+
+                let dx = nextX - this.body.center.x;
+                let dy = nextY - this.body.center.y;
+                const len = Math.sqrt(dx * dx + dy * dy);
+                if (len > 0) { dx /= len; dy /= len; }
+
+                if ((this.body.blocked.left && dx < 0) || (this.body.blocked.right && dx > 0)) dx = 0;
+                if ((this.body.blocked.up && dy < 0) || (this.body.blocked.down && dy > 0)) dy = 0;
+
+                const newLen = Math.sqrt(dx * dx + dy * dy);
+                if (newLen > 0) {
+                    this.body.setVelocity(dx / newLen * this.speed, dy / newLen * this.speed);
+                } else {
+                    this.currentPath = null;
+                    this.pathfindingCooldown = false;
+                }
+            }
+        } else {
+            this.scene.physics.moveToObject(this, this.scene.player, this.speed);
+        }
+    }    
 }

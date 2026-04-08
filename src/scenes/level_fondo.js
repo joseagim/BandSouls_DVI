@@ -44,8 +44,6 @@ export default class Level_Fondo extends Level {
 
         super.create();
 
-        this.spawner.spawn(500, 500, 'kamikaze');
-
         this.soundManager.play('level1_music');
 
         this.physics.add.collider(this.player, layer_edif);

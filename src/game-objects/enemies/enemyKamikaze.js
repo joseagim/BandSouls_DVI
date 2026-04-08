@@ -24,7 +24,7 @@ export default class ShadowEnemy extends Enemy {
         this.hasDamaged = stats.hasDamaged;
         this.is_knockback = stats.is_knockback;
         this.life = 1; // Vida muy baja para que muera al primer golpe
-    
+
         // bs escalado extraño para los colliders
         this.setScale(1.5);
         this.isDead = false;
@@ -33,7 +33,7 @@ export default class ShadowEnemy extends Enemy {
         this.body.setSize(16, 16);
         this.body.setOffset(9, 15);
         this.is_moving = false;
-        this.label = this.scene.add.text(1080,10,"",{fontSize: 20});
+        this.label = this.scene.add.text(1080, 10, "", { fontSize: 20 });
 
         this.scene.anims.create({
             key: 'kamikaze_walk',
@@ -81,7 +81,7 @@ export default class ShadowEnemy extends Enemy {
             this.scene.physics.moveToObject(this, this.scene.player, this.speed);
             this.play('kamikaze_walk', true);
         }
-        if(!this.is_moving){
+        if (!this.is_moving) {
             this.is_moving = true;
             this.scene.soundManager.play('fuse_kamikaze', { volume: 0.5 });
             this.scene.soundManager.play('movement', { volume: 0.5 });

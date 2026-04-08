@@ -89,6 +89,7 @@ import shop_tileset from '../../assets/map/gj.png'
 import shop_json from '../../assets/map/garajefinal.json'
 import portalSpritesheet from '../../assets/animations/portal/portal-spritesheet.png'
 import portalJSON from '../../assets/animations/portal/portaljson.json'
+import spawnPortalSpritesheet from '../../assets/animations/portal/spawn-portal-spritesheet.png'
 import tileset_grassland_grass from '../../assets/map/tileset-grassland-grass.png';
 import tileset_grassland_paths from '../../assets/map/tileset-grassland-paths.png';
 import tileset_grassland_props from '../../assets/map/tileset-grassland-props.png';
@@ -209,6 +210,7 @@ export default class Boot extends Phaser.Scene {
     this.load.image('shop_tiles', shop_tileset);
     this.load.tilemapTiledJSON('shop_map', shop_json);
     this.load.atlas('portal', portalSpritesheet, portalJSON);
+    this.load.spritesheet('spawn_portal', spawnPortalSpritesheet, { frameWidth: 48, frameHeight: 48 });
 
     // data
     this.cache.json.add('data', data);

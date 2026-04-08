@@ -1,10 +1,9 @@
 import Phaser from 'phaser';
-import Arma from './arma';
 import actor from './actor';
-import Guitar from './guitar';
-import Drum from './drum';
-import Bass from './bass';
-import Keyboard from './keyboard';
+import Guitar from './weapons/guitar';
+import Drum from './weapons/drum';
+import Bass from './weapons/bass';
+import Keyboard from './weapons/keyboard';
 import Item from './item';
 import SoundManager from './sound-manager';
 import GunManager from './gun-manager';
@@ -123,6 +122,20 @@ export default class Player extends actor {
         this.soundManager = SoundManager.getInstance(this.scene);
         this.playingMovementSound = false;
 
+        // Regeneración de vida
+        this.regenDelay = stats.regenDelay;
+        this.lastDamageTime = 0;
+        this.scene.time.addEvent({
+            delay: 100,
+            loop: true,
+            callback: () => {
+                if (this.life < this.maxHP && (this.scene.time.now - this.lastDamageTime) >= this.regenDelay) {
+                    this.life = Math.min(this.life + 5, this.maxHP);
+                    this.updateHealth();
+                }
+            }
+        });
+
         //seccion de items no consumibles(trinkets)
         this.trinket = [];
 
@@ -196,7 +209,6 @@ export default class Player extends actor {
     preUpdate(t, dt) {
         super.preUpdate(t, dt);
 
-        let isHorizontal = false;
         this.updateVisualCues();
 
         if (this.dashEaseout) {
@@ -221,23 +233,19 @@ export default class Player extends actor {
         const lockDirection = this.arma.getAnimSuffix() === '-keyboard' && this.arma.isCharging;
 
         if (this.keyA.isDown) {
-            isHorizontal = true;
             if (!lockDirection) this.lastDirection = 'left';
             this.body.setVelocityX(-this.speed);
 
         } else if (this.keyD.isDown) {
-            isHorizontal = true;
             if (!lockDirection) this.lastDirection = 'right';
             this.body.setVelocityX(this.speed);
         }
 
 
         if (this.keyW.isDown) {
-            isHorizontal = false;
             if (!lockDirection) this.lastDirection = 'up';
             this.body.setVelocityY(-this.speed);
         } else if (this.keyS.isDown) {
-            isHorizontal = false;
             if (!lockDirection) this.lastDirection = 'down';
             this.body.setVelocityY(this.speed);;
         }
@@ -294,6 +302,7 @@ export default class Player extends actor {
         this.body.velocity.normalize().scale(this.dashSpeed);
         this.invincible = true;
 
+
         // ease out del dash
         this.scene.time.delayedCall(1 / 4 * this.dashDuration, () => {
             this.dashEaseout = true;
@@ -317,12 +326,13 @@ export default class Player extends actor {
         this.isDashing = false;
         this.invincible = false;
         if (this.body) {
-            this.body.setVelocity(0, 0); // Opcional: frenar en seco al terminar
+            this.body.setVelocity(0, 0);
         }
     }
 
     getDamage(dmg) {
         super.getDamage(dmg);
+        this.lastDamageTime = this.scene.time.now;
         this.scene.cameras.main.shake(50, 0.01);
 
     }

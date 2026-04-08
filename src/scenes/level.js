@@ -1,8 +1,5 @@
 import Phaser from 'phaser';
-import Platform from '../game-objects/platform.js';
 import Player from '../game-objects/player.js';
-import Enemy from '../game-objects/enemy.js';
-import actor from '../game-objects/actor.js';
 import Spawner from '../game-objects/spawner.js';
 import WaveManager from '../game-objects/wave-manager.js';
 import SoundManager from '../game-objects/sound-manager.js';
@@ -32,6 +29,7 @@ export default class Level extends Phaser.Scene {
     create() {
         //this.stars = 10;
         this.bases = this.add.group();
+        this.physics.world.setFPS(240);
         this.soundManager = new SoundManager(this);
         this.soundManager.addSounds({
             'movement': { key: 'movement', loop: true, loopDelay: 100 },
@@ -69,6 +67,24 @@ export default class Level extends Phaser.Scene {
                 enemy.attack(player);
             }
         }, null, this);
+
+        // Colisión física entre enemigos (evita amontonamiento)
+        this.physics.add.collider(
+            this.spawner.PhysicsGroup(),
+            this.spawner.PhysicsGroup(),
+            null,
+            (a, b) => a.active && !a.isDead && b.active && !b.isDead,
+            this
+        );
+
+        // Colisión física jugador-enemigo (el jugador los empuja; desactivada durante el dash)
+        this.physics.add.collider(
+            this.player,
+            this.spawner.PhysicsGroup(),
+            null,
+            (player, enemy) => !player.invincible && enemy.active && !enemy.isDead,
+            this
+        );
 
         this.cameras.main.setZoom(1); // Ventana de visualización
 

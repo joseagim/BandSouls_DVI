@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import actor from './actor';
+import actor from '../actor';
 
 /**
  * Clase que representa el primer enemigo del juego. Es un enemigo de prueba que persigue al jugador.

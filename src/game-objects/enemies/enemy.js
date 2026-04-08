@@ -60,7 +60,7 @@ export default class Enemy extends actor {
         //this.body.stop();
         this.is_knockback = false;
         //this.body.enable = false;
-
+        this.scene.enemyDies(this);
         /*
         this.death_timer = this.scene.time.delayedCall(800,() => {
             this.setActive(false);

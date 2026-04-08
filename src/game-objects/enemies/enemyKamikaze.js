@@ -194,7 +194,7 @@ export default class ShadowEnemy extends Enemy {
         this.body.setVelocity(0, 0);
         this.body.enable = false;
         this.canAttack = false;
-
+        this.scene.enemyDies(this);
         this.scene.soundManager.play('explosion_kamikaze');
 
         // Reproducir animación una sola vez y ocultar al terminar

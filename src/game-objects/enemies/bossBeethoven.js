@@ -284,6 +284,7 @@ export default class EnemyBeethoven extends Enemy {
         // Notificar al HUD (vida = 0)
         this.scene.game.events.emit('bossHealthUpdate', 0, this.maxHP);
         this.scene.game.events.emit('bossDefeated');
+        this.scene.enemyDies(this);
 
         // Deshabilitar colisiones inmediatamente para que no siga dañando
         if (this.body) {

@@ -116,6 +116,16 @@ export default class Level extends Phaser.Scene {
 
     }
 
+    enemyDies(enemy) {
+        if (enemy.life <= 0) {
+            this.waveManager.enemyDies();
+            // Sumar puntos por matar al enemigo
+            const newScore = (this.registry.get('score') || 0) + 100;
+            this.registry.set('score', newScore);
+            this.events.emit('updateScore', newScore);
+        }
+    }
+
     setWeaponCollision(weapon) {
         for (let hurtBox of weapon.getHurtboxes()) {
             this.physics.add.overlap(hurtBox, this.spawner.PhysicsGroup(), (hurtbox, enemy) => {
@@ -127,13 +137,6 @@ export default class Level extends Phaser.Scene {
                     }
                     //this.soundManager.playWithPitch('enemy_hurt');
                     weapon.attack(enemy, this.player.attackMod, hurtbox);
-                    if (enemy.life <= 0) {
-                        this.waveManager.enemyDies();
-                        // Sumar puntos por matar al enemigo
-                        const newScore = (this.registry.get('score') || 0) + 100;
-                        this.registry.set('score', newScore);
-                        this.events.emit('updateScore', newScore);
-                    }
                 }
             }, null, this);
         }

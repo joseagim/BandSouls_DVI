@@ -15,7 +15,7 @@ const gameConfig = {
         },
 
         redVelvet: {
-            life: 200,
+            life: 100,
             speed: 40,
             defenseMod: 1,
             attackMod: 1,

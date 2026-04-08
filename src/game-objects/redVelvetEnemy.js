@@ -13,7 +13,14 @@ export default class RedVelvetEnemy extends Enemy {
         this.canAttack = stats.canAttack;
         this.hasDamaged = stats.hasDamaged;
         this.is_knockback = stats.is_knockback;
-        console.log("Red Velvet Deployed");
+        
+        this.states = {
+            ATTACKING_RANGED: 0,
+            ATTACKING_MELEE: 1,
+            FLEEING: 2,
+            MOVING: 3
+        }
+        this.state = this.states.MOVING;
         
         this.scene.anims.create({
             key : 'redVelvet_walk',
@@ -23,6 +30,47 @@ export default class RedVelvetEnemy extends Enemy {
         });
 
         this.play('redVelvet_walk');
+    }
+
+    die() {
+        super.die();
+        this.visible = false;
+    }
+    updateState() {
+
+    }
+
+    preUpdate(t, dt) {
+        super.preUpdate(t, dt);
+
+        if (!this.active || this.life <= 0 || this.isDead) return;
+        
+        if (this.scene.player.x <= this.x) {
+            this.setFlip(true, false);
+        }
+
+        // uptade state
+        this.updateState();
+
+        // si estoy lejos y puedo hacer ataque a distancia => ataque a distancia
+        if (this.state == this.states.ATTACKING_RANGED) {
+            this.rangedAttack();
+        }
+
+        // si estoy cerca y puedo hacer ataque melee => ataque a melee
+        else if (this.state == this.states.ATTACKING_RANGED) {
+            this.rangedAttack();
+        }
+
+        // si estoy cerca y no puedo hacer ataque a melee => huir
+        else if (this.state == this.states.ATTACKING_RANGED) {
+            this.rangedAttack();
+        }
+        // otherwise => acercarse al personaje
+        else {
+            this.move(dt);
+        }
+
     }
 
 }

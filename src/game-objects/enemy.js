@@ -15,6 +15,7 @@ export default class Enemy extends actor {
     constructor(scene, x, y, tag, stats) {
         super(scene, x, y, tag, stats);
         this.ContactDamage = 10;
+        this.canContactAttack = true;
     }
 
     spawn(x, y) {
@@ -57,7 +58,7 @@ export default class Enemy extends actor {
         this.body.setVelocityY(Math.sin(angle) * knockbackForce);
         //this.body.stop();
         this.is_knockback = false;
-        //this.body.enable = false;
+        this.body.enable = false;
 
         /*
         this.death_timer = this.scene.time.delayedCall(800,() => {
@@ -72,13 +73,13 @@ export default class Enemy extends actor {
 
                
     attackOnContact(player) {
-        if (this.canAttack) {
-            player.getDamage(this.attackDamage * this.attackMod);
-            this.canAttack = false;
+        if (this.canContactAttack) {
+            player.getDamage(this.ContactDamage * this.attackMod);
+            this.canContactAttack = false;
             
 
             this.scene.time.delayedCall(this.attackCooldown, () => {
-                this.canAttack = true;
+                this.canContactAttack = true;
             })
         }
     }
@@ -96,11 +97,9 @@ export default class Enemy extends actor {
     preUpdate(t, dt) {
         super.preUpdate(t, dt);
 
-        if (!this.active || this.life <= 0 || this.isDead) return;
+        
 
-        if (this.scene.player.x <= this.x) {
-            this.setFlip(true, false);
-        }
+
         if (!this.scene.physics.overlap(this, this.scene.player) && !this.is_knockback) {
             this.move(dt);
         }
@@ -111,7 +110,7 @@ export default class Enemy extends actor {
 
     playHit() {
         if (this.life <= 0) return;
-        this.play('enemy_hit', true);
+
     }
 
     knockback() {
@@ -132,7 +131,6 @@ export default class Enemy extends actor {
         this.scene.time.delayedCall(200, () => {
             if (this.active) {
                 this.is_knockback = false;
-                console.log("KNOCKBACK ES FALSO");
                 //this.move();
             }
         });
@@ -146,7 +144,6 @@ export default class Enemy extends actor {
             this._moveWithPathfinding(dt);
         } else {
             this.scene.physics.moveToObject(this, this.scene.player, this.speed);
-            this.play('enemy_walk', true);
         }
     }
 
@@ -221,8 +218,6 @@ export default class Enemy extends actor {
             // Fallback: movimiento directo si no hay path disponible
             this.scene.physics.moveToObject(this, this.scene.player, this.speed);
         }
-
-        this.play('enemy_walk', true);
     }
 
 }

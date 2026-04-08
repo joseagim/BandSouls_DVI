@@ -65,6 +65,18 @@ export default class RedVelvetEnemy extends Enemy {
         this.visible = false;
     }
 
+    enableMelee() {
+         for (let i = 0; i < 3; i++) {
+            this.stabHurtboxes[i].setActive(true).setVisible(true);;
+        }
+    }
+
+    disableMelee() {
+        for (let i = 0; i < 3; i++) {
+            this.stabHurtboxes[i].setActive(false).setVisible(false);;
+        }
+    }
+
     updateState() {
         const distanceToPlayer = Phaser.Math.Distance.Between(this.x, this.y, this.scene.player.x, this.scene.player.y);
 
@@ -179,6 +191,7 @@ export default class RedVelvetEnemy extends Enemy {
 
         const baseAngle = Phaser.Math.Angle.Between(this.x, this.y, this.scene.player.x, this.scene.player.y);
 
+        this.enableMelee();
         for (let t = 0; t < thrusts; t++) {
             this.scene.time.delayedCall(thrustDelay * t, () => {
                 if (!this.active) return;
@@ -213,6 +226,7 @@ export default class RedVelvetEnemy extends Enemy {
 
         this.scene.time.delayedCall(thrustDelay * thrusts, () => {
             this.isAttacking = false;
+            this.disableMelee();
         });
 
         this.scene.time.delayedCall(this.meleeAttackCooldown, () => {

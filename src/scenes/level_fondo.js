@@ -1,7 +1,4 @@
 import Phaser from 'phaser';
-import Platform from '../game-objects/platform.js';
-import Player from '../game-objects/player.js';
-import Enemy from '../game-objects/enemy.js'
 import Level from './level.js';
 import EasyStar from 'easystarjs';
 

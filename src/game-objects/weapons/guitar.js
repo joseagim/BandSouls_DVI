@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import Arma from './arma.js'
-import Enemy from './enemy.js';
+import Enemy from '../enemies/enemy.js';
 
 export default class Guitar extends Arma{
     constructor(scene,x,y,player){

@@ -117,7 +117,7 @@ export default class Level extends Phaser.Scene {
     }
 
     enemyDies(enemy) {
-        if (enemy.life <= 0) {
+        if (enemy.life <= 0 || enemy.exploded) {
             this.waveManager.enemyDies();
             // Sumar puntos por matar al enemigo
             const newScore = (this.registry.get('score') || 0) + 100;

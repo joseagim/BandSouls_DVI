@@ -87,8 +87,9 @@ export default class ShadowEnemy extends Enemy {
         if (!this.scene.physics.overlap(this, this.scene.player) && !this.is_knockback) {
             this.move(dt);
         }
-        else {//this.body.setVelocity(0);
+        else {
             this.is_moving = false;
+            this.attack(this.scene.player);
         }
     }
 

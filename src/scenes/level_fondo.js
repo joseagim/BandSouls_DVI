@@ -27,17 +27,17 @@ export default class Level_Fondo extends Level {
 
 
         var map = this.make.tilemap({ key: 'map' });
-        var tiles = map.addTilesetImage('city_tileset', 'city_tiles');
+        var tiles = map.addTilesetImage('Modern_Exteriors_Complete_Tileset_32x32', 'city_tiles');
 
         var layer_suelo = map.createLayer('suelo', tiles, 0, 0);
-        var layer_edif = map.createLayer('edificios', tiles, 0, 0);
-        var layer_deco = map.createLayer('decorado', tiles, 0, 0);
-        var layer_deco_sin = map.createLayer('decoradoSin', tiles, 0, 0);
-        var layer_obj = map.createLayer('objetos', tiles, 0, 0);
+        var layer_deco = map.createLayer('decoraciones', tiles, 0, 0);
+        var layer_objetos = map.createLayer('objetos', tiles, 0, 0);
+        var layer_colisiones = map.createLayer('colisiones', tiles, 0, 0);
+        
+        
 
-        layer_edif.setCollisionByExclusion([-1], true);
-        layer_deco.setCollisionByExclusion([-1], true);
-        layer_obj.setCollisionByExclusion([-1], true);
+        layer_colisiones.setCollisionByExclusion([-1], true);
+        layer_objetos.setCollisionByExclusion([-1], true);
 
         this.bases = this.add.group();
 
@@ -45,13 +45,11 @@ export default class Level_Fondo extends Level {
 
         this.soundManager.play('level1_music');
 
-        this.physics.add.collider(this.player, layer_edif);
-        this.physics.add.collider(this.player, layer_deco);
-        this.physics.add.collider(this.player, layer_obj);
+        this.physics.add.collider(this.player, layer_colisiones);
+        this.physics.add.collider(this.player, layer_objetos);
 
-        this.physics.add.collider(this.spawner.pool, layer_edif);
-        this.physics.add.collider(this.spawner.pool, layer_deco);
-        this.physics.add.collider(this.spawner.pool, layer_obj);
+        this.physics.add.collider(this.spawner.pool, layer_colisiones);
+        this.physics.add.collider(this.spawner.pool, layer_objetos);
 
         // Inicializar pathfinding A* con el grid del tilemap
         const gridWidth = map.width;
@@ -60,11 +58,9 @@ export default class Level_Fondo extends Level {
         for (let y = 0; y < gridHeight; y++) {
             const row = [];
             for (let x = 0; x < gridWidth; x++) {
-                const tileEdif = layer_edif.getTileAt(x, y);
-                const tileDeco = layer_deco.getTileAt(x, y);
-                const tileObj = layer_obj.getTileAt(x, y);
+                const tileEdif = layer_colisiones.getTileAt(x, y);
+                const tileObj = layer_objetos.getTileAt(x, y);
                 const blocked = (tileEdif && tileEdif.collides) ||
-                    (tileDeco && tileDeco.collides) ||
                     (tileObj && tileObj.collides);
                 row.push(blocked ? 1 : 0);
             }

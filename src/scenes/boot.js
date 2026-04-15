@@ -93,8 +93,8 @@ import keyboardMinigunButton from '../../assets/sprites/hud/buttons/keyboard-min
 import keyboardMinigunButtonDisabled from '../../assets/sprites/hud/buttons/keyboard-minigun-button-disabled.png'
 
 //mapas
-import city_tileset from '../../assets/map/rogueLike_city.png';
-import city_json from '../../assets/map/city_map.json'
+import city_tileset from '../../assets/map/Modern_Exteriors_Complete_Tileset_32x32.png';
+import city_json from '../../assets/map/level_nuevo.json'
 import shop_tileset from '../../assets/map/gj.png'
 import shop_json from '../../assets/map/garajefinal.json'
 import portalSpritesheet from '../../assets/animations/portal/portal-spritesheet.png'

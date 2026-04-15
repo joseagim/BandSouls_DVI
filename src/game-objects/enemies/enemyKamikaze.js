@@ -30,8 +30,8 @@ export default class ShadowEnemy extends Enemy {
         this.isDead = false;
         this.exploded = false;
         this._explodedEnemies = new Set();
-        this.body.setSize(16, 16);
-        this.body.setOffset(9, 15);
+        this.body.setSize(32, 32);  // Aumentar el collider para mejor detección de contacto
+        this.body.setOffset(4, 7.5);
         this.is_moving = false;
         this.label = this.scene.add.text(1080, 10, "", { fontSize: 20 });
 
@@ -45,7 +45,7 @@ export default class ShadowEnemy extends Enemy {
         this.scene.anims.create({
             key: 'kamikaze_die',
             frames: this.anims.generateFrameNames('kamikaze_die', { prefix: 'kamikaze_die-', start: 1, end: 10 }),
-            frameRate: 10,
+            frameRate: 60,  // Más rápido para que la explosión sea casi inmediata
             repeat: 0
         });
     }
@@ -74,6 +74,11 @@ export default class ShadowEnemy extends Enemy {
         }
     }
 
+    attackOnContact(player) {
+        // El kamikaze maneja su ataque de manera personalizada en preUpdate
+        // No usar el attackOnContact del padre para evitar daño duplicado
+    }
+
     preUpdate(t, dt) {
         super.preUpdate(t, dt);
 
@@ -87,8 +92,10 @@ export default class ShadowEnemy extends Enemy {
         if (!this.scene.physics.overlap(this, this.scene.player) && !this.is_knockback) {
             this.move(dt);
         }
-        else {//this.body.setVelocity(0);
+        else {
             this.is_moving = false;
+            this.body.setVelocity(0, 0);  // Detener inmediatamente al contacto
+            this.attack(this.scene.player);
         }
     }
 
@@ -197,7 +204,7 @@ export default class ShadowEnemy extends Enemy {
         this.scene.enemyDies(this);
         this.scene.soundManager.play('explosion_kamikaze');
 
-        // Reproducir animación una sola vez y ocultar al terminar
+        // Reproducir animación de explosión rápida y ocultar al terminar
         this.play('kamikaze_die').on('animationcomplete', () => {
             this.setActive(false);
             this.setVisible(false);

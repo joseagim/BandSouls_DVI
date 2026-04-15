@@ -107,7 +107,7 @@ export default class Level extends Phaser.Scene {
             this
         );
 
-        this.cameras.main.setZoom(1); // Ventana de visualización
+        this.cameras.main.setZoom(1.5); // Ventana de visualización
 
         this.setWeaponCollision(this.player.guitar);
         this.setWeaponCollision(this.player.bajo);

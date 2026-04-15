@@ -108,8 +108,7 @@ export default class Bass extends Arma {
     attack(enemy, attackMod) {
         if (this.enemiesHit.has(enemy)) return;
         const finalDamage = this.damage * attackMod * (this.currentDamageMultiplier || 1);
-        enemy.getDamage(finalDamage);
-        enemy.knockback();
+        enemy.getDamage(finalDamage, 300);
         this.enemiesHit.add(enemy);
     }
 

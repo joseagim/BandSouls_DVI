@@ -27,8 +27,8 @@ export default class actor extends Phaser.GameObjects.Sprite {
 
     getDamage(dmg) {
         this.life -= dmg;
-        if (this.life <= 0) this.die();
         this.updateHealth();
+        if (this.life <= 0) this.die();
     }
 
     die() {

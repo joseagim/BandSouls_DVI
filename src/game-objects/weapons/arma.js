@@ -92,8 +92,7 @@ export default class Arma extends Phaser.GameObjects.Sprite {
     attack(enemy, attackMod, hurtbox){
         const hitSet = hurtbox?.enemiesHit ?? this.enemiesHit;
         if (hitSet.has(enemy)) return;
-        enemy.getDamage(this.damage * attackMod);
-        enemy.knockback();
+        enemy.getDamage(this.damage * attackMod, 300);
         hitSet.add(enemy);
     }
 

@@ -31,13 +31,13 @@ export default class Level_Fondo extends Level {
 
         var layer_suelo = map.createLayer('suelo', tiles, 0, 0);
         var layer_deco = map.createLayer('decoraciones', tiles, 0, 0);
-        var layer_objetos = map.createLayer('objetos', tiles, 0, 0);
+        var layer_deco2 = map.createLayer('decoraciones2', tiles, 0, 0);
         var layer_colisiones = map.createLayer('colisiones', tiles, 0, 0);
         
         
 
         layer_colisiones.setCollisionByExclusion([-1], true);
-        layer_objetos.setCollisionByExclusion([-1], true);
+        layer_deco2.setDepth(200);
 
         this.bases = this.add.group();
 
@@ -46,10 +46,10 @@ export default class Level_Fondo extends Level {
         this.soundManager.play('level1_music');
 
         this.physics.add.collider(this.player, layer_colisiones);
-        this.physics.add.collider(this.player, layer_objetos);
+      //  this.physics.add.collider(this.player, layer_objetos);
 
         this.physics.add.collider(this.spawner.pool, layer_colisiones);
-        this.physics.add.collider(this.spawner.pool, layer_objetos);
+        //this.physics.add.collider(this.spawner.pool, layer_objetos);
 
         // Inicializar pathfinding A* con el grid del tilemap
         const gridWidth = map.width;
@@ -65,9 +65,8 @@ export default class Level_Fondo extends Level {
             const row = [];
             for (let x = 0; x < gridWidth; x++) {
                 const tileEdif = layer_colisiones.getTileAt(x, y);
-                const tileObj = layer_objetos.getTileAt(x, y);
-                const blocked = (tileEdif && tileEdif.collides) ||
-                    (tileObj && tileObj.collides);
+                //const tileObj = layer_objetos.getTileAt(x, y);
+                const blocked = (tileEdif && tileEdif.collides); // || (tileObj && tileObj.collides);
                 row.push(blocked ? 1 : 0);
             }
             grid.push(row);

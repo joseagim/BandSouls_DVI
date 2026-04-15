@@ -5,7 +5,7 @@ const gameConfig = {
             speed: 100,
             defenseMod: 1,
             attackMod: 1,
-            attackDamage: 10,
+            attackDamage: 40,
             attackRange: 80,
             attackRadius: 20,
             attackCooldown: 1000,
@@ -15,7 +15,7 @@ const gameConfig = {
         },
 
         redVelvet: {
-            life: 100,
+            life: 50,
             speed: 40,
             defenseMod: 1,
             attackMod: 1,
@@ -37,7 +37,7 @@ const gameConfig = {
             speed: 100,
             defenseMod: 1,
             attackMod: 1,
-            attackDamage: 30,
+            attackDamage: 50,
             attackRange: 80,
             attackRadius: 20,
             attackCooldown: 1000,
@@ -51,7 +51,7 @@ const gameConfig = {
             speed: 150,
             defenseMod: 1,
             attackMod: 1,
-            attackDamage: 50,
+            attackDamage: 100,
             attackRange: 50,
             attackRadius: 100,  // Radio de explosión
             attackCooldown: 2000,
@@ -65,7 +65,7 @@ const gameConfig = {
             speed: 0,
             defenseMod: 1,
             attackMod: 1,
-            attackDamage: 20,      // daño de sus proyectiles
+            attackDamage: 10,      // daño de sus proyectiles
             collisionDamage: 5,   // daño por contacto
             attackRange: 0,
             attackRadius: 0,
@@ -78,7 +78,7 @@ const gameConfig = {
     },
 
     playerBaseStats: {
-        life: 100,
+        life: 300,
         speed: 150,
         defenseMod: 1,
         attackMod: 1,

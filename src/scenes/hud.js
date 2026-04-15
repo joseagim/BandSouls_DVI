@@ -7,6 +7,30 @@ export default class HUD extends Phaser.Scene {
     }
 
     create() {
+        this._gameEventHandlers = [];
+        this._registryEventHandlers = [];
+
+        const registerGameEvent = (eventName, callback, context = this) => {
+            this.game.events.on(eventName, callback, context);
+            this._gameEventHandlers.push({ eventName, callback, context });
+        };
+
+        const registerRegistryEvent = (eventName, callback, context = this) => {
+            this.registry.events.on(eventName, callback, context);
+            this._registryEventHandlers.push({ eventName, callback, context });
+        };
+
+        this.events.on('shutdown', () => {
+            this._gameEventHandlers.forEach(({ eventName, callback, context }) => {
+                this.game.events.off(eventName, callback, context);
+            });
+            this._gameEventHandlers.length = 0;
+            this._registryEventHandlers.forEach(({ eventName, callback, context }) => {
+                this.registry.events.off(eventName, callback, context);
+            });
+            this._registryEventHandlers.length = 0;
+        }, this);
+
         // crear la barra abajo a la izquierda
         this.healthBar = new Bar(this, 20, this.scale.height - 50, 'hud_health_border', 'hud_health_bar');
         this.healthBar.setScale(3);
@@ -27,7 +51,7 @@ export default class HUD extends Phaser.Scene {
         this.scoreText.setText(String(currentScore));
 
         // Escuchar cambios en el registry para actualizar el score
-        this.registry.events.on('changedata-score', (_parent, value) => {
+        registerRegistryEvent('changedata-score', (_parent, value) => {
                 this.scoreText.setText(String(value) ?? "0");
         });
 
@@ -54,7 +78,7 @@ export default class HUD extends Phaser.Scene {
         this._showRound(1);
 
         // evento: actualizar salud del jugador
-        this.game.events.on('updateHealth', (player) => {
+        registerGameEvent('updateHealth', (player) => {
             const percentage = player.life / player.maxHP;
             this.healthBar.setValue(percentage);
         });
@@ -112,7 +136,7 @@ export default class HUD extends Phaser.Scene {
         this._bossBarContainer.add([bgPanel, bossLabel, barBg, this._bossHealthFill, barBorder, this._bossHealthText]);
 
         // Escuchar actualizaciones de vida del boss
-        this.game.events.on('bossHealthUpdate', (current, max) => {
+        registerGameEvent('bossHealthUpdate', (current, max) => {
             this._bossBarContainer.setVisible(true);
             const pct    = Math.max(0, Math.min(1, current / max));
             const { x, y, w, h } = this._bossBarBounds;
@@ -125,7 +149,7 @@ export default class HUD extends Phaser.Scene {
         });
 
         // Al morir el boss, ocultar la barra tras un breve delay
-        this.game.events.on('bossDefeated', () => {
+        registerGameEvent('bossDefeated', () => {
             this.time.delayedCall(2000, () => {
                 this._bossBarContainer.setVisible(false);
             });
@@ -134,7 +158,7 @@ export default class HUD extends Phaser.Scene {
 
         // El botón de dash se crea en _createWeaponSelector para posicionarlo a su derecha
         this._dashButton = null;
-        this.game.events.on('dashStart', (cooldown) => {
+        registerGameEvent('dashStart', (cooldown) => {
             if (this._dashButton) this._dashButton.setTexture('dash-button-disabled');
             if (this._dashCooldownBar) this._dashCooldownBar.setVisible(true);
             this._dashCooldownFill = { value: 0 };
@@ -147,23 +171,23 @@ export default class HUD extends Phaser.Scene {
                 onUpdate: () => this._redrawDashBar()
             });
         });
-        this.game.events.on('dashReady', () => {
+        registerGameEvent('dashReady', () => {
             if (this._dashButton) this._dashButton.setTexture('dash-button');
             if (this._dashCooldownBar) this._dashCooldownBar.setVisible(false);
         });
 
         // evento: actualizar número de oleada
-        this.game.events.on('nextWave', (waveNumber) => {
+        registerGameEvent('nextWave', (waveNumber) => {
             this._showRound(waveNumber);
         });
 
         // evento: actualizar enemigos restantes
-        this.game.events.on('enemyDead', (enemiesLeft) => {
+        registerGameEvent('enemyDead', (enemiesLeft) => {
             this.remainingEnemies.setText('Enemigos restantes: ' + enemiesLeft);
         });
 
         // evento: mensaje de espera para la siguiente oleada
-        this.game.events.on('finishWave', (waveDelay) => {
+        registerGameEvent('finishWave', (waveDelay) => {
             let timeLeft = Math.floor(waveDelay / 1000);
 
             this.waitingNextWave.visible = true;
@@ -225,7 +249,7 @@ export default class HUD extends Phaser.Scene {
 
         // Render trinkets
         this._updateTrinketsDisplay(this.registry.get('trinkets') || []);
-        this.registry.events.on('changedata-trinkets', (_parent, values) => {
+        registerRegistryEvent('changedata-trinkets', (_parent, values) => {
             this._updateTrinketsDisplay(values);
         });
 
@@ -237,11 +261,11 @@ export default class HUD extends Phaser.Scene {
             if (data) this._createWeaponSelector(data.iconKeys, data.currentIndex);
         };
 
-        this.game.events.on('weaponSelectorInit', buildWeaponSelector);
+        registerGameEvent('weaponSelectorInit', buildWeaponSelector);
         // Por si ya se emitió antes de que el HUD estuviera listo
         buildWeaponSelector();
 
-        this.game.events.on('weaponChanged', (index) => {
+        registerGameEvent('weaponChanged', (index) => {
             this._updateWeaponSelector(index);
             if (this._ultiButton && this._weaponIconKeys) {
                 const key = this._ultiKeyMap[this._weaponIconKeys[index]];

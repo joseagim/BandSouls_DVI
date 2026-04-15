@@ -118,14 +118,14 @@ export default class Enemy extends actor {
 
     playHit() {}
 
-    knockback() {
+    knockback(force = 300) {
         if (this.is_knockback || this.life <= 0) return;
         this.is_knockback = true;
 
         this.playHit();
 
         const angle = Phaser.Math.Angle.Between(this.scene.player.x, this.scene.player.y, this.x, this.y);
-        const knockbackForce = 300;
+        const knockbackForce = force;
 
         // console.log("La velocidad aqui es %d %d",Math.cos(angle) * knockbackForce,Math.sin(angle) * knockbackForce);
         this.body.setVelocityX(Math.cos(angle) * knockbackForce);
@@ -165,9 +165,12 @@ export default class Enemy extends actor {
 
     }
 
-    getDamage(dmg) {
+    getDamage(dmg, knockbackForce = 300) {
+        const wasAlive = this.life > 0;
         super.getDamage(dmg);
-        this.knockback();
+        if (this.life > 0 && wasAlive) {
+            this.knockback(knockbackForce);
+        }
     }
 
     move(_dt) {  

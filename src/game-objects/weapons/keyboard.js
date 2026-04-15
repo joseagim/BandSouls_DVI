@@ -75,8 +75,7 @@ export default class Keyboard extends Arma {
         // para poder atravesar enemigos y que no se pare
         if (hurtbox.enemiesHit.has(enemy)) return;
 
-        enemy.getDamage(this.damage * attackMod);
-        enemy.knockback();
+        enemy.getDamage(this.damage * attackMod, 300);
         hurtbox.enemiesHit.add(enemy);
     }
 

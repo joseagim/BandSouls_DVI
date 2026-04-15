@@ -94,7 +94,7 @@ import keyboardMinigunButtonDisabled from '../../assets/sprites/hud/buttons/keyb
 
 //mapas
 import city_tileset from '../../assets/map/Modern_Exteriors_Complete_Tileset_32x32.png';
-import city_json from '../../assets/map/level_nuevo.json'
+import city_json from '../../assets/map/level_refactor_2.json'
 import shop_tileset from '../../assets/map/gj.png'
 import shop_json from '../../assets/map/garajefinal.json'
 import portalSpritesheet from '../../assets/animations/portal/portal-spritesheet.png'

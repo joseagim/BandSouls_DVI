@@ -262,10 +262,10 @@ export default class RedVelvetEnemy extends Enemy {
     }
 
     move(dt) {
+        super.move(dt);
         if (this.scene.easystar) this._moveWithPathfinding(dt);
         else {
             this.scene.physics.moveToObject(this, this.scene.player, this.speed);
-            this.play('thief_move', true);
         }
     }
 

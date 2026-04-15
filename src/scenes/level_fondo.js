@@ -54,6 +54,12 @@ export default class Level_Fondo extends Level {
         // Inicializar pathfinding A* con el grid del tilemap
         const gridWidth = map.width;
         const gridHeight = map.height;
+        this.bounds = {
+            x : 0,
+            y : 0,
+            right : gridWidth * map.tileWidth,
+            bottom : gridHeight * map.tileHeight
+        }
         const grid = [];
         for (let y = 0; y < gridHeight; y++) {
             const row = [];

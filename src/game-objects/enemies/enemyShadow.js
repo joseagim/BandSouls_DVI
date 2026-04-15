@@ -145,6 +145,7 @@ export default class EnemyShadow extends Enemy {
 
 
     move(dt) {
+        super.move(dt)
         if (this.scene.easystar) {
             this._moveWithPathfinding(dt);
         } else {

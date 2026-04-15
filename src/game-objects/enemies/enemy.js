@@ -96,6 +96,24 @@ export default class Enemy extends actor {
      */
     preUpdate(t, dt) {
         super.preUpdate(t, dt);
+        const bounds = {
+            x : 40,
+            y : 40,
+            right : this.scene.gridWidth * this.scene.pathfinderTileSize,
+            bottom : this.scene.gridHeight * this.scene.pathfinderTileSize
+        }
+
+        if (this.x <= bounds.x) {
+            this.body.setVelocityX(0);
+        } else if (this.x >= bounds.right - 1) {
+            this.body.setVelocityX(0);
+        }
+        
+        if (this.y <= bounds.y) {
+            this.body.setVelocityY(0);
+        } else if (this.y >= bounds.bottom - 1) {
+            this.body.setVelocityY(0);
+        }
     }
 
     playHit() {}
@@ -114,6 +132,26 @@ export default class Enemy extends actor {
 
         this.body.setVelocityY(Math.sin(angle) * knockbackForce);
         // console.log("La velocidad aqui es %d",this.speed);
+        const bounds = {
+            x : 40,
+            y : 40,
+            right : this.scene.gridWidth * this.scene.pathfinderTileSize,
+            bottom : this.scene.gridHeight * this.scene.pathfinderTileSize
+        }
+
+        console.log(bounds)
+        console.log ("x: " + this.x + " | y: " + this.y)
+        if (this.x <= bounds.x + 1) {
+            this.body.setVelocityX(0);
+        } else if (this.x >= bounds.right - 1) {
+            this.body.setVelocityX(0);
+        }
+        
+        if (this.y <= bounds.y + 1) {
+            this.body.setVelocityY(0);
+        } else if (this.y >= bounds.bottom - 1) {
+            this.body.setVelocityY(0);
+        }
 
         this.scene.time.delayedCall(200, () => {
             if (this.active) {
@@ -132,6 +170,23 @@ export default class Enemy extends actor {
         this.knockback();
     }
 
-    move(_dt) {}
+    move(_dt) {  
+        const bounds = {
+            x : 40,
+            y : 40,
+            right : this.scene.gridWidth * this.scene.pathfinderTileSize,
+            bottom : this.scene.gridHeight * this.scene.pathfinderTileSize
+        }      
+        if (this.x < bounds.x) {
+            this.setPosition(bounds.x + 1, this.y);
+        } else if (this.x >= bounds.right) {
+            this.setPosition(bounds.right - bounds.x - 1, this.y);
+        }
+        
+        if (this.y < bounds.y) {
+            this.setPosition(this.x, bounds.y + 1);
+        } else if (this.y >= bounds.bottom) {
+            this.setPosition(this.x, bounds.bottom - bounds.y - 1);
+        }}
 
 }

@@ -10,7 +10,7 @@ export default class Drum extends Arma{
         this.player = player;
         this.visible = false;
 
-        const POOL_SIZE = 4;
+        const POOL_SIZE = 2;
         this.hurtboxPool = Array.from({ length: POOL_SIZE }, () => {
             const hb = this.scene.add.circle(0, 0, 8, 0xff0000);
             hb.visible = false;
@@ -55,11 +55,14 @@ export default class Drum extends Arma{
     attack(enemy, attackMod, hurtbox) {
         if (hurtbox.enemiesHit.has(enemy)) return;
         enemy.getDamage(this.damage * attackMod, 50);
-        hurtbox.enemiesHit.add(enemy);
-        if (hurtbox.enemiesHit.size >= 3) this._deactivateProjectile(hurtbox);
+        this._deactivateProjectile(hurtbox);
     }
 
     _deactivateProjectile(hurtbox) {
+        if (hurtbox.durationTimer) {
+            hurtbox.durationTimer.remove();
+            hurtbox.durationTimer = null;
+        }
         hurtbox.body.enable = false;
         hurtbox.body.setVelocity(0, 0);
         hurtbox.active = false;
@@ -90,7 +93,7 @@ export default class Drum extends Arma{
             this.canAttack = true;
         });
 
-        this.scene.time.delayedCall(this.duration, () => {
+        hurtbox.durationTimer = this.scene.time.delayedCall(this.duration, () => {
             this._deactivateProjectile(hurtbox);
         });
     }

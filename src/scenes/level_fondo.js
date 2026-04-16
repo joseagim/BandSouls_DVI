@@ -102,14 +102,7 @@ export default class Level_Fondo extends Level {
             });
         }
 
-        this.game.events.on('allWavesComplete', () => {
-            // Un poco más arriba del centro del mapa (asumiendo 1280x720 como tamaño)
-            const mapCenterX = 1280 / 2;
-            const mapCenterY = 736 / 2 - 150;
-
-            this.portal = this.physics.add.sprite(mapCenterX, mapCenterY, 'portal');
-            this.portal.play('portalAnim');
-        });
+        this.game.events.on('shopTime', () => this._spawnShopPortal());
     }
 
     update() {
@@ -123,9 +116,27 @@ export default class Level_Fondo extends Level {
             );
 
             if (distToPortal < this.portalInteractionRange && Phaser.Input.Keyboard.JustDown(this.keyEnter)) {
+                this.registry.set('savedWave', this.waveManager.currentWave);
                 this.scene.start('shop');
             }
         }
+    }
+
+    getStartingWave() {
+        const saved = this.registry.get('savedWave');
+        if (saved != null) {
+            this.registry.remove('savedWave');
+            return saved;
+        }
+        return 0;
+    }
+
+    _spawnShopPortal() {
+        if (this.portal) return; // evita doble spawn
+        const mapCenterX = 1280 / 2;
+        const mapCenterY = 736 / 2 - 150;
+        this.portal = this.physics.add.sprite(mapCenterX, mapCenterY, 'portal');
+        this.portal.play('portalAnim');
     }
 
     /**

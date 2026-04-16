@@ -55,7 +55,10 @@ export default class Level extends Phaser.Scene {
         this.spawner = new Spawner(this, enemyPoolsData, enemyStats);
 
         this.waveManager = new WaveManager(this, this.spawner);
-        this.scene.get('hud').events.once('hud-ready', () => this.waveManager.startNextWave());
+        this.scene.get('hud').events.once('hud-ready', () => {
+            this.waveManager.currentWave = this.getStartingWave();
+            this.waveManager.startNextWave();
+        });
 
         // Colisión: proyectiles del boss → jugador
         // Nos suscribimos al evento que emite EnemyBeethoven al spawnearse
@@ -76,6 +79,22 @@ export default class Level extends Phaser.Scene {
                 },
                 null, this
             );
+
+            this.tweens.add({
+                targets: this.cameras.main,
+                zoom: 1,
+                duration: 1500,
+                ease: 'Sine.easeInOut',
+            });
+        });
+
+        this.game.events.on('bossDefeated', () => {
+            this.tweens.add({
+                targets: this.cameras.main,
+                zoom: 1.5,
+                duration: 1000,
+                ease: 'Sine.easeInOut',
+            });
         });
 
         this.physics.add.overlap(this.player, this.spawner.PhysicsGroup(), function (player, enemy) {
@@ -114,6 +133,10 @@ export default class Level extends Phaser.Scene {
         this.setWeaponCollision(this.player.drum);
         this.setWeaponCollision(this.player.teclado);
 
+    }
+
+    getStartingWave() {
+        return 0;
     }
 
     enemyDies(enemy) {

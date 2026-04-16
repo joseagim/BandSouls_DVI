@@ -80,6 +80,7 @@ import bossPatterns from '../../assets/bosses/beethoven/bossPatterns.json'
 // hud
 import HUDhealthBorder from '../../assets/sprites/hud/health-bar/border.png'
 import HUDhealthBar from '../../assets/sprites/hud/health-bar/bar.png'
+import HUDhealthBarGreen from '../../assets/sprites/hud/health-bar/bar-green.png'
 import roundNumbers from '../../assets/sprites/hud/round-numbers.png'
 import dashButton from '../../assets/sprites/hud/buttons/dash-button.png'
 import dashButtonDisabled from '../../assets/sprites/hud/buttons/dash-button-disabled.png'
@@ -212,6 +213,7 @@ export default class Boot extends Phaser.Scene {
     // hud
     this.load.image('hud_health_border', HUDhealthBorder);
     this.load.image('hud_health_bar', HUDhealthBar);
+    this.load.image('hud_health_bar_green', HUDhealthBarGreen);
     this.load.spritesheet('round_numbers', roundNumbers, { frameWidth: 24, frameHeight: 32 });
     this.load.image('dash-button', dashButton);
     this.load.image('dash-button-disabled', dashButtonDisabled);

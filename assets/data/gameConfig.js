@@ -124,8 +124,8 @@ const gameConfig = {
             speedMult: 0.75,
             cooldownMult: 0.8,
             enemies: [
-                { type: "shadow", count: 8, spawnDelay: 2000 },
-                { type: "thief", count: 5, spawnDelay: 3000 },
+                { type: "shadow", count: 7, spawnDelay: 2000 },
+                { type: "shadow", count: 7, spawnDelay: 2000 },
                 { type: "kamikaze", count: 3, spawnDelay: 5000 }
             ],
             delay: 20000,
@@ -135,8 +135,9 @@ const gameConfig = {
             speedMult: 1,
             cooldownMult: 0.8,
             enemies: [
-                { type: "shadow", count: 8, spawnDelay: 3000 },
-                { type: "shadow", count: 8, spawnDelay: 2000 },
+                { type: "shadow", count: 10, spawnDelay: 3000 },
+                { type: "shadow", count: 6, spawnDelay: 2000 },
+                { type: "thief", count: 5, spawnDelay: 3000 },
                 { type: "kamikaze", count: 4, spawnDelay: 3000 },
             ],
             delay: 3000,
@@ -213,6 +214,15 @@ const gameConfig = {
             waveNumber: 10,
             enemies: [
                 { type: "beethoven", count: 1, spawnDelay: 0 }
+            ],
+            delay: 3000,
+        },
+        {
+            waveNumber: 11,
+            speedMult: 1.2,
+            cooldownMult: 0.7,
+            enemies: [
+                { type: "shadow", count: 100000, spawnDelay: 200 },
             ],
             delay: 3000,
         },

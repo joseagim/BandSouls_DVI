@@ -32,7 +32,7 @@ export default class HUD extends Phaser.Scene {
         }, this);
 
         // crear la barra abajo a la izquierda
-        this.healthBar = new Bar(this, 20, this.scale.height - 50, 'hud_health_border', 'hud_health_bar');
+        this.healthBar = new Bar(this, 20, this.scale.height - 50, 'hud_health_border', 'hud_health_bar_green');
         this.healthBar.setScale(3);
         this.healthBar.setScrollFactor(0);
 
@@ -90,6 +90,7 @@ export default class HUD extends Phaser.Scene {
         registerGameEvent('updateHealth', (player) => {
             const percentage = player.life / player.maxHP;
             this.healthBar.setValue(percentage);
+            this.healthBar.setBarTexture(percentage <= 0.3 ? 'hud_health_bar' : 'hud_health_bar_green');
         });
 
         // ─── Barra de vida del Boss (abajo a la derecha) ────────────────────────

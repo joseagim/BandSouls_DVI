@@ -118,7 +118,7 @@ export default class Enemy extends actor {
 
     playHit() {}
 
-    knockback(force = 300) {
+    knockback(force = 300, stunDuration = 200) {
         if (this.is_knockback || this.life <= 0) return;
         this.is_knockback = true;
 
@@ -153,7 +153,7 @@ export default class Enemy extends actor {
             this.body.setVelocityY(0);
         }
 
-        this.scene.time.delayedCall(100, () => {
+        this.scene.time.delayedCall(stunDuration, () => {
             if (this.active) {
                 this.is_knockback = false;
                 console.log("KNOCKBACK ES FALSO");
@@ -165,11 +165,11 @@ export default class Enemy extends actor {
 
     }
 
-    getDamage(dmg, knockbackForce = 300) {
+    getDamage(dmg, knockbackForce = 300, stunDuration = 200) {
         const wasAlive = this.life > 0;
         super.getDamage(dmg);
         if (this.life > 0 && wasAlive) {
-            this.knockback(knockbackForce);
+            this.knockback(knockbackForce, stunDuration);
         }
     }
 

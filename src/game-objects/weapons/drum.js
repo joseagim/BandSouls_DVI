@@ -6,6 +6,8 @@ export default class Drum extends Arma{
         super(scene,x,y, 'drumSticks',  {   damage      : 5,
                                             cooldown    : 150,
                                             duration    : 1000});
+        this.stunDuration = 50;
+        this.knockback = 20;
 
         this.player = player;
         this.visible = false;
@@ -54,7 +56,7 @@ export default class Drum extends Arma{
 
     attack(enemy, attackMod, hurtbox) {
         if (hurtbox.enemiesHit.has(enemy)) return;
-        enemy.getDamage(this.damage * attackMod, 50);
+        enemy.getDamage(this.damage * attackMod, this.knockback, this.stunDuration);
         this._deactivateProjectile(hurtbox);
     }
 

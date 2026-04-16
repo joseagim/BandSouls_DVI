@@ -15,7 +15,7 @@ const gameConfig = {
         },
 
         redVelvet: {
-            life: 50,
+            life: 100,
             speed: 40,
             defenseMod: 1,
             attackMod: 1,
@@ -128,7 +128,7 @@ const gameConfig = {
                 { type: "thief", count: 5, spawnDelay: 3000 },
                 { type: "kamikaze", count: 3, spawnDelay: 5000 }
             ],
-            delay: 5000,
+            delay: 20000,
         },
         {
             waveNumber: 4,
@@ -165,7 +165,7 @@ const gameConfig = {
                 { type: "kamikaze", count: 5, spawnDelay: 4000 },
                 { type: "redVelvet", count: 2, spawnDelay: 6000 }
             ],
-            delay: 3000,
+            delay: 20000,
         },
         {
             waveNumber: 7,
@@ -207,7 +207,7 @@ const gameConfig = {
                 { type: "kamikaze", count: 8, spawnDelay: 5000 },
                 { type: "redVelvet", count: 3, spawnDelay: 6000 }
             ],
-            delay: 3000,
+            delay: 20000,
         },
         {
             waveNumber: 10,

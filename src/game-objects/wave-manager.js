@@ -55,6 +55,7 @@ export default class WaveManager {
                 this.scene.game.events.emit('allWavesComplete');
             } else if (this.shopWaves.includes(this.currentWave)) {
                 this.scene.game.events.emit('shopTime', this.currentWave);
+                this.scene.time.delayedCall(this.waveDelay, () => this.startNextWave());
             } else {
                 this.scene.time.delayedCall(this.waveDelay, () => this.startNextWave());
             }

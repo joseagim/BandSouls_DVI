@@ -64,7 +64,16 @@ export default class HUD extends Phaser.Scene {
             strokeThickness: 4
         }).setScrollFactor(0);
 
-        this.waitingNextWave = this.add.text(this.scale.width / 2, 180, 'La siguiente oleada comenzará en X', {
+        this.portalBanner = this.add.text(this.scale.width / 2, 140, '¡Ha aparecido un portal!', {
+            fontSize: '32px',
+            fill: '#ffe066',
+            fontFamily: 'Arial',
+            stroke: '#000000',
+            strokeThickness: 5
+        }).setOrigin(0.5, 0).setScrollFactor(0);
+        this.portalBanner.visible = false;
+
+        this.waitingNextWave = this.add.text(this.scale.width / 2, 185, 'La siguiente oleada comenzará en X', {
             fontSize: '32px',
             fill: '#ffffff',
             fontFamily: 'Arial',
@@ -179,11 +188,17 @@ export default class HUD extends Phaser.Scene {
         // evento: actualizar número de oleada
         registerGameEvent('nextWave', (waveNumber) => {
             this._showRound(waveNumber);
+            this.portalBanner.visible = false;
         });
 
         // evento: actualizar enemigos restantes
         registerGameEvent('enemyDead', (enemiesLeft) => {
             this.remainingEnemies.setText('Enemigos restantes: ' + enemiesLeft);
+        });
+
+        // evento: portal de tienda aparecido
+        registerGameEvent('shopTime', () => {
+            this.portalBanner.visible = true;
         });
 
         // evento: mensaje de espera para la siguiente oleada

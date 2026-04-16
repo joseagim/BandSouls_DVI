@@ -44,6 +44,11 @@ export default class Shop extends Phaser.Scene {
 
         this.physics.add.collider(this.player, layer);
 
+        this.cameras.main.setBounds(0, 0, 1280, 720);
+        this.cameras.main.setZoom(1.5);
+        this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
+        this.cameras.main.setBackgroundColor(0x000000);
+
         this.scene.launch('hud');
 
         // --- Sistema de items en la tienda ---
@@ -85,8 +90,6 @@ export default class Shop extends Phaser.Scene {
 
 
         this.keyE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
-        this.keyEnter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
-
 
         this.anims.create({
             key: 'portalAnim',
@@ -97,7 +100,10 @@ export default class Shop extends Phaser.Scene {
 
         this.portal = this.physics.add.sprite(833, 272, 'portal');
         this.portal.play('portalAnim');
-        this.portalInteractionRange = 50;
+        this.portal.setScale(2);
+        this.portalInteractionRange = 80;
+        this._portalEnterTimer = null;
+        this._portalBlinkTween = null;
     }
 
 
@@ -182,13 +188,41 @@ export default class Shop extends Phaser.Scene {
             }
         }
 
-        // Enter para entrar al portal
-        if (Phaser.Input.Keyboard.JustDown(this.keyEnter)) {
-            if (distToPortal < this.portalInteractionRange) {
-                this.scene.start('level_fondo');
+        if (distToPortal < this.portalInteractionRange) {
+            if (!this._portalEnterTimer) {
+                this._portalEnterTimer = this.time.delayedCall(3000, () => {
+                    this._stopPortalBlink();
+                    this.scene.start('level_fondo');
+                });
+                this._startPortalBlink();
+            }
+        } else {
+            if (this._portalEnterTimer) {
+                this._portalEnterTimer.remove();
+                this._portalEnterTimer = null;
+                this._stopPortalBlink();
             }
         }
 
+    }
+
+    _startPortalBlink() {
+        this._portalBlinkTween = this.tweens.add({
+            targets: this.player,
+            alpha: 0.15,
+            duration: 250,
+            ease: 'Sine.easeInOut',
+            yoyo: true,
+            repeat: -1
+        });
+    }
+
+    _stopPortalBlink() {
+        if (this._portalBlinkTween) {
+            this._portalBlinkTween.stop();
+            this._portalBlinkTween = null;
+            this.player.setAlpha(1);
+        }
     }
 
 }

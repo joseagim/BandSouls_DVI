@@ -14,7 +14,7 @@ export default class Enemy extends actor {
      */
     constructor(scene, x, y, tag, stats) {
         super(scene, x, y, tag, stats);
-        this.ContactDamage = 10;
+        this.ContactDamage = stats?.attackDamage ?? 10;
         this.contacAttackCooldown = 1000;
         this.canContactAttack = true;
     }
@@ -153,7 +153,7 @@ export default class Enemy extends actor {
             this.body.setVelocityY(0);
         }
 
-        this.scene.time.delayedCall(200, () => {
+        this.scene.time.delayedCall(100, () => {
             if (this.active) {
                 this.is_knockback = false;
                 console.log("KNOCKBACK ES FALSO");

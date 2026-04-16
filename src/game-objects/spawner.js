@@ -11,11 +11,14 @@ export default class Spawner {
         this.shadowStats = this.scene.cache.json.get('data').shadowBaseStats;
     }
 
-    spawn(x, y, type) {
+    spawn(x, y, type, speedMult = 1, cooldownMult = 1) {
         const enemy = this.pool.spawnInactive(type);
 
         if (enemy) {
             enemy.spawn(x, y);
+            if (speedMult !== 1)    enemy.speed *= speedMult;
+            if (cooldownMult !== 1 && enemy.attackCooldown != null)
+                enemy.attackCooldown *= cooldownMult;
             this._showSpawnEffect(x, y, enemy);
             return enemy;
         }
@@ -44,15 +47,14 @@ export default class Spawner {
         return this.pool.physicsGroup;
     }
 
-    spawnMultiple(config) {
+    spawnMultiple(config, speedMult = 1, cooldownMult = 1) {
         for (let i = 1; i <= config.count; i++) {
             this.scene.time.addEvent({
                 delay: config.spawnDelay * i,
                 callback: () => {
                     const x = Phaser.Math.Between(50, 750);
                     const y = Phaser.Math.Between(50, 550);
-                    
-                    this.spawn(x, y, config.type);
+                    this.spawn(x, y, config.type, speedMult, cooldownMult);
                 }
             });
         }

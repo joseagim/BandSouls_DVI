@@ -89,8 +89,9 @@ export default class Level_Fondo extends Level {
 
         // --- Portal al finalizar oleadas ---
         this.portal = null;
-        this.keyEnter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
-        this.portalInteractionRange = 50;
+        this.portalInteractionRange = 80;
+        this._portalEnterTimer = null;
+        this._portalBlinkTween = null;
 
         // Crear la animación por si no estuviese creada en esta escena
         if (!this.anims.exists('portalAnim')) {
@@ -102,13 +103,18 @@ export default class Level_Fondo extends Level {
             });
         }
 
-        this.game.events.on('allWavesComplete', () => {
-            // Un poco más arriba del centro del mapa (asumiendo 1280x720 como tamaño)
-            const mapCenterX = 1280 / 2;
-            const mapCenterY = 736 / 2 - 150;
+        this.game.events.on('shopTime', () => this._spawnShopPortal());
 
-            this.portal = this.physics.add.sprite(mapCenterX, mapCenterY, 'portal');
-            this.portal.play('portalAnim');
+        this.game.events.on('nextWave', () => {
+            if (this.portal) {
+                this.portal.destroy();
+                this.portal = null;
+            }
+            if (this._portalEnterTimer) {
+                this._portalEnterTimer.remove();
+                this._portalEnterTimer = null;
+            }
+            this._stopPortalBlink();
         });
     }
 
@@ -122,9 +128,59 @@ export default class Level_Fondo extends Level {
                 this.portal.x, this.portal.y
             );
 
-            if (distToPortal < this.portalInteractionRange && Phaser.Input.Keyboard.JustDown(this.keyEnter)) {
-                this.scene.start('shop');
+            if (distToPortal < this.portalInteractionRange) {
+                if (!this._portalEnterTimer) {
+                    this._portalEnterTimer = this.time.delayedCall(3000, () => {
+                        this._stopPortalBlink();
+                        this.registry.set('savedWave', this.waveManager.currentWave);
+                        this.scene.start('shop');
+                    });
+                    this._startPortalBlink();
+                }
+            } else {
+                if (this._portalEnterTimer) {
+                    this._portalEnterTimer.remove();
+                    this._portalEnterTimer = null;
+                    this._stopPortalBlink();
+                }
             }
+        }
+    }
+
+    getStartingWave() {
+        const saved = this.registry.get('savedWave');
+        if (saved != null) {
+            this.registry.remove('savedWave');
+            return saved;
+        }
+        return 0;
+    }
+
+    _spawnShopPortal() {
+        if (this.portal) return; // evita doble spawn
+        const mapCenterX = 1280 / 2;
+        const mapCenterY = 736 / 2 - 150;
+        this.portal = this.physics.add.sprite(mapCenterX, mapCenterY, 'portal');
+        this.portal.play('portalAnim');
+        this.portal.setScale(2);
+    }
+
+    _startPortalBlink() {
+        this._portalBlinkTween = this.tweens.add({
+            targets: this.player,
+            alpha: 0.15,
+            duration: 250,
+            ease: 'Sine.easeInOut',
+            yoyo: true,
+            repeat: -1
+        });
+    }
+
+    _stopPortalBlink() {
+        if (this._portalBlinkTween) {
+            this._portalBlinkTween.stop();
+            this._portalBlinkTween = null;
+            this.player.setAlpha(1);
         }
     }
 

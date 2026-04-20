@@ -284,7 +284,7 @@ export default class Boot extends Phaser.Scene {
     this.registry.set('trinkets', []);
 
     this.soundManager.play('menu_music');
-    this.add.image(640, 368, "title");
+    this.add.image(640, 368, "title").setDisplaySize(this.scale.width, this.scale.height);
     this.startText = this.add.sprite(596, 490, "start");
     this.anims.create({
       key: 'startAnim',
@@ -305,58 +305,52 @@ export default class Boot extends Phaser.Scene {
     this.optionsText = this.add.sprite(644, 570, "options");
     this.activeOption = null;
 
-    this.input.keyboard.on("keydown-W", () => {
-      if (this.activeOption == null) {
-        this.activeOption = this.startText;
-        this.startText.play('startAnim');
-        this.select.setVisible(true);
-      } else if (this.activeOption == this.optionsText) {
-        this.startText.play('startAnim');
+    const selectOption = (option) => {
+      if (this.activeOption === option) return;
+      if (this.activeOption === this.startText) {
+        this.startText.stop();
+        this.startText.setTexture('start');
+      } else if (this.activeOption === this.optionsText) {
         this.optionsText.stop();
         this.optionsText.setTexture('options');
-        this.activeOption = this.startText;
-        this.moveSelect(this.select, this.activeOption);
-      } else {
-        this.startText.stop();
-        this.activeOption = this.optionsText;
-        this.startText.setTexture('start');
-        this.optionsText.play('optionsAnim')
-        this.moveSelect(this.select, this.activeOption);
       }
-    });
+      this.activeOption = option;
+      this.select.setVisible(true);
+      this.moveSelect(this.select, option);
+      if (option === this.startText) this.startText.play('startAnim');
+      else this.optionsText.play('optionsAnim');
+    };
 
-    this.input.keyboard.on("keydown-S", () => {
-      if (this.activeOption == null) {
-        this.activeOption = this.startText;
-        this.startText.play('startAnim');
-        this.select.setVisible(true);
-      } else if (this.activeOption == this.optionsText) {
-        this.startText.play('startAnim');
-        this.optionsText.stop();
-        this.optionsText.setTexture('options');
-        this.activeOption = this.startText;
-        this.moveSelect(this.select, this.activeOption);
-      } else {
-        this.startText.stop();
-        this.activeOption = this.optionsText;
-        this.startText.setTexture('start');
-        this.optionsText.play('optionsAnim')
-        this.moveSelect(this.select, this.activeOption);
-      }
-    });
-
-    this.input.keyboard.on("keydown-ENTER", () => {
-      if (this.activeOption == this.startText) {
+    const confirmOption = () => {
+      if (this.activeOption === this.startText) {
         this.soundManager.fadeOutMusic(500);
-        this.time.delayedCall(500, () => {
-          this.scene.start('level_fondo');
-        });
-      } else if (this.activeOption == this.optionsText) {
-        alert("se mostraria menu de opciones: audio, brillo, etc...")
-      } else {
-
+        this.time.delayedCall(500, () => { this.scene.start('level_fondo'); });
+      } else if (this.activeOption === this.optionsText) {
+        alert("se mostraria menu de opciones: audio, brillo, etc...");
       }
-    });
+    };
+
+    this.startText.setInteractive({ useHandCursor: true });
+    this.optionsText.setInteractive({ useHandCursor: true });
+
+    const deselectOption = () => {
+      if (this.activeOption === this.startText) {
+        this.startText.stop();
+        this.startText.setTexture('start');
+      } else if (this.activeOption === this.optionsText) {
+        this.optionsText.stop();
+        this.optionsText.setTexture('options');
+      }
+      this.activeOption = null;
+      this.select.setVisible(false);
+    };
+
+    this.startText.on('pointerover', () => selectOption(this.startText));
+    this.startText.on('pointerout', () => deselectOption());
+    this.startText.on('pointerdown', () => confirmOption());
+    this.optionsText.on('pointerover', () => selectOption(this.optionsText));
+    this.optionsText.on('pointerout', () => deselectOption());
+    this.optionsText.on('pointerdown', () => confirmOption());
 
 
 

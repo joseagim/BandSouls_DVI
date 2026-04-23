@@ -69,14 +69,12 @@ export default class ShadowEnemy extends Enemy {
     attack(player) {
         if (this.isDead || this.exploded) return;
         if (this.canAttack) {
-            player.getDamage(this.attackDamage * this.attackMod);
             this.die();
         }
     }
 
     attackOnContact(player) {
-        // El kamikaze maneja su ataque de manera personalizada en preUpdate
-        // No usar el attackOnContact del padre para evitar daño duplicado
+        this.attack(player);
     }
 
     preUpdate(t, dt) {
@@ -89,13 +87,11 @@ export default class ShadowEnemy extends Enemy {
         } else {
             this.setFlip(false, false);
         }
-        if (!this.scene.physics.overlap(this, this.scene.player) && !this.is_knockback) {
+        if (!this.is_knockback) {
             this.move(dt);
-        }
-        else {
+        } else {
             this.is_moving = false;
-            this.body.setVelocity(0, 0);  // Detener inmediatamente al contacto
-            this.attack(this.scene.player);
+            this.body.setVelocity(0, 0);
         }
     }
 
@@ -210,6 +206,15 @@ export default class ShadowEnemy extends Enemy {
             this.setActive(false);
             this.setVisible(false);
         });
+
+        // Daño al jugador si está en el radio
+        const player = this.scene.player;
+        if (player && player.active && !player.invincible) {
+            const playerDist = Phaser.Math.Distance.Between(this.x, this.y, player.x, player.y);
+            if (playerDist <= this.attackRadius) {
+                player.getDamage(this.attackDamage * this.attackMod);
+            }
+        }
 
         const allEnemies = this.scene.spawner.pool.physicsGroup.getChildren();
         const explosionDamage = this.attackDamage * 3;

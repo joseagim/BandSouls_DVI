@@ -28,7 +28,8 @@ export default class Enemy extends actor {
 
         if (this.body) {
             this.body.enable = true;
-            this.body.checkCollision.none = false; 
+            this.body.checkCollision.none = false;
+            this.body.setCollideWorldBounds(true);
         }
 
         this.life = this.maxHP;
@@ -105,14 +106,18 @@ export default class Enemy extends actor {
 
         if (this.x <= bounds.x) {
             this.body.setVelocityX(0);
+            this.setX(bounds.x + 1);
         } else if (this.x >= bounds.right - 1) {
             this.body.setVelocityX(0);
+            this.setX(bounds.right - 2);
         }
-        
+
         if (this.y <= bounds.y) {
             this.body.setVelocityY(0);
+            this.setY(bounds.y + 1);
         } else if (this.y >= bounds.bottom - 1) {
             this.body.setVelocityY(0);
+            this.setY(bounds.bottom - 2);
         }
     }
 

@@ -48,7 +48,7 @@ export default class Level_Fondo extends Level {
         this.physics.add.collider(this.player, layer_colisiones);
       //  this.physics.add.collider(this.player, layer_objetos);
 
-        this.physics.add.collider(this.spawner.pool, layer_colisiones);
+        this.physics.add.collider(this.spawner.PhysicsGroup(), layer_colisiones);
         //this.physics.add.collider(this.spawner.pool, layer_objetos);
 
         // Inicializar pathfinding A* con el grid del tilemap
@@ -60,6 +60,7 @@ export default class Level_Fondo extends Level {
             right : gridWidth * map.tileWidth,
             bottom : gridHeight * map.tileHeight
         }
+        this.physics.world.setBounds(0, 0, this.bounds.right, this.bounds.bottom);
         const grid = [];
         for (let y = 0; y < gridHeight; y++) {
             const row = [];

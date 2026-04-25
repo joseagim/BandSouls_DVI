@@ -125,10 +125,12 @@ export default class EnemyThief extends Enemy {
 
     _moveWithPathfinding(dt) {
         const tileSize = this.scene.pathfinderTileSize;
-        const startX = Math.floor(this.body.center.x / tileSize);
-        const startY = Math.floor(this.body.center.y / tileSize);
-        const endX = Math.floor(this.scene.player.body.center.x / tileSize);
-        const endY = Math.floor(this.scene.player.body.center.y / tileSize);
+        const maxX = this.scene.gridWidth - 1;
+        const maxY = this.scene.gridHeight - 1;
+        const startX = Phaser.Math.Clamp(Math.floor(this.body.center.x / tileSize), 0, maxX);
+        const startY = Phaser.Math.Clamp(Math.floor(this.body.center.y / tileSize), 0, maxY);
+        const endX = Phaser.Math.Clamp(Math.floor(this.scene.player.body.center.x / tileSize), 0, maxX);
+        const endY = Phaser.Math.Clamp(Math.floor(this.scene.player.body.center.y / tileSize), 0, maxY);
 
         this._stuckTimer += dt;
         if (this._stuckTimer >= 600) {

@@ -83,7 +83,7 @@ const gameConfig = {
             cooldown: 700,
             duration: 250,
             abilityDamage: 15,
-            abilityCooldown: 30000,
+            abilityCooldown: 45000,
         },
         bass: {
             damage: 8,
@@ -98,6 +98,11 @@ const gameConfig = {
             duration: 1000,
             stunDuration: 50,
             knockback: 20,
+            abilityDamage: 10,
+            abilityCooldown: 60000,
+            abilityKnockback: 300,
+            abilityStunDuration: 400,
+            abilityRadius: 100,
         },
         keyboard: {
             damage: 20,

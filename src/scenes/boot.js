@@ -29,6 +29,8 @@ import cooldownResetVisualCueJSON from '../../assets/animations/laude/CooldownRe
 
 // weapons
 import guitarSprite from '../../assets/sprites/weapons/guitar/guitar-sprite.png'
+import guitarRiff from '../../assets/sprites/weapons/guitar/guitar-riff.png'
+import guitarRiffAtlas from '../../assets/sprites/weapons/guitar/guitar-riff.json'
 import guitarIcon from '../../assets/sprites/weapons/guitar/guitar-icon.png'
 import drumSticks from '../../assets/sprites/weapons/drum/drum-sticks.png'
 import drumIcon from '../../assets/sprites/weapons/drum/drum-icon.png'
@@ -175,6 +177,7 @@ export default class Boot extends Phaser.Scene {
 
     // weapons
     this.load.image('guitarSprite', guitarSprite);
+    this.load.atlas('guitar-riff', guitarRiff, guitarRiffAtlas);
     this.load.image('guitar-icon', guitarIcon);
     this.load.image('drumSticks', drumSticks);
     this.load.image('drum-icon', drumIcon);

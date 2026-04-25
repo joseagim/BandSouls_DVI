@@ -2,18 +2,18 @@ import Phaser from 'phaser';
 import Arma from './arma.js'
 
 export default class Keyboard extends Arma {
-    constructor(scene, x, y, player) {
+    constructor(scene, x, y, player, stats) {
         super(scene, x, y, 'keyboard_projectile', {
-            damage: 20,
-            cooldown: 1000,
-            duration: 2000
+            damage: stats.damage,
+            cooldown: stats.cooldown,
+            duration: stats.duration
         });
 
         this.player = player;
         this.visible = false;
 
-        this.chargeTime = 1000;
-        this.chargeSpeedModifier = 0.20;
+        this.chargeTime = stats.chargeTime;
+        this.chargeSpeedModifier = stats.chargeSpeedModifier;
 
         // crea la animación del proyectil
         if (!this.scene.anims.exists('keyboard_projectile_anim')) {

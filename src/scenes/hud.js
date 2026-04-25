@@ -31,10 +31,22 @@ export default class HUD extends Phaser.Scene {
             this._registryEventHandlers.length = 0;
         }, this);
 
-        // La barra se posiciona y escala dentro de _createWeaponSelector
+        // Panel + barra de vida — arriba izquierda
         this.healthBar = new Bar(this, 0, 0, 'hud_health_border', 'hud_health_bar_green');
         this.healthBar.setScrollFactor(0);
-        this.healthBar.setVisible(false);
+        const hpPanelW = 290;
+        const hpPadX   = 16;
+        const hpPadY   = 16;
+        const hpBarScale = (hpPanelW - 16) / this.healthBar.frame.width;
+        const hpPanelH   = Math.round(this.healthBar.frame.height * hpBarScale) + 12;
+        this.add.graphics()
+            .fillStyle(0x000000, 0.4)
+            .fillRoundedRect(hpPadX, hpPadY, hpPanelW, hpPanelH, 8)
+            .setDepth(-1)
+            .setScrollFactor(0);
+        this.healthBar.setScale(hpBarScale);
+        this.healthBar.setPosition(hpPadX + 8, hpPadY + 6);
+        this.healthBar.setVisible(true);
 
         // Score — se posiciona en _createWeaponSelector
         this.scoreText = this.add.text(0, 0, '0', {
@@ -183,6 +195,21 @@ export default class HUD extends Phaser.Scene {
             if (this._dashCooldownBar) this._dashCooldownBar.setVisible(false);
         });
 
+        registerGameEvent('ultiStart', ({ weaponKey, cooldown }) => {
+            if (!this._ultiCooldownState) this._ultiCooldownState = {};
+            this._ultiCooldownState[weaponKey] = { startTime: Date.now(), cooldown };
+            if (this._getCurrentUltiIconKey() === weaponKey) {
+                if (this._ultiCooldownTween) { this._ultiCooldownTween.stop(); this._ultiCooldownTween = null; }
+                this._startUltiCooldownUI(0, cooldown);
+            }
+        });
+        registerGameEvent('ultiReady', ({ weaponKey }) => {
+            if (this._ultiCooldownState) delete this._ultiCooldownState[weaponKey];
+            if (this._getCurrentUltiIconKey() === weaponKey) {
+                this._stopUltiCooldownUI(weaponKey);
+            }
+        });
+
         // evento: actualizar número de oleada
         registerGameEvent('nextWave', (waveNumber) => {
             this._showRound(waveNumber);
@@ -279,11 +306,21 @@ export default class HUD extends Phaser.Scene {
         buildWeaponSelector();
 
         registerGameEvent('weaponChanged', (index) => {
+            this._currentWeaponPlayerIndex = index;
             this._updateWeaponSelector(index);
             if (this._ultiButton && this._weaponIconKeys) {
                 const si = this._playerToSortedIndex?.[index] ?? index;
-                const key = this._ultiKeyMap[this._weaponIconKeys[si]];
-                if (key) this._ultiButton.setTexture(key);
+                const iconKey = this._weaponIconKeys[si];
+                if (this._ultiCooldownTween) { this._ultiCooldownTween.stop(); this._ultiCooldownTween = null; }
+                const state = this._ultiCooldownState?.[iconKey];
+                if (state) {
+                    const elapsed = Date.now() - state.startTime;
+                    const progress = Math.min(elapsed / state.cooldown, 1);
+                    const remaining = Math.max(state.cooldown - elapsed, 0);
+                    this._startUltiCooldownUI(progress, remaining);
+                } else {
+                    this._stopUltiCooldownUI(iconKey);
+                }
             }
         });
 
@@ -306,11 +343,20 @@ export default class HUD extends Phaser.Scene {
         const sortedCurrentIndex = this._playerToSortedIndex[currentIndex] ?? 0;
         this._weaponIconKeys = sortedKeys;
 
+        this._currentWeaponPlayerIndex = currentIndex;
+        if (!this._ultiCooldownState) this._ultiCooldownState = {};
+
         this._ultiKeyMap = {
             'guitar-icon':   'guitar-vibe-button',
             'drum-icon':     'drum-smash-button',
             'bass-icon':     'bass-grenade-button',
             'keyboard-icon': 'keyboard-minigun-button',
+        };
+        this._ultiDisabledKeyMap = {
+            'guitar-icon':   'guitar-vibe-button-disabled',
+            'drum-icon':     'drum-smash-button-disabled',
+            'bass-icon':     'bass-grenade-button-disabled',
+            'keyboard-icon': 'keyboard-minigun-button-disabled',
         };
 
         // Layout — slots abajo-derecha, crecen hacia la izquierda
@@ -320,13 +366,13 @@ export default class HUD extends Phaser.Scene {
         const rightEdge  = this.scale.width  - 60;
         const firstSlotX = rightEdge - (sortedKeys.length - 1) * slotSpacing;
 
-        // Panel translúcido que cubre barra de vida + slots
+        // Panel translúcido que cubre los slots
         if (this._hudTopPanel)   this._hudTopPanel.destroy();
         if (this._scorePanelGfx) this._scorePanelGfx.destroy();
         const panelPad  = 35;
         const panelLeft = firstSlotX - panelPad - 20;
         const panelW    = rightEdge + panelPad - panelLeft + 20;
-        const panelTop  = slotY - 85;
+        const panelTop  = slotY - 50;
         const panelH    = slotY + 50 - panelTop;
         this._hudTopPanel = this.add.graphics()
             .fillStyle(0x000000, 0.4)
@@ -334,19 +380,11 @@ export default class HUD extends Phaser.Scene {
             .setDepth(-1)
             .setScrollFactor(0);
 
-        // Barra de vida: ajustada al ancho del panel
-        if (this.healthBar) {
-            const barScale = (panelW - 24) / this.healthBar.frame.width;
-            this.healthBar.setScale(barScale);
-            this.healthBar.setPosition(panelLeft + 12, panelTop );
-            this.healthBar.setVisible(true);
-        }
-
         // Panel de puntuación: encima del panel de armas, alineado a la derecha
         const scoreH    = 46;
         const scoreW    = Math.round(190 * 1.3);
         const scoreLeft = this.scale.width - scoreW;
-        const scoreTop  = panelTop - 28 - scoreH;
+        const scoreTop  = panelTop - 40 - scoreH;
         const sg = this.add.graphics().setScrollFactor(0).setDepth(-1);
         const fadeZone  = 70;
         const fadeSteps = 14;
@@ -369,9 +407,11 @@ export default class HUD extends Phaser.Scene {
         this.scoreText.setVisible(true);
 
         // Dash + ulti abajo-izquierda, más grandes
-        if (this._dashButton)      this._dashButton.destroy();
-        if (this._ultiButton)      this._ultiButton.destroy();
-        if (this._dashCooldownBar) this._dashCooldownBar.destroy();
+        if (this._dashButton)       this._dashButton.destroy();
+        if (this._ultiButton)       this._ultiButton.destroy();
+        if (this._dashCooldownBar)  this._dashCooldownBar.destroy();
+        if (this._ultiCooldownBar)  this._ultiCooldownBar.destroy();
+        if (this._ultiCooldownTween) { this._ultiCooldownTween.stop(); this._ultiCooldownTween = null; }
 
         const dashX = 50;
         const ultiX = dashX + 90;
@@ -387,6 +427,21 @@ export default class HUD extends Phaser.Scene {
         this._dashCooldownFill = { value: 0 };
         this._dashCooldownBar = this.add.graphics().setScrollFactor(0).setDepth(100).setVisible(false);
         this._redrawDashBar();
+
+        this._ultiBarBounds = { x: ultiX + 28, y: slotY - 22, w: 5, h: 44 };
+        this._ultiCooldownFill = { value: 0 };
+        this._ultiCooldownBar = this.add.graphics().setScrollFactor(0).setDepth(100).setVisible(false);
+        this._redrawUltiBar();
+
+        // Restore cooldown state for the currently equipped weapon
+        const currentIconKey = this._weaponIconKeys[sortedCurrentIndex];
+        const existingState = this._ultiCooldownState?.[currentIconKey];
+        if (existingState) {
+            const elapsed = Date.now() - existingState.startTime;
+            const progress = Math.min(elapsed / existingState.cooldown, 1);
+            const remaining = Math.max(existingState.cooldown - elapsed, 0);
+            this._startUltiCooldownUI(progress, remaining);
+        }
 
         // Slots de arma
         this._weaponSlots = sortedKeys.map((iconKey, i) => {
@@ -566,17 +621,55 @@ export default class HUD extends Phaser.Scene {
         this._itemPanelElements = [];
     }
 
+    _getCurrentUltiIconKey() {
+        if (!this._weaponIconKeys || this._currentWeaponPlayerIndex == null) return null;
+        const si = this._playerToSortedIndex?.[this._currentWeaponPlayerIndex] ?? this._currentWeaponPlayerIndex;
+        return this._weaponIconKeys[si] ?? null;
+    }
+
+    _startUltiCooldownUI(startProgress, duration) {
+        const iconKey = this._getCurrentUltiIconKey();
+        const disabledKey = this._ultiDisabledKeyMap?.[iconKey];
+        if (this._ultiButton && disabledKey) this._ultiButton.setTexture(disabledKey);
+        if (this._ultiCooldownBar) this._ultiCooldownBar.setVisible(true);
+        this._ultiCooldownFill = { value: startProgress };
+        this._redrawUltiBar();
+        this._ultiCooldownTween = this.tweens.add({
+            targets: this._ultiCooldownFill,
+            value: 1,
+            duration,
+            ease: 'Linear',
+            onUpdate: () => this._redrawUltiBar()
+        });
+    }
+
+    _stopUltiCooldownUI(iconKey) {
+        if (this._ultiCooldownTween) { this._ultiCooldownTween.stop(); this._ultiCooldownTween = null; }
+        const enabledKey = this._ultiKeyMap?.[iconKey];
+        if (this._ultiButton && enabledKey) this._ultiButton.setTexture(enabledKey);
+        if (this._ultiCooldownBar) this._ultiCooldownBar.setVisible(false);
+    }
+
     _redrawDashBar() {
         if (!this._dashCooldownBar || !this._dashBarBounds) return;
         const { x, y, w, h } = this._dashBarBounds;
         this._dashCooldownBar.clear();
-        // Fondo oscuro
         this._dashCooldownBar.fillStyle(0x222222, 0.8);
         this._dashCooldownBar.fillRect(x, y, w, h);
-        // Relleno de abajo a arriba
         const fillH = h * this._dashCooldownFill.value;
         this._dashCooldownBar.fillStyle(0x00ccff, 1);
         this._dashCooldownBar.fillRect(x, y + h - fillH, w, fillH);
+    }
+
+    _redrawUltiBar() {
+        if (!this._ultiCooldownBar || !this._ultiBarBounds) return;
+        const { x, y, w, h } = this._ultiBarBounds;
+        this._ultiCooldownBar.clear();
+        this._ultiCooldownBar.fillStyle(0x222222, 0.8);
+        this._ultiCooldownBar.fillRect(x, y, w, h);
+        const fillH = h * this._ultiCooldownFill.value;
+        this._ultiCooldownBar.fillStyle(0xff8800, 1);
+        this._ultiCooldownBar.fillRect(x, y + h - fillH, w, fillH);
     }
 
     _showRound(number) {

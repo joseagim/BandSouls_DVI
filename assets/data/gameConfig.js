@@ -47,7 +47,7 @@ const gameConfig = {
         },
 
         kamikaze: {
-            life: 1, // Vida muy baja para que muera al primer golpe
+            life: 10, // Vida muy baja para que muera rápido
             speed: 150,
             defenseMod: 1,
             attackMod: 1,
@@ -75,6 +75,37 @@ const gameConfig = {
             is_knockback: false,
         },
 
+    },
+
+    weaponStats: {
+        guitar: {
+            damage: 10,
+            cooldown: 700,
+            duration: 250,
+            abilityDamage: 15,
+            abilityCooldown: 30000,
+        },
+        bass: {
+            damage: 8,
+            cooldown: 1000,
+            duration: 400,
+            maxChargeTime: 3000,
+            maxDamageMultiplier: 3,
+        },
+        drum: {
+            damage: 5,
+            cooldown: 150,
+            duration: 1000,
+            stunDuration: 50,
+            knockback: 20,
+        },
+        keyboard: {
+            damage: 20,
+            cooldown: 1000,
+            duration: 2000,
+            chargeTime: 1000,
+            chargeSpeedModifier: 0.20,
+        },
     },
 
     playerBaseStats: {

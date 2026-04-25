@@ -2,12 +2,10 @@ import Phaser from 'phaser';
 import Arma from './arma.js'
 
 export default class Drum extends Arma{
-    constructor(scene,x,y,player){
-        super(scene,x,y, 'drumSticks',  {   damage      : 5,
-                                            cooldown    : 150,
-                                            duration    : 1000});
-        this.stunDuration = 50;
-        this.knockback = 20;
+    constructor(scene, x, y, player, stats) {
+        super(scene, x, y, 'drumSticks', { damage: stats.damage, cooldown: stats.cooldown, duration: stats.duration });
+        this.stunDuration = stats.stunDuration;
+        this.knockback = stats.knockback;
 
         this.player = player;
         this.visible = false;

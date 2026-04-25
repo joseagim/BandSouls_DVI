@@ -81,6 +81,10 @@ export default class Level_Fondo extends Level {
         this.gridWidth = gridWidth;
         this.gridHeight = gridHeight;
 
+        const mapPixelWidth = gridWidth * map.tileWidth;
+        const mapPixelHeight = gridHeight * map.tileHeight;
+        this.physics.world.setBounds(0, 0, mapPixelWidth, mapPixelHeight);
+
         // Configurar cámara
         this.cameras.main.setBounds(0, 0, 1280, 720);
         this.cameras.main.startFollow(this.player, true, 0.1, 0.1);

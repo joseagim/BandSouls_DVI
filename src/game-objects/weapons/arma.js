@@ -92,7 +92,8 @@ export default class Arma extends Phaser.GameObjects.Sprite {
     attack(enemy, attackMod, hurtbox){
         const hitSet = hurtbox?.enemiesHit ?? this.enemiesHit;
         if (hitSet.has(enemy)) return;
-        enemy.getDamage(this.damage * attackMod, 300);
+        const dmg = hurtbox?.damage ?? this.damage;
+        enemy.getDamage(dmg * attackMod, 300);
         hitSet.add(enemy);
     }
 
@@ -100,9 +101,7 @@ export default class Arma extends Phaser.GameObjects.Sprite {
         return '';
     }
 
-    ability(){
-        console.error("ESTAS LLAMANDO A HABILIDAD DE CLASE ABSTRACTA");
-    }
+    ability(){}
 
     getAtk(){
         return this.atk;

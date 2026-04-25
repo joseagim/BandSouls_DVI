@@ -2,11 +2,11 @@ import Phaser from 'phaser';
 import Arma from './arma.js'
 
 export default class Bass extends Arma {
-    constructor(scene, x, y, player) {
+    constructor(scene, x, y, player, stats) {
         super(scene, x, y, 'bass-sprite', {
-            damage: 8,
-            cooldown: 1000,
-            duration: 400
+            damage: stats.damage,
+            cooldown: stats.cooldown,
+            duration: stats.duration
         });
 
         this.player = player;
@@ -29,8 +29,8 @@ export default class Bass extends Arma {
         this.isCharging = false;
         this.chargeStartTime = 0;
         this.chargeTime = 0;
-        this.maxChargeTime = 3000;   // 3 seconds for max charge
-        this.maxDamageMultiplier = 3; // x3 damage at full charge
+        this.maxChargeTime = stats.maxChargeTime;
+        this.maxDamageMultiplier = stats.maxDamageMultiplier;
 
         // Store the attack angle when player clicks
         this.attackAngle = 0;

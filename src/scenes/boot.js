@@ -29,8 +29,12 @@ import cooldownResetVisualCueJSON from '../../assets/animations/laude/CooldownRe
 
 // weapons
 import guitarSprite from '../../assets/sprites/weapons/guitar/guitar-sprite.png'
+import guitarRiff from '../../assets/sprites/weapons/guitar/guitar-riff.png'
+import guitarRiffAtlas from '../../assets/sprites/weapons/guitar/guitar-riff.json'
 import guitarIcon from '../../assets/sprites/weapons/guitar/guitar-icon.png'
 import drumSticks from '../../assets/sprites/weapons/drum/drum-sticks.png'
+import drumSmash from '../../assets/sprites/weapons/drum/drum-smash.png'
+import drumSmashAtlas from '../../assets/sprites/weapons/drum/drum-smash.json'
 import drumIcon from '../../assets/sprites/weapons/drum/drum-icon.png'
 import bassSprite from '../../assets/sprites/weapons/bass/bass-sprite.png'
 import bassIcon from '../../assets/sprites/weapons/bass/bass-icon.png'
@@ -175,8 +179,10 @@ export default class Boot extends Phaser.Scene {
 
     // weapons
     this.load.image('guitarSprite', guitarSprite);
+    this.load.atlas('guitar-riff', guitarRiff, guitarRiffAtlas);
     this.load.image('guitar-icon', guitarIcon);
     this.load.image('drumSticks', drumSticks);
+    this.load.atlas('drum-smash', drumSmash, drumSmashAtlas);
     this.load.image('drum-icon', drumIcon);
     this.load.image('bass-sprite', bassSprite);
     this.load.image('bass-icon', bassIcon);

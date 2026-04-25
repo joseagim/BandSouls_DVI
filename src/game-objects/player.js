@@ -66,6 +66,9 @@ export default class Player extends actor {
 
         // this.keyF = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F); DEBUG FOR DAMAGE
         this.keySpace = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.scene.input.keyboard.on('keydown-E', () => {
+            this.arma.ability();
+        });
         this.mouseClick = this.scene.input.on('pointerdown', (pointer) => {
             if (pointer.button === 0 && this.canAttack) {
                 if (this.arma === this.bajo) {
@@ -107,10 +110,11 @@ export default class Player extends actor {
             }
         });
 
-        this.guitar = new Guitar(this.scene, this.x, this.y, this);
-        this.bajo = new Bass(this.scene, this.x, this.y, this);
-        this.drum = new Drum(this.scene, this.x, this.y, this);
-        this.teclado = new Keyboard(this.scene, this.x, this.y, this);
+        const weaponStats = this.scene.cache.json.get('data').weaponStats;
+        this.guitar = new Guitar(this.scene, this.x, this.y, this, weaponStats.guitar);
+        this.bajo = new Bass(this.scene, this.x, this.y, this, weaponStats.bass);
+        this.drum = new Drum(this.scene, this.x, this.y, this, weaponStats.drum);
+        this.teclado = new Keyboard(this.scene, this.x, this.y, this, weaponStats.keyboard);
 
         this.gunManager = new GunManager(this.scene, this, [
             { weapon: this.guitar, iconKey: 'guitar-icon' },

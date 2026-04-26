@@ -31,28 +31,44 @@ export default class HUD extends Phaser.Scene {
             this._registryEventHandlers.length = 0;
         }, this);
 
-        // Panel + barra de vida — arriba izquierda
+        const GAMEPLAY_SCENES = ['level_fondo', 'level2'];
+
+        // Pause button — top-left corner, 8px margin from edges
+        const pauseBtn = this.add.image(8, 8, 'pause-button')
+            .setScale(2).setOrigin(-0.15, -0.1).setScrollFactor(0).setDepth(100)
+            .setInteractive({ useHandCursor: true });
+
+        // Panel + barra de vida — arriba izquierda, a la derecha del botón de pausa
         this.healthBar = new Bar(this, 0, 0, 'hud_health_border', 'hud_health_bar_green');
         this.healthBar.setScrollFactor(0);
-        const hpPanelW = 290;
-        const hpPadX   = 16;
-        const hpPadY   = 16;
-        const hpBarScale = (hpPanelW - 16) / this.healthBar.frame.width;
-        const hpPanelH   = Math.round(this.healthBar.frame.height * hpBarScale) + 12;
+        const hpBarScale = 2;
+        const hpPadX     = 80;
+        const hpPadY     = 8;
+        const hpPanelW   = Math.round(this.healthBar.frame.width  * hpBarScale) + 20;
+        const hpPanelH   = Math.round(this.healthBar.frame.height * hpBarScale) + 16;
         this.add.graphics()
             .fillStyle(0x000000, 0.4)
             .fillRoundedRect(hpPadX, hpPadY, hpPanelW, hpPanelH, 8)
             .setDepth(-1)
             .setScrollFactor(0);
         this.healthBar.setScale(hpBarScale);
-        this.healthBar.setPosition(hpPadX + 8, hpPadY + 6);
+        this.healthBar.setPosition(hpPadX + 10, hpPadY + 8);
         this.healthBar.setVisible(true);
+        pauseBtn.on('pointerover',  () => pauseBtn.setTint(0xaaaaaa));
+        pauseBtn.on('pointerout',   () => pauseBtn.clearTint());
+        pauseBtn.on('pointerdown',  () => pauseBtn.setTint(0x888888));
+        pauseBtn.on('pointerup',    () => pauseBtn.setTint(0xaaaaaa));
+        pauseBtn.on('pointerup', () => {
+            if (this.scene.isActive('pause_menu')) return;
+            const active = GAMEPLAY_SCENES.find(k => this.scene.isActive(k));
+            if (active) this.scene.launch('pause_menu', { callerKey: active });
+        });
 
         // Score — se posiciona en _createWeaponSelector
         this.scoreText = this.add.text(0, 0, '0', {
             fontSize: '26px',
             fill: '#ffffff',
-            fontFamily: 'Arial',
+            fontFamily: 'Verdana',
             stroke: '#000000',
             strokeThickness: 4,
         }).setOrigin(1, 0.5).setScrollFactor(0).setVisible(false);
@@ -68,7 +84,7 @@ export default class HUD extends Phaser.Scene {
         this.remainingEnemies = this.add.text(this.scale.width / 2, 20, 'Enemigos restantes: X', {
             fontSize: '22px',
             fill: '#ffffff',
-            fontFamily: 'Arial',
+            fontFamily: 'Verdana',
             stroke: '#000000',
             strokeThickness: 4
         }).setOrigin(0.5, 0).setScrollFactor(0);
@@ -76,7 +92,7 @@ export default class HUD extends Phaser.Scene {
         this.portalBanner = this.add.text(this.scale.width / 2, 140, '¡Ha aparecido un portal!', {
             fontSize: '32px',
             fill: '#ffe066',
-            fontFamily: 'Arial',
+            fontFamily: 'Verdana',
             stroke: '#000000',
             strokeThickness: 5
         }).setOrigin(0.5, 0).setScrollFactor(0);
@@ -85,7 +101,7 @@ export default class HUD extends Phaser.Scene {
         this.waitingNextWave = this.add.text(this.scale.width / 2, 185, 'La siguiente oleada comenzará en X', {
             fontSize: '32px',
             fill: '#ffffff',
-            fontFamily: 'Arial',
+            fontFamily: 'Verdana',
             stroke: '#000000',
             strokeThickness: 4
         }).setOrigin(0.5, 0).setScrollFactor(0);
@@ -324,6 +340,13 @@ export default class HUD extends Phaser.Scene {
             }
         });
 
+        // TAB key → pause menu
+        this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TAB).on('down', () => {
+            if (this.scene.isActive('pause_menu')) return;
+            const active = GAMEPLAY_SCENES.find(k => this.scene.isActive(k));
+            if (active) this.scene.launch('pause_menu', { callerKey: active });
+        });
+
         this.events.emit('hud-ready');
     }
 
@@ -500,7 +523,7 @@ export default class HUD extends Phaser.Scene {
         if (hasMore) {
             const dotsY = bottomY - visibleRows * rowH - 4;
             const dotsText = this.add.text(startX, dotsY, '...', {
-                fontSize: '20px', fill: '#ffffff', fontFamily: 'Arial',
+                fontSize: '20px', fill: '#ffffff', fontFamily: 'Verdana',
                 stroke: '#000000', strokeThickness: 3
             }).setOrigin(0, 1).setScrollFactor(0).setInteractive({ useHandCursor: true });
 
@@ -559,7 +582,7 @@ export default class HUD extends Phaser.Scene {
         const descText = this.add.text(contentX, currentY, item.description, {
             fontSize: '14px',
             fill: '#cccccc',
-            fontFamily: 'Arial',
+            fontFamily: 'Verdana',
             wordWrap: { width: panelWidth - 30 }
         });
         this._itemPanelElements.push(descText);
@@ -571,7 +594,7 @@ export default class HUD extends Phaser.Scene {
             const statsDisplay = this.add.text(contentX, currentY, statsText, {
                 fontSize: '14px',
                 fill: '#88ff88',
-                fontFamily: 'Arial',
+                fontFamily: 'Verdana',
                 wordWrap: { width: panelWidth - 30 }
             });
             this._itemPanelElements.push(statsDisplay);
@@ -607,7 +630,7 @@ export default class HUD extends Phaser.Scene {
             const buyHint = this.add.text(contentX, currentY + priceText.height + 4, '[E] Buy', {
                 fontSize: '12px',
                 fill: '#aaaaaa',
-                fontFamily: 'Arial'
+                fontFamily: 'Verdana'
             });
             this._itemPanelElements.push(buyHint);
         }

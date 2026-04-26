@@ -89,13 +89,21 @@ export default class ShadowEnemy extends Enemy {
         } else {
             this.setFlip(false, false);
         }
-        if (!this.scene.physics.overlap(this, this.scene.player) && !this.is_knockback) {
-            this.move(dt);
-        }
-        else {
+
+        if (this.is_knockback) return;
+
+        const dist = Phaser.Math.Distance.Between(
+            this.body.center.x, this.body.center.y,
+            this.scene.player.body.center.x, this.scene.player.body.center.y
+        );
+        const contactThreshold = (this.body.width + this.scene.player.body.width) / 2;
+
+        if (dist <= contactThreshold) {
             this.is_moving = false;
-            this.body.setVelocity(0, 0);  // Detener inmediatamente al contacto
+            this.body.setVelocity(0, 0);
             this.attack(this.scene.player);
+        } else {
+            this.move(dt);
         }
     }
 

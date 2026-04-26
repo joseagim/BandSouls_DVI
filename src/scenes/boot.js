@@ -1,15 +1,36 @@
 import Phaser from 'phaser'
 
+// pointers
+import cursorArrow  from '../../assets/sprites/pointers/arrow.png'
+import cursorHand   from '../../assets/sprites/pointers/hand.png'
+import cursorDrag   from '../../assets/sprites/pointers/drag.png'
+import cursorSniper from '../../assets/sprites/pointers/sniper.png'
+
 // title screen
 import titleScreen from '../../assets/sprites/title-screen/lopk.png'
 import deathScreen from '../../assets/sprites/title-screen/death-screen.png'
 import start from '../../assets/sprites/title-screen/start-text.png'
-import startJSON from '../../assets/sprites/title-screen/start-selected-atlas.json'
-import startSelected from '../../assets/sprites/title-screen/start-selected-sheet.png'
+import startHover from '../../assets/sprites/title-screen/start-hover.png'
+import startHoverJSON from '../../assets/sprites/title-screen/start-hover-atlas.json'
 import options from '../../assets/sprites/title-screen/options-text.png'
-import optionsJSON from '../../assets/sprites/title-screen/options-selected-atlas.json'
-import optionsSelected from '../../assets/sprites/title-screen/options-selected-sheet.png'
+import optionsHover from '../../assets/sprites/title-screen/options-hover.png'
+import optionsHoverJSON from '../../assets/sprites/title-screen/options-hover-atlas.json'
 import selectionPick from '../../assets/sprites/title-screen/selection-pick.png'
+
+// options menu
+import optionsWindowPng  from '../../assets/sprites/options-menu/options-window.png'
+import pauseWindowPng   from '../../assets/sprites/options-menu/pause-window.png'
+import xButtonPng        from '../../assets/sprites/options-menu/x-button.png'
+import scrollBarPng      from '../../assets/sprites/options-menu/scroll-bar.png'
+import scrollBarFillPng  from '../../assets/sprites/options-menu/scroll-bar-fill.png'
+import scrollBarIndexPng from '../../assets/sprites/options-menu/scroll-bar-index.png'
+import checkOffPng       from '../../assets/sprites/options-menu/check-button.png'
+import checkOnPng        from '../../assets/sprites/options-menu/check-button-1.png'
+import soundButtonPng    from '../../assets/sprites/options-menu/sound-button.png'
+import soundMutePng      from '../../assets/sprites/options-menu/sound-button-mute.png'
+import sfxTextPng        from '../../assets/sprites/options-menu/SFX-text.png'
+import musicTextPng      from '../../assets/sprites/options-menu/MUSIC-text.png'
+import fullscreenTextPng from '../../assets/sprites/options-menu/FULLSCREEN-text.png'
 
 // player (laude)
 import laudeSpritesheet from '../../assets/animations/laude/sprite.png'
@@ -86,6 +107,7 @@ import HUDhealthBorder from '../../assets/sprites/hud/health-bar/border.png'
 import HUDhealthBar from '../../assets/sprites/hud/health-bar/bar.png'
 import HUDhealthBarGreen from '../../assets/sprites/hud/health-bar/bar-green.png'
 import roundNumbers from '../../assets/sprites/hud/round-numbers.png'
+import pauseButton from '../../assets/sprites/hud/buttons/pause-button.png'
 import dashButton from '../../assets/sprites/hud/buttons/dash-button.png'
 import dashButtonDisabled from '../../assets/sprites/hud/buttons/dash-button-disabled.png'
 import guitarVibeButton from '../../assets/sprites/hud/buttons/guitar-vibe-button.png'
@@ -162,10 +184,25 @@ export default class Boot extends Phaser.Scene {
     this.load.image('title', titleScreen);
     this.load.image('death', deathScreen);
     this.load.image('start', start);
-    this.load.atlas('startSelected', startSelected, startJSON);
+    this.load.atlas('startHover', startHover, startHoverJSON);
     this.load.image('options', options);
-    this.load.atlas('optionsSelected', optionsSelected, optionsJSON);
+    this.load.atlas('optionsHover', optionsHover, optionsHoverJSON);
     this.load.image('selectionPick', selectionPick);
+
+    // options menu
+    this.load.image('opt_window',      optionsWindowPng);
+    this.load.image('pause_window',    pauseWindowPng);
+    this.load.image('opt_x',           xButtonPng);
+    this.load.image('opt_scrollbar',   scrollBarPng);
+    this.load.image('opt_scrollfill',  scrollBarFillPng);
+    this.load.image('opt_scrollindex', scrollBarIndexPng);
+    this.load.image('opt_check_off',   checkOffPng);
+    this.load.image('opt_check_on',    checkOnPng);
+    this.load.image('opt_sound',       soundButtonPng);
+    this.load.image('opt_sound_mute',  soundMutePng);
+    this.load.image('opt_text_sfx',        sfxTextPng);
+    this.load.image('opt_text_music',      musicTextPng);
+    this.load.image('opt_text_fullscreen', fullscreenTextPng);
 
     // player (laude)
     this.load.atlas('laude', laudeSpritesheet, laudeAtlas);
@@ -216,11 +253,18 @@ export default class Boot extends Phaser.Scene {
     this.load.atlas('beethoven_attack', beethovenAttackSheet, beethovenAttackAtlas);
     this.cache.json.add('bossPatterns', bossPatterns);
 
+    // pointers
+    this.load.image('cursor_arrow',  cursorArrow);
+    this.load.image('cursor_hand',   cursorHand);
+    this.load.image('cursor_drag',   cursorDrag);
+    this.load.image('cursor_sniper', cursorSniper);
+
     // hud
     this.load.image('hud_health_border', HUDhealthBorder);
     this.load.image('hud_health_bar', HUDhealthBar);
     this.load.image('hud_health_bar_green', HUDhealthBarGreen);
     this.load.spritesheet('round_numbers', roundNumbers, { frameWidth: 24, frameHeight: 32 });
+    this.load.image('pause-button', pauseButton);
     this.load.image('dash-button', dashButton);
     this.load.image('dash-button-disabled', dashButtonDisabled);
     this.load.image('guitar-vibe-button', guitarVibeButton);
@@ -289,20 +333,22 @@ export default class Boot extends Phaser.Scene {
     this.registry.set('score', 0);
     this.registry.set('trinkets', []);
 
+    this.scene.launch('cursor');
+
     this.soundManager.play('menu_music');
     this.add.image(640, 368, "title").setDisplaySize(this.scale.width, this.scale.height);
     this.startText = this.add.sprite(596, 490, "start");
     this.anims.create({
-      key: 'startAnim',
-      frames: this.anims.generateFrameNames('startSelected'),
-      frameRate: 10,
+      key: 'startHoverAnim',
+      frames: this.anims.generateFrameNames('startHover'),
+      frameRate: 2,
       repeat: -1
     });
 
     this.anims.create({
-      key: 'optionsAnim',
-      frames: this.anims.generateFrameNames('optionsSelected'),
-      frameRate: 10,
+      key: 'optionsHoverAnim',
+      frames: this.anims.generateFrameNames('optionsHover'),
+      frameRate: 2,
       repeat: -1
     });
 
@@ -323,8 +369,8 @@ export default class Boot extends Phaser.Scene {
       this.activeOption = option;
       this.select.setVisible(true);
       this.moveSelect(this.select, option);
-      if (option === this.startText) this.startText.play('startAnim');
-      else this.optionsText.play('optionsAnim');
+      if (option === this.startText) this.startText.play('startHoverAnim');
+      else this.optionsText.play('optionsHoverAnim');
     };
 
     const confirmOption = () => {
@@ -332,7 +378,7 @@ export default class Boot extends Phaser.Scene {
         this.soundManager.fadeOutMusic(500);
         this.time.delayedCall(500, () => { this.scene.start('level_fondo'); });
       } else if (this.activeOption === this.optionsText) {
-        alert("se mostraria menu de opciones: audio, brillo, etc...");
+        this.scene.launch('options_menu');
       }
     };
 

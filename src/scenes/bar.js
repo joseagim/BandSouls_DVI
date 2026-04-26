@@ -5,7 +5,7 @@ export default class Bar extends Phaser.GameObjects.Container {
         super(scene, x, y);
 
         this.frame = scene.add.image(0, 0, borderKey).setOrigin(0);
-        this.bar = scene.add.image(4, 4, barKey).setOrigin(0);
+        this.bar = scene.add.image(24, 7, barKey).setOrigin(0);
 
         this.add([this.frame, this.bar]);
         scene.add.existing(this);

@@ -3,8 +3,6 @@ const gameConfig = {
         shadow: {
             life: 20,
             speed: 100,
-            defenseMod: 1,
-            attackMod: 1,
             attackDamage: 40,
             attackRange: 80,
             attackRadius: 20,
@@ -17,8 +15,6 @@ const gameConfig = {
         redVelvet: {
             life: 100,
             speed: 40,
-            defenseMod: 1,
-            attackMod: 1,
             rangedAttackDamage: 50,
             meleeAttackDamage: 20,
             rangedAttackRange: 300,
@@ -35,8 +31,6 @@ const gameConfig = {
         thief: {
             life: 20,
             speed: 100,
-            defenseMod: 1,
-            attackMod: 1,
             attackDamage: 40,
             attackRange: 80,
             attackRadius: 20,
@@ -49,8 +43,6 @@ const gameConfig = {
         kamikaze: {
             life: 10, // Vida muy baja para que muera rápido
             speed: 150,
-            defenseMod: 1,
-            attackMod: 1,
             attackDamage: 50,
             attackRange: 50,
             attackRadius: 100,  // Radio de explosión
@@ -63,8 +55,6 @@ const gameConfig = {
         beethoven: {
             life: 300,
             speed: 0,
-            defenseMod: 1,
-            attackMod: 1,
             attackDamage: 10,      // daño de sus proyectiles
             collisionDamage: 5,   // daño por contacto
             attackRange: 0,

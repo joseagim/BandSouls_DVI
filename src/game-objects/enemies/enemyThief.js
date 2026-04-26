@@ -64,7 +64,12 @@ export default class EnemyThief extends Enemy {
     spawn(x, y) {
         super.spawn(x, y);
         this.hasStolen = false;
+        this.canAttack = true;
         this.setTexture('thief_move');
+    }
+
+    attackOnContact(player) {
+        this.attack(player);
     }
 
     die() {
@@ -81,7 +86,7 @@ export default class EnemyThief extends Enemy {
                 this.hasStolen = true;
             }
 
-            player.getDamage(this.attackDamage * this.attackMod);
+            player.getDamage(this.attackDamage);
             this.canAttack = false;
             this.scene.time.delayedCall(this.attackCooldown, () => {
                 this.canAttack = true;

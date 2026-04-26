@@ -42,7 +42,7 @@ export default class RedVelvetEnemy extends Enemy {
             this.scene.physics.add.overlap(circle, this.scene.player, (c, player) => {
                 if (this.thrustHit) return;
                 this.thrustHit = true;
-                player.getDamage(this.meleeAttackDamage * this.attackMod);
+                player.getDamage(this.meleeAttackDamage );
             });
         }
 
@@ -159,7 +159,7 @@ export default class RedVelvetEnemy extends Enemy {
                 this.scene.physics.add.overlap(circle, this.scene.player, (c, player) => {
                     if (beamHit) return;
                     beamHit = true;
-                    player.getDamage(this.rangedAttackDamage * this.attackMod);
+                    player.getDamage(this.rangedAttackDamage );
                 });
             }
 

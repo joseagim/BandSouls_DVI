@@ -52,6 +52,11 @@ export default class ShadowEnemy extends Enemy {
 
     spawn(x, y) {
         super.spawn(x, y);
+        this.canAttack = true;
+        this.exploded = false;
+        this.is_moving = false;
+        this.is_knockback = false;
+        this._explodedEnemies.clear();
     }
 
     die() {
@@ -87,11 +92,20 @@ export default class ShadowEnemy extends Enemy {
         } else {
             this.setFlip(false, false);
         }
-        if (!this.is_knockback) {
-            this.move(dt);
-        } else {
-            this.is_moving = false;
+
+        if (this.is_knockback) return;
+
+        const dist = Phaser.Math.Distance.Between(
+            this.body.center.x, this.body.center.y,
+            this.scene.player.body.center.x, this.scene.player.body.center.y
+        );
+        const contactThreshold = (this.body.width + this.scene.player.body.width) / 2 + 10;
+
+        if (dist <= contactThreshold) {
             this.body.setVelocity(0, 0);
+            this.attack(this.scene.player);
+        } else {
+            this.move(dt);
         }
     }
 
@@ -132,6 +146,8 @@ export default class ShadowEnemy extends Enemy {
             if (moved < 4) {
                 this.currentPath = null;
                 this.pathfindingCooldown = false;
+                const angle = Math.random() * Math.PI * 2;
+                this.body.setVelocity(Math.cos(angle) * this.speed, Math.sin(angle) * this.speed);
             }
             this._lastPos = { x: this.body.center.x, y: this.body.center.y };
             this._stuckTimer = 0;
@@ -207,29 +223,20 @@ export default class ShadowEnemy extends Enemy {
             this.setVisible(false);
         });
 
-        // Daño al jugador si está en el radio
-        const player = this.scene.player;
-        if (player && player.active && !player.invincible) {
-            const playerDist = Phaser.Math.Distance.Between(this.x, this.y, player.x, player.y);
-            if (playerDist <= this.attackRadius) {
-                player.getDamage(this.attackDamage * this.attackMod);
-            }
+        // Daño al jugador si está en el radio de explosión
+        const playerDist = Phaser.Math.Distance.Between(this.x, this.y, this.scene.player.x, this.scene.player.y);
+        if (playerDist <= this.attackRadius && !this.scene.player.invincible) {
+            this.scene.player.getDamage(this.attackDamage);
         }
 
         const allEnemies = this.scene.spawner.pool.physicsGroup.getChildren();
-        const explosionDamage = this.attackDamage * 3;
-
         allEnemies.forEach(enemy => {
             if (enemy === this) return;
             if (this._explodedEnemies.has(enemy)) return;
 
-            const distance = Phaser.Math.Distance.Between(
-                this.x, this.y,
-                enemy.x, enemy.y
-            );
-
+            const distance = Phaser.Math.Distance.Between(this.x, this.y, enemy.x, enemy.y);
             if (distance <= this.attackRadius) {
-                enemy.getDamage(explosionDamage);
+                enemy.getDamage(this.attackDamage);
                 this._explodedEnemies.add(enemy);
             }
         });

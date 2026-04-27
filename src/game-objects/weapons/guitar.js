@@ -19,6 +19,7 @@ export default class Guitar extends Arma {
         this.abilityDamage = stats.abilityDamage;
         this.abilityCooldown = stats.abilityCooldown;
         this.canUseAbility = true;
+        this._abilityTimer = null;
 
         // Riff hurtbox — circle that travels with the wave
         this.riffHurtbox = this.scene.add.circle(0, 0, 24, 0xff6600);
@@ -112,8 +113,9 @@ export default class Guitar extends Arma {
             this._deactivateRiff();
         });
 
-        this.scene.time.delayedCall(this.abilityCooldown, () => {
+        this._abilityTimer = this.scene.time.delayedCall(this.abilityCooldown, () => {
             this.canUseAbility = true;
+            this._abilityTimer = null;
             this.player.showCooldownCue(0xff8800);
             this.scene.game.events.emit('ultiReady', { weaponKey: this.iconKey });
         });

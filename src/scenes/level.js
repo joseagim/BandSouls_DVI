@@ -55,9 +55,40 @@ export default class Level extends Phaser.Scene {
         this.spawner = new Spawner(this, enemyPoolsData, enemyStats);
 
         this.waveManager = new WaveManager(this, this.spawner);
+
+        // Restaurar cooldowns de ulti guardados al salir de la sala anterior
+        const savedCooldown = this.registry.get('ultiCooldown') || {};
+        const ultiWeapons = [
+            { weapon: this.player.guitar, cueColor: 0xff8800 },
+            { weapon: this.player.drum,   cueColor: 0xffaa00 },
+        ];
+        for (const { weapon, cueColor } of ultiWeapons) {
+            const remaining = savedCooldown[weapon.iconKey] || 0;
+            if (remaining > 0) {
+                weapon.canUseAbility = false;
+                weapon._abilityTimer = this.time.delayedCall(remaining, () => {
+                    weapon.canUseAbility = true;
+                    weapon._abilityTimer = null;
+                    this.player.showCooldownCue(cueColor);
+                    this.game.events.emit('ultiReady', { weaponKey: weapon.iconKey });
+                });
+            }
+        }
+
         this.scene.get('hud').events.once('hud-ready', () => {
             this.waveManager.currentWave = this.getStartingWave();
             this.waveManager.startNextWave();
+            for (const { weapon } of ultiWeapons) {
+                if (!weapon.canUseAbility && weapon._abilityTimer) {
+                    this.game.events.emit('ultiStart', {
+                        weaponKey: weapon.iconKey,
+                        cooldown: weapon._abilityTimer.getRemaining(),
+                    });
+                } else {
+                    // Limpia cualquier estado fantasma del HUD para armas listas
+                    this.game.events.emit('ultiReady', { weaponKey: weapon.iconKey });
+                }
+            }
         });
 
         // Colisión: proyectiles del boss → jugador

@@ -37,6 +37,7 @@ export default class Drum extends Arma {
         this.abilityStunDuration = stats.abilityStunDuration;
         this.abilityRadius = stats.abilityRadius;
         this.canUseAbility = true;
+        this._abilityTimer = null;
 
         // Smash hurtbox — large circle centered on player
         this.smashHurtbox = this.scene.add.circle(0, 0, this.abilityRadius, 0xffaa00);
@@ -130,8 +131,9 @@ export default class Drum extends Arma {
             this.smashHurtbox.enemiesHit.clear();
         });
 
-        this.scene.time.delayedCall(this.abilityCooldown, () => {
+        this._abilityTimer = this.scene.time.delayedCall(this.abilityCooldown, () => {
             this.canUseAbility = true;
+            this._abilityTimer = null;
             this.player.showCooldownCue(0xffaa00);
             this.scene.game.events.emit('ultiReady', { weaponKey: this.iconKey });
         });

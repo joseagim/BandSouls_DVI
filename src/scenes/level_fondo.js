@@ -138,6 +138,10 @@ export default class Level_Fondo extends Level {
                     this._portalEnterTimer = this.time.delayedCall(3000, () => {
                         this._stopPortalBlink();
                         this.registry.set('savedWave', this.waveManager.currentWave);
+                        this.registry.set('ultiCooldown', {
+                            [this.player.guitar.iconKey]: this.player.guitar._abilityTimer?.getRemaining() ?? 0,
+                            [this.player.drum.iconKey]:   this.player.drum._abilityTimer?.getRemaining()   ?? 0,
+                        });
                         this.scene.start('shop');
                     });
                     this._startPortalBlink();

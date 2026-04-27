@@ -60,6 +60,7 @@ export default class Level_Fondo extends Level {
             right : gridWidth * map.tileWidth,
             bottom : gridHeight * map.tileHeight
         }
+        this.physics.world.setBounds(0, 0, this.bounds.right, this.bounds.bottom);
         const grid = [];
         for (let y = 0; y < gridHeight; y++) {
             const row = [];

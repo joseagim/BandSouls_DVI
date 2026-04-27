@@ -78,6 +78,10 @@ export default class EnemyThief extends Enemy {
         this.play('thief_die');
     }
 
+    attackOnContact(player) {
+        this.attack(player);
+    }
+
     attack(player) {
         if (this.canAttack) {
             if (!this.hasStolen && player.trinket.length > 0) {

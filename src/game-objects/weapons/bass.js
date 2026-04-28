@@ -217,7 +217,7 @@ export default class Bass extends Arma {
 
                 this.noteSprite.once('animationcomplete-bass_note_anim', () => {
                     this.noteSprite.setVisible(false);
-                    this._startExplosion(targetX, targetY);
+                    this.startExplosion(targetX, targetY);
                 });
             }
         });
@@ -230,7 +230,7 @@ export default class Bass extends Arma {
     }
 
 
-    _startExplosion(x, y) {
+    startExplosion(x, y) {
         this._explosionCenter = { x, y };
         this._explosionActive = true;
         this.explosionSprite.setPosition(x, y);
@@ -246,12 +246,12 @@ export default class Bass extends Arma {
         this.grenadeHurtbox.enemiesHit.clear();
         this.grenadeHurtbox.visible = false;
         this.explosionSprite.once('animationcomplete-bass_explosion_anim', () => {
-            this._deactivateGrenade();
+            this.deactivateExplosion();
         });
     }
 
 
-    _deactivateGrenade() {
+    deactivateExplosion() {
         this.explosionSprite.setVisible(false);
         this.noteSprite.setVisible(false);
         this.grenadeHurtbox.body.enable = false;

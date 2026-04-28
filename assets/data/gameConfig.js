@@ -81,7 +81,7 @@ const gameConfig = {
             duration: 400,
             maxChargeTime: 1000,
             maxDamageMultiplier: 3,
-            abilityDamage: 1000,
+            abilityDamage: 500,
             abilityCooldown: 50000,
             abilityRange: 200,
             abilityExplosionRadius: 100,

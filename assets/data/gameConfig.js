@@ -131,6 +131,7 @@ const gameConfig = {
             enemies: [
                 { type: "shadow", count: 4, spawnDelay: 2000 },
                 { type: "shadow", count: 4, spawnDelay: 3000 },
+                { type: "redVelvet", count: 2, spawnDelay: 6000 }
             ],
             delay: 3000,
         },

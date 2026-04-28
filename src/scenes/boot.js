@@ -95,6 +95,12 @@ import kamikazeDieJSON from '../../assets/animations/enemy_kamikaze/kamikaze_die
 // enemy - redVelvet
 import redVelvetWalk from '../../assets/animations/redVelvet/redVelvetWalking-Sheet.png'
 import redVelvetWalkJSON from '../../assets/animations/redVelvet/redVelvetWalking.json'
+import redVelvetHit from '../../assets/animations/redVelvet/redvelvet_hit.png'
+import redVelvetHitJSON from '../../assets/animations/redVelvet/redvelvet_hit_atlas.json'
+import redVelvetdie from '../../assets/animations/redVelvet/redvelvet_die.png'
+import redVelvetdieJSON from '../../assets/animations/redVelvet/redvelvet_die_atlas.json'
+import velvetBeam from '../../assets/animations/redVelvet/velvetBeam.png'
+import velvetMelee from '../../assets/animations/redVelvet/velvetMelee.png'
 
 // boss - beethoven
 import beethovenSprite from '../../assets/bosses/beethoven/beethoven.png'
@@ -248,6 +254,10 @@ export default class Boot extends Phaser.Scene {
 
     // enemy - redVelvet
     this.load.atlas('redVelvet_walk', redVelvetWalk, redVelvetWalkJSON);
+    this.load.atlas('redVelvet_hit', redVelvetHit, redVelvetHitJSON);
+    this.load.atlas('redVelvet_die', redVelvetdie, redVelvetdieJSON);
+    this.load.image('velvetBeam', velvetBeam);
+    this.load.image('velvetMelee', velvetMelee);
 
     // boss - beethoven
     this.load.image('beethoven', beethovenSprite);

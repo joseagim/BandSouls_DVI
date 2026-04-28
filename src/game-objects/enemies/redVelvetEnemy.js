@@ -45,6 +45,9 @@ export default class RedVelvetEnemy extends Enemy {
                 player.getDamage(this.meleeAttackDamage );
             });
         }
+        this.meleeSprite = this.scene.add.image(this.x, this.y, 'velvetMelee');
+        this.meleeSprite.setDepth(6);
+        this.meleeSprite.setVisible(false);
 
         this.scene.anims.create({
             key: 'redVelvet_walk',
@@ -53,16 +56,42 @@ export default class RedVelvetEnemy extends Enemy {
             repeat: -1
         });
 
-        this.play('redVelvet_walk');
+        this.scene.anims.create({
+            key: 'redVelvet_hit',
+            frames: this.anims.generateFrameNames('redVelvet_hit', { prefix: 'hit ', start: 1, end: 4}),
+            frameRate: 8,
+            repeat: 0
+        });
+
+        this.scene.anims.create({
+            key: 'redVelvet_die',
+            frames: this.anims.generateFrameNames('redVelvet_die',{ prefix: 'die ', start: 1, end: 14 } ),
+            frameRate: 20,
+            repeat : 0
+        })
+
+        this.on('animationcomplete', (anim) =>{
+            if(anim.key =='redVelvet_die'){
+                this.setActive(false);
+                this.setVisible(false);
+                this.body.enable = false;
+            }
+        })
 
         // Collider scaling
         this.isDead = false;
         this.body.setSize(64, 64);
     }
 
+    spawn(x, y) {
+        super.spawn(x, y);
+        this.setTexture('redVelvet_walk');
+    }
+
     die() {
         super.die();
-        this.visible = false;
+        this.setTexture('redVelvetDie');
+        this.play('redVelvet_die');
     }
 
     enableMelee() {
@@ -132,16 +161,21 @@ export default class RedVelvetEnemy extends Enemy {
 
             const fireAngle = Phaser.Math.Angle.Between(this.x, this.y, playerX, playerY);
 
-            const beamGfx = this.scene.add.rectangle(
-                this.x + Math.cos(fireAngle) * beamLength / 2,
-                this.y + Math.sin(fireAngle) * beamLength / 2,
-                beamLength,
-                beamThickness,
-                0xff4444,
-                0.9
+            const beamSprite = this.scene.add.sprite(
+                this.x,
+                this.y,
+                'velvetBeam'
             );
-            beamGfx.setRotation(fireAngle);
-            beamGfx.setDepth(5);
+
+            beamSprite.setOrigin(0, 0.5); // start from enemy position
+            beamSprite.setRotation(fireAngle);
+            beamSprite.setDepth(5);
+
+            // Scale to match your logical beam size
+            const textureWidth = beamSprite.width;
+            const textureHeight = beamSprite.height;
+
+            beamSprite.setDisplaySize(beamLength, beamThickness * 2);
 
             let beamHit = false;
             const beamHurtboxes = [];
@@ -164,7 +198,7 @@ export default class RedVelvetEnemy extends Enemy {
             }
 
             this.scene.time.delayedCall(beamDuration, () => {
-                beamGfx.destroy();
+                beamSprite.destroy();
                 beamHurtboxes.forEach(c => c.destroy());
                 this.isAttacking = false;
             });
@@ -173,6 +207,12 @@ export default class RedVelvetEnemy extends Enemy {
                 this.canAttackRanged = true;
             });
         });
+    }
+
+    playHit() {
+        if (this.life <= 0) return;
+        this.setTexture('redVelvet_hit');
+        this.play('redVelvet_hit', true);
     }
 
     meleeAttack() {
@@ -207,19 +247,28 @@ export default class RedVelvetEnemy extends Enemy {
                     if (this.active) this.body.setVelocity(0);
                 });
 
-                this.stabHurtboxes.forEach((circle, i) => {
-                    const offset = bladeLength * (i + 1);
-                    const spawnX = this.x + Math.cos(baseAngle) * offset;
-                    const spawnY = this.y + Math.sin(baseAngle) * offset;
+                const midOffset = bladeLength * 2; // center of the 3 hitboxes
 
-                    circle.setPosition(spawnX, spawnY);
-                    circle.setActive(true).setVisible(true);
-                    circle.body.reset(spawnX, spawnY);
+                const centerX = this.x + Math.cos(baseAngle) * midOffset;
+                const centerY = this.y + Math.sin(baseAngle) * midOffset;
 
+                // Position the big slash sprite
+                this.meleeSprite.setScale(0.8, 1);
+
+                this.scene.tweens.add({
+                    targets: this.meleeSprite,
+                    scaleX: 1,
+                    duration: stabDuration,
+                    ease: 'Quad.out'
                 });
+                this.meleeSprite.setPosition(centerX, centerY);
+                this.meleeSprite.setRotation(baseAngle);
+                this.meleeSprite.setDisplaySize(bladeLength * 3, stabRadius * 2); // spans all 3 hitboxes
+                this.meleeSprite.setVisible(true);
 
                 this.scene.time.delayedCall(stabDuration, () => {
                     this.stabHurtboxes.forEach(c => c.setActive(false).setVisible(false));
+                    this.meleeSprite.setVisible(false);
                 });
             });
         }
@@ -266,6 +315,7 @@ export default class RedVelvetEnemy extends Enemy {
         if (this.scene.easystar) this._moveWithPathfinding(dt);
         else {
             this.scene.physics.moveToObject(this, this.scene.player, this.speed);
+            this.play('redVelvet_walk', true);
         }
     }
 
@@ -325,5 +375,7 @@ export default class RedVelvetEnemy extends Enemy {
                 }
             }
         } else this.scene.physics.moveToObject(this, this.scene.player, this.speed);
+
+        this.play('redVelvet_walk', true);
     }
 }

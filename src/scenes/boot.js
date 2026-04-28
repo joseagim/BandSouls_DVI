@@ -60,6 +60,11 @@ import drumSmashAtlas from '../../assets/sprites/weapons/drum/drum-smash.json'
 import drumIcon from '../../assets/sprites/weapons/drum/drum-icon.png'
 import bassSprite from '../../assets/sprites/weapons/bass/bass-sprite.png'
 import bassIcon from '../../assets/sprites/weapons/bass/bass-icon.png'
+import bassNoteSprite from '../../assets/sprites/weapons/bass/notaultibajosprite.png'
+import bassNoteSheet from '../../assets/sprites/weapons/bass/notaultibajosprite-sheet.png'
+import bassNoteAtlas from '../../assets/sprites/weapons/bass/notaultibajosprite.json'
+import bassExplosionSheet from '../../assets/sprites/weapons/bass/explosion-sheet.png'
+import bassExplosionAtlas from '../../assets/sprites/weapons/bass/explosion.json'
 import keyboardIcon from '../../assets/sprites/weapons/keyboard/keyboard-icon.png'
 import keyboardProjectileSheet from '../../assets/sprites/weapons/keyboard/keyboard-projectile.png'
 import keyboardProjectileAtlas from '../../assets/sprites/weapons/keyboard/keyboard-projectile.json'
@@ -231,6 +236,9 @@ export default class Boot extends Phaser.Scene {
     this.load.image('drum-icon', drumIcon);
     this.load.image('bass-sprite', bassSprite);
     this.load.image('bass-icon', bassIcon);
+    this.load.image('bass-note', bassNoteSprite);
+    this.load.atlas('bass-note-anim', bassNoteSheet, bassNoteAtlas);
+    this.load.atlas('bass-explosion', bassExplosionSheet, bassExplosionAtlas);
     this.load.image('keyboard-icon', keyboardIcon);
     this.load.atlas('keyboard_projectile', keyboardProjectileSheet, keyboardProjectileAtlas);
     this.load.image('weapon-selected', weaponSelected);

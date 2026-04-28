@@ -79,8 +79,12 @@ const gameConfig = {
             damage: 8,
             cooldown: 1000,
             duration: 400,
-            maxChargeTime: 3000,
+            maxChargeTime: 1000,
             maxDamageMultiplier: 3,
+            abilityDamage: 1000,
+            abilityCooldown: 50000,
+            abilityRange: 200,
+            abilityExplosionRadius: 100,
         },
         drum: {
             damage: 5,

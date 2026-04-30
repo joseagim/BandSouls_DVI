@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import Platform from '../game-objects/platform.js';
 import Player from '../game-objects/player.js';
-import Enemy from '../game-objects/enemy.js'
+import Enemy from '../game-objects/enemies/enemy.js'
 
 
 /**

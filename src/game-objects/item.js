@@ -50,6 +50,30 @@ export default class Item {
     }
 
     /**
+     * Revierte los buffs y debuffs de este item sobre el jugador.
+     * @param {Player} player
+     */
+    removeFrom(player) {
+        for (const [stat, value] of Object.entries(this.buffs)) {
+            if (player[stat] !== undefined) {
+                player[stat] -= value;
+            }
+        }
+        for (const [stat, value] of Object.entries(this.debuffs)) {
+            if (player[stat] !== undefined) {
+                player[stat] -= value;
+            }
+        }
+
+        if (this.buffs.life !== undefined || this.debuffs.life !== undefined) {
+            const lifeDelta = (this.buffs.life || 0) + (this.debuffs.life || 0);
+            player.maxHP -= lifeDelta;
+            if (player.life > player.maxHP) player.life = player.maxHP;
+            player.updateHealth();
+        }
+    }
+
+    /**
      * Genera el texto de buffs/debuffs para mostrar en el panel de info.
      * @returns {string}
      */

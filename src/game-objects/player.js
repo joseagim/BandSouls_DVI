@@ -1,10 +1,9 @@
 import Phaser from 'phaser';
-import Arma from './arma';
 import actor from './actor';
-import Guitar from './guitar';
-import Drum from './drum';
-import Bass from './bass';
-import Keyboard from './keyboard';
+import Guitar from './weapons/guitar';
+import Drum from './weapons/drum';
+import Bass from './weapons/bass';
+import Keyboard from './weapons/keyboard';
 import Item from './item';
 import SoundManager from './sound-manager';
 import GunManager from './gun-manager';
@@ -67,6 +66,9 @@ export default class Player extends actor {
 
         // this.keyF = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F); DEBUG FOR DAMAGE
         this.keySpace = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.scene.input.keyboard.on('keydown-E', () => {
+            this.arma.ability();
+        });
         this.mouseClick = this.scene.input.on('pointerdown', (pointer) => {
             if (pointer.button === 0 && this.canAttack) {
                 if (this.arma === this.bajo) {
@@ -78,6 +80,7 @@ export default class Player extends actor {
                     this.soundManager.playWithPitch('drum_attk');
                 } else if (this.arma === this.teclado) {
                     this.arma.startCharge();
+                    //this.soundManager.playWithPitch('keyboard_attk');
                 } else {
                     this.soundManager.playWithPitch('guitar_attk');
                     this.arma.activateWeapon();
@@ -107,10 +110,11 @@ export default class Player extends actor {
             }
         });
 
-        this.guitar = new Guitar(this.scene, this.x, this.y, this);
-        this.bajo = new Bass(this.scene, this.x, this.y, this);
-        this.drum = new Drum(this.scene, this.x, this.y, this);
-        this.teclado = new Keyboard(this.scene, this.x, this.y, this);
+        const weaponStats = this.scene.cache.json.get('data').weaponStats;
+        this.guitar = new Guitar(this.scene, this.x, this.y, this, weaponStats.guitar);
+        this.bajo = new Bass(this.scene, this.x, this.y, this, weaponStats.bass);
+        this.drum = new Drum(this.scene, this.x, this.y, this, weaponStats.drum);
+        this.teclado = new Keyboard(this.scene, this.x, this.y, this, weaponStats.keyboard);
 
         this.gunManager = new GunManager(this.scene, this, [
             { weapon: this.guitar, iconKey: 'guitar-icon' },
@@ -121,6 +125,20 @@ export default class Player extends actor {
 
         this.soundManager = SoundManager.getInstance(this.scene);
         this.playingMovementSound = false;
+
+        // Regeneración de vida
+        this.regenDelay = stats.regenDelay;
+        this.lastDamageTime = 0;
+        this.scene.time.addEvent({
+            delay: 100,
+            loop: true,
+            callback: () => {
+                if (this.life < this.maxHP && (this.scene.time.now - this.lastDamageTime) >= this.regenDelay) {
+                    this.life = Math.min(this.life + 5, this.maxHP);
+                    this.updateHealth();
+                }
+            }
+        });
 
         //seccion de items no consumibles(trinkets)
         this.trinket = [];
@@ -160,6 +178,23 @@ export default class Player extends actor {
         this.updateHealth();
     }
 
+    /**
+     * Elimina un trinket del jugador, revierte sus efectos y actualiza el registro.
+     * @param {Item} item
+     */
+    removeTrinket(item) {
+        const idx = this.trinket.indexOf(item);
+        if (idx === -1) return;
+
+        item.removeFrom(this);
+        this.trinket.splice(idx, 1);
+
+        const savedTrinkets = this.scene.registry.get('trinkets') || [];
+        const regIdx = savedTrinkets.findIndex(t => t.id === item.id);
+        if (regIdx !== -1) savedTrinkets.splice(regIdx, 1);
+        this.scene.registry.set('trinkets', savedTrinkets);
+    }
+
     get arma() {
         return this.gunManager.currentWeapon;
     }
@@ -178,7 +213,6 @@ export default class Player extends actor {
     preUpdate(t, dt) {
         super.preUpdate(t, dt);
 
-        let isHorizontal = false;
         this.updateVisualCues();
 
         if (this.dashEaseout) {
@@ -200,25 +234,23 @@ export default class Player extends actor {
 
         this.body.setVelocity(0);
 
+        const lockDirection = this.arma.getAnimSuffix() === '-keyboard' && this.arma.isCharging;
+
         if (this.keyA.isDown) {
-            isHorizontal = true;
-            this.lastDirection = 'left';
+            if (!lockDirection) this.lastDirection = 'left';
             this.body.setVelocityX(-this.speed);
 
         } else if (this.keyD.isDown) {
-            isHorizontal = true;
-            this.lastDirection = 'right';
+            if (!lockDirection) this.lastDirection = 'right';
             this.body.setVelocityX(this.speed);
         }
 
 
         if (this.keyW.isDown) {
-            isHorizontal = false;
-            this.lastDirection = 'up';
+            if (!lockDirection) this.lastDirection = 'up';
             this.body.setVelocityY(-this.speed);
         } else if (this.keyS.isDown) {
-            isHorizontal = false;
-            this.lastDirection = 'down';
+            if (!lockDirection) this.lastDirection = 'down';
             this.body.setVelocityY(this.speed);;
         }
 
@@ -241,7 +273,7 @@ export default class Player extends actor {
     }
 
     updateHealth() {
-        this.scene.events.emit('updateHealth', this);
+        this.scene.game.events.emit('updateHealth', this);
     }
 
     die() {
@@ -268,10 +300,12 @@ export default class Player extends actor {
         this.soundManager.play('dash');
         this.isDashing = true;
         this.canDash = false;
+        this.scene.game.events.emit('dashStart', this.dashCooldown);
 
         // velocidad en función del vector dirección del jugador
         this.body.velocity.normalize().scale(this.dashSpeed);
         this.invincible = true;
+
 
         // ease out del dash
         this.scene.time.delayedCall(1 / 4 * this.dashDuration, () => {
@@ -288,6 +322,7 @@ export default class Player extends actor {
             let dashColor = 0x00ffff;
             this.showCooldownCue(dashColor);
             this.canDash = true;
+            this.scene.game.events.emit('dashReady');
         });
     }
 
@@ -295,12 +330,13 @@ export default class Player extends actor {
         this.isDashing = false;
         this.invincible = false;
         if (this.body) {
-            this.body.setVelocity(0, 0); // Opcional: frenar en seco al terminar
+            this.body.setVelocity(0, 0);
         }
     }
 
     getDamage(dmg) {
         super.getDamage(dmg);
+        this.lastDamageTime = this.scene.time.now;
         this.scene.cameras.main.shake(50, 0.01);
 
     }
@@ -333,8 +369,11 @@ export default class Player extends actor {
         const vel = this.body.velocity;
         const suffix = this.arma.getAnimSuffix();
 
-        // si el teclado está cargando, animación de keyboard attack
-        if (this.arma.isCharging) {
+        // si el teclado está cargando, animación de keyboard attack (sin reiniciarla si ya está en curso)
+        if (this.arma.getAnimSuffix() === '-keyboard' && this.arma.isCharging) {
+            const currentKey = this.anims.currentAnim?.key;
+            if (currentKey && currentKey.endsWith('-keyboard') && currentKey.startsWith('attack-')) return;
+
             switch (this.lastDirection) {
                 case 'left':
                     this.flipX = true;
@@ -717,7 +756,7 @@ export default class Player extends actor {
                 start: 0,
                 end: 6
             }),
-            frameRate: 8,
+            frameRate: 6.5,
             repeat: -1
         });
         this.scene.anims.create({
@@ -727,7 +766,7 @@ export default class Player extends actor {
                 start: 0,
                 end: 6
             }),
-            frameRate: 8,
+            frameRate: 6.5,
             repeat: -1
         });
         this.scene.anims.create({
@@ -737,7 +776,7 @@ export default class Player extends actor {
                 start: 0,
                 end: 6
             }),
-            frameRate: 8,
+            frameRate: 6.5,
             repeat: -1
         });
 

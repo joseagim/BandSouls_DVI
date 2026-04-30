@@ -1,7 +1,4 @@
 import Phaser from 'phaser';
-import Platform from '../game-objects/platform.js';
-import Player from '../game-objects/player.js';
-import Enemy from '../game-objects/enemy.js'
 import Level from './level.js';
 import EasyStar from 'easystarjs';
 
@@ -30,18 +27,17 @@ export default class Level_Fondo extends Level {
 
 
         var map = this.make.tilemap({ key: 'map' });
-        var tiles = map.addTilesetImage('city_tileset', 'city_tiles');
+        var tiles = map.addTilesetImage('Modern_Exteriors_Complete_Tileset_32x32', 'city_tiles');
 
         var layer_suelo = map.createLayer('suelo', tiles, 0, 0);
-        var layer_edif = map.createLayer('edificios', tiles, 0, 0);
-        var layer_deco = map.createLayer('decorado', tiles, 0, 0);
-        var layer_deco_sin = map.createLayer('decoradoSin', tiles, 0, 0);
-        var layer_obj = map.createLayer('objetos', tiles, 0, 0);
+        var layer_deco = map.createLayer('decoraciones', tiles, 0, 0);
+        var layer_deco2 = map.createLayer('decoraciones2', tiles, 0, 0);
+        var layer_colisiones = map.createLayer('colisiones', tiles, 0, 0);
+        
+        
 
-        layer_edif.setCollisionByExclusion([-1], true);
-        layer_deco.setCollisionByExclusion([-1], true);
-        layer_obj.setCollisionByExclusion([-1], true);
-
+        layer_colisiones.setCollisionByExclusion([-1], true);
+        layer_deco2.setDepth(200);
 
         this.bases = this.add.group();
 
@@ -49,27 +45,29 @@ export default class Level_Fondo extends Level {
 
         this.soundManager.play('level1_music');
 
-        this.physics.add.collider(this.player, layer_edif);
-        this.physics.add.collider(this.player, layer_deco);
-        this.physics.add.collider(this.player, layer_obj);
+        this.physics.add.collider(this.player, layer_colisiones);
+      //  this.physics.add.collider(this.player, layer_objetos);
 
-        this.physics.add.collider(this.spawner.pool, layer_edif);
-        this.physics.add.collider(this.spawner.pool, layer_deco);
-        this.physics.add.collider(this.spawner.pool, layer_obj);
+        this.physics.add.collider(this.spawner.PhysicsGroup(), layer_colisiones);
+        //this.physics.add.collider(this.spawner.pool, layer_objetos);
 
         // Inicializar pathfinding A* con el grid del tilemap
         const gridWidth = map.width;
         const gridHeight = map.height;
+        this.bounds = {
+            x : 0,
+            y : 0,
+            right : gridWidth * map.tileWidth,
+            bottom : gridHeight * map.tileHeight
+        }
+        this.physics.world.setBounds(0, 0, this.bounds.right, this.bounds.bottom);
         const grid = [];
         for (let y = 0; y < gridHeight; y++) {
             const row = [];
             for (let x = 0; x < gridWidth; x++) {
-                const tileEdif = layer_edif.getTileAt(x, y);
-                const tileDeco = layer_deco.getTileAt(x, y);
-                const tileObj = layer_obj.getTileAt(x, y);
-                const blocked = (tileEdif && tileEdif.collides) ||
-                    (tileDeco && tileDeco.collides) ||
-                    (tileObj && tileObj.collides);
+                const tileEdif = layer_colisiones.getTileAt(x, y);
+                //const tileObj = layer_objetos.getTileAt(x, y);
+                const blocked = (tileEdif && tileEdif.collides); // || (tileObj && tileObj.collides);
                 row.push(blocked ? 1 : 0);
             }
             grid.push(row);
@@ -80,6 +78,12 @@ export default class Level_Fondo extends Level {
         this.easystar.enableDiagonals();
         this.easystar.disableCornerCutting();
         this.pathfinderTileSize = map.tileWidth;
+        this.gridWidth = gridWidth;
+        this.gridHeight = gridHeight;
+
+        const mapPixelWidth = gridWidth * map.tileWidth;
+        const mapPixelHeight = gridHeight * map.tileHeight;
+        this.physics.world.setBounds(0, 0, mapPixelWidth, mapPixelHeight);
 
         // Configurar cámara
         this.cameras.main.setBounds(0, 0, 1280, 720);
@@ -90,8 +94,9 @@ export default class Level_Fondo extends Level {
 
         // --- Portal al finalizar oleadas ---
         this.portal = null;
-        this.keyEnter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
-        this.portalInteractionRange = 50;
+        this.portalInteractionRange = 80;
+        this._portalEnterTimer = null;
+        this._portalBlinkTween = null;
 
         // Crear la animación por si no estuviese creada en esta escena
         if (!this.anims.exists('portalAnim')) {
@@ -103,13 +108,18 @@ export default class Level_Fondo extends Level {
             });
         }
 
-        this.events.on('allWavesComplete', () => {
-            // Un poco más arriba del centro del mapa (asumiendo 1280x720 como tamaño)
-            const mapCenterX = 1280 / 2;
-            const mapCenterY = 736 / 2 - 150;
+        this.game.events.on('shopTime', () => this._spawnShopPortal());
 
-            this.portal = this.physics.add.sprite(mapCenterX, mapCenterY, 'portal');
-            this.portal.play('portalAnim');
+        this.game.events.on('nextWave', () => {
+            if (this.portal) {
+                this.portal.destroy();
+                this.portal = null;
+            }
+            if (this._portalEnterTimer) {
+                this._portalEnterTimer.remove();
+                this._portalEnterTimer = null;
+            }
+            this._stopPortalBlink();
         });
     }
 
@@ -123,9 +133,63 @@ export default class Level_Fondo extends Level {
                 this.portal.x, this.portal.y
             );
 
-            if (distToPortal < this.portalInteractionRange && Phaser.Input.Keyboard.JustDown(this.keyEnter)) {
-                this.scene.start('shop');
+            if (distToPortal < this.portalInteractionRange) {
+                if (!this._portalEnterTimer) {
+                    this._portalEnterTimer = this.time.delayedCall(3000, () => {
+                        this._stopPortalBlink();
+                        this.registry.set('savedWave', this.waveManager.currentWave);
+                        this.registry.set('ultiCooldown', {
+                            [this.player.guitar.iconKey]: this.player.guitar._abilityTimer?.getRemaining() ?? 0,
+                            [this.player.drum.iconKey]:   this.player.drum._abilityTimer?.getRemaining()   ?? 0,
+                        });
+                        this.scene.start('shop');
+                    });
+                    this._startPortalBlink();
+                }
+            } else {
+                if (this._portalEnterTimer) {
+                    this._portalEnterTimer.remove();
+                    this._portalEnterTimer = null;
+                    this._stopPortalBlink();
+                }
             }
+        }
+    }
+
+    getStartingWave() {
+        const saved = this.registry.get('savedWave');
+        if (saved != null) {
+            this.registry.remove('savedWave');
+            return saved;
+        }
+        return 0;
+    }
+
+    _spawnShopPortal() {
+        if (this.portal) return; // evita doble spawn
+        const mapCenterX = 1280 / 2;
+        const mapCenterY = 736 / 2 - 150;
+        this.portal = this.physics.add.sprite(mapCenterX, mapCenterY, 'portal');
+        this.portal.play('portalAnim');
+        this.portal.setScale(2);
+    }
+
+    _startPortalBlink() {
+        this._portalBlinkTween = this.tweens.add({
+            targets: this.player,
+            alpha: 0.15,
+            duration: 250,
+            ease: 'Sine.easeInOut',
+            yoyo: true,
+            repeat: -1
+        });
+    }
+
+    _stopPortalBlink() {
+        if (this._portalBlinkTween) {
+            this._portalBlinkTween.stop();
+            this._portalBlinkTween = null;
+            this.player.setAlpha(1);
         }
     }
 

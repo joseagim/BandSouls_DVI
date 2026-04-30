@@ -1,0 +1,384 @@
+{
+    "patterns": [
+        {
+            "id": "single_2",
+            "description": "Solo libre posición 2",
+            "attacks": [
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 1
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 3
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 4
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 5
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 6
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 7
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 8
+                }
+            ]
+        },
+        {
+            "id": "single_7",
+            "description": "Solo libre posición 7",
+            "attacks": [
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 1
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 2
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 3
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 4
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 5
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 6
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 8
+                }
+            ]
+        },
+        {
+            "id": "single_3",
+            "description": "Solo libre posición 3",
+            "attacks": [
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 1
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 2
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 4
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 5
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 6
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 7
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 8
+                }
+            ]
+        },
+        {
+            "id": "single_6",
+            "description": "Solo libre posición 6",
+            "attacks": [
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 1
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 2
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 3
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 4
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 5
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 7
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 8
+                }
+            ]
+        },
+        {
+            "id": "double_1_8",
+            "description": "Libres extremos 1 y 8",
+            "attacks": [
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 2
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 3
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 4
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 5
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 6
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 7
+                }
+            ]
+        },
+        {
+            "id": "double_2_7",
+            "description": "Libres 2 y 7",
+            "attacks": [
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 1
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 3
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 4
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 5
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 6
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 8
+                }
+            ]
+        },
+        {
+            "id": "double_3_7",
+            "description": "Libres 3 y 7",
+            "attacks": [
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 1
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 2
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 4
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 5
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 6
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 8
+                }
+            ]
+        },
+        {
+            "id": "double_2_6",
+            "description": "Libres 2 y 6",
+            "attacks": [
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 1
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 3
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 4
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 5
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 7
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 8
+                }
+            ]
+        },
+        {
+            "id": "extra_4_8",
+            "description": "Libres 4 y 8",
+            "attacks": [
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 1
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 2
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 3
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 5
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 6
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 7
+                }
+            ]
+        },
+        {
+            "id": "extra_1_5",
+            "description": "Libres 1 y 5",
+            "attacks": [
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 2
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 3
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 4
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 6
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 7
+                },
+                {
+                    "wait": 0,
+                    "alert": 1000,
+                    "pos": 8
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,59 @@
+{
+    "patterns": [
+        {
+            "id": "barrera_central",
+            "description": "Cuatro rayos en el centro de la pantalla. El jugador debe ir arriba (1-2) o abajo (7-8) para esquivar.",
+            "attacks": [
+                { "wait": 0,    "alert": 800, "pos": 3 },
+                { "wait": 0,    "alert": 800, "pos": 4 },
+                { "wait": 0,    "alert": 800, "pos": 5 },
+                { "wait": 0,    "alert": 800, "pos": 6 }
+            ]
+        },
+        {
+            "id": "escalera_descendente",
+            "description": "Ataques que bajan uno a uno por la pantalla, dando tiempo a esquivar si el jugador sube.",
+            "attacks": [
+                { "wait": 0,    "alert": 600, "pos": 2 },
+                { "wait": 700,  "alert": 600, "pos": 4 },
+                { "wait": 1400, "alert": 600, "pos": 6 },
+                { "wait": 2100, "alert": 600, "pos": 8 }
+            ]
+        },
+        {
+            "id": "peine_impar",
+            "description": "Ocupa carriles impares (1,3,5,7) simultáneamente. El jugador debe situarse en un carril par (2,4,6,8).",
+            "attacks": [
+                { "wait": 500, "alert": 1000, "pos": 1 },
+                { "wait": 500, "alert": 1000, "pos": 3 },
+                { "wait": 500, "alert": 1000, "pos": 5 },
+                { "wait": 500, "alert": 1000, "pos": 7 }
+            ]
+        },
+        {
+            "id": "mitad_inferior",
+            "description": "Lluvia rápida en la mitad inferior. Hay tiempo para huir arriba antes de que salgan.",
+            "attacks": [
+                { "wait": 0,   "alert": 500, "pos": 5 },
+                { "wait": 200, "alert": 500, "pos": 6 },
+                { "wait": 400, "alert": 500, "pos": 7 },
+                { "wait": 600, "alert": 500, "pos": 8 }
+            ]
+        },
+        {
+            "id": "la_quinta_sinfonia",
+            "description": "Ta-ta-ta-TAAA: tres golpes rápidos al centro y luego apertura que cierra el camino. Solo queda el extremo inferior.",
+            "attacks": [
+                { "wait": 0,    "alert": 400, "pos": 4 },
+                { "wait": 500,  "alert": 400, "pos": 4 },
+                { "wait": 1000, "alert": 400, "pos": 4 },
+                { "wait": 2000, "alert": 1000, "pos": 1 },
+                { "wait": 2000, "alert": 1000, "pos": 2 },
+                { "wait": 2000, "alert": 1000, "pos": 3 },
+                { "wait": 2000, "alert": 1000, "pos": 5 },
+                { "wait": 2000, "alert": 1000, "pos": 6 },
+                { "wait": 2000, "alert": 1000, "pos": 7 }
+            ]
+        }
+    ]
+}

@@ -1,5 +1,4 @@
 import Phaser from 'phaser';
-import ShadowEnemy from './shadowEnemy';
 
 export default class Pool {
     constructor(scene, poolsData, factory) {
@@ -37,7 +36,6 @@ export default class Pool {
         else {
             element = this.inactive[type].pop();
         }
-        element.spawn();
         this.active[type].push(element);
 
         return element;

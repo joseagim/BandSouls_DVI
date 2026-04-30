@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import Platform from '../game-objects/platform.js';
 import Player from '../game-objects/player.js';
-import Enemy from '../game-objects/enemy.js'
+import Enemy from '../game-objects/enemies/enemy.js'
 import Level from './level.js';
 import EasyStar from 'easystarjs';
 
@@ -44,6 +44,8 @@ export default class Level_Fondo extends Level {
         
         super.create();
 
+        // Spawn manual de kamikaze para probar
+
                 
         this.physics.add.collider(this.player,layer_objetos);
 
@@ -68,6 +70,12 @@ export default class Level_Fondo extends Level {
         this.easystar.enableDiagonals();
         this.easystar.disableCornerCutting();
         this.pathfinderTileSize = map.tileWidth;
+        this.gridWidth = gridWidth;
+        this.gridHeight = gridHeight;
+
+        const mapPixelWidth = gridWidth * map.tileWidth;
+        const mapPixelHeight = gridHeight * map.tileHeight;
+        this.physics.world.setBounds(0, 0, mapPixelWidth, mapPixelHeight);
 
         // Configurar cámara
         this.cameras.main.setBounds(0, 0, 1280, 720);

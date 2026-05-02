@@ -133,9 +133,9 @@ const gameConfig = {
             speedMult: 0.75,
             cooldownMult: 1,
             enemies: [
-                { type: "shadow", count: 4, spawnDelay: 2000 },
-                { type: "shadow", count: 4, spawnDelay: 3000 },
-                { type: "redVelvet", count: 2, spawnDelay: 6000 }
+                { type: "shadow", count: 1, spawnDelay: 2000 },
+                { type: "shadow", count: 0, spawnDelay: 3000 },
+                { type: "redVelvet", count: 0, spawnDelay: 6000 }
             ],
             delay: 3000,
         },
@@ -144,9 +144,9 @@ const gameConfig = {
             speedMult: 0.75,
             cooldownMult: 1,
             enemies: [
-                { type: "shadow", count: 5, spawnDelay: 3000 },
-                { type: "shadow", count: 5, spawnDelay: 2000 },
-                { type: "kamikaze", count: 2, spawnDelay: 4000 }
+                { type: "shadow", count: 1, spawnDelay: 3000 },
+                { type: "shadow", count: 0, spawnDelay: 2000 },
+                { type: "kamikaze", count: 0, spawnDelay: 4000 }
             ],
             delay: 5000,
         },
@@ -155,9 +155,9 @@ const gameConfig = {
             speedMult: 0.75,
             cooldownMult: 0.8,
             enemies: [
-                { type: "shadow", count: 7, spawnDelay: 2000 },
-                { type: "shadow", count: 7, spawnDelay: 2000 },
-                { type: "kamikaze", count: 3, spawnDelay: 5000 }
+                { type: "shadow", count: 1, spawnDelay: 2000 },
+                { type: "shadow", count: 0, spawnDelay: 2000 },
+                { type: "kamikaze", count: 0, spawnDelay: 5000 }
             ],
             delay: 20000,
         },

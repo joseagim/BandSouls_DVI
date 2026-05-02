@@ -67,6 +67,8 @@ export default class Drum extends Arma {
         this.smashSprite.setVisible(false);
         this.smashSprite.setDepth(0);
 
+        this.soundManager = this.scene.soundManager;
+
         this.smashSprite.on('animationcomplete-drum_smash_anim', () => {
             this.smashSprite.setVisible(false);
         });
@@ -106,6 +108,8 @@ export default class Drum extends Arma {
     ability() {
         if (!this.canUseAbility) return;
         this.canUseAbility = false;
+
+        this.soundManager.play('drum_ability');
 
         const fx = this.player.x;
         const fy = this.player.y;

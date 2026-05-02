@@ -167,10 +167,13 @@ import bajo_attk from '../../assets/sounds/fx/bajo-attk.mp3';
 import drum_attk from '../../assets/sounds/fx/drum-attk.mp3';
 import fuse_kamikaze from '../../assets/sounds/fx/fuse-kamikaze.mp3';
 import explosion_kamikaze from '../../assets/sounds/fx/explosion-kamikaze.mp3';
+import guitar_ability from '../../assets/sounds/fx/guitar-ability.mp3';
+import drum_ability from '../../assets/sounds/fx/drum-ability.mp3';
 
 //musica
 import menu_music from '../../assets/sounds/music/menu-music.mp3';
 import level1_music from '../../assets/sounds/music/level1-music.mp3';
+import shop_music from '../../assets/sounds/music/shop-music.mp3';
 
 
 /**
@@ -324,11 +327,14 @@ export default class Boot extends Phaser.Scene {
     this.load.audio('drum_attk', drum_attk);
     this.load.audio('fuse_kamikaze', fuse_kamikaze);
     this.load.audio('explosion_kamikaze', explosion_kamikaze);
+    this.load.audio('guitar_ability', guitar_ability);
+    this.load.audio('drum_ability', drum_ability);
 
 
     // música
     this.load.audio('menu_music', menu_music);
     this.load.audio('level1_music', level1_music);
+    this.load.audio('shop_music', shop_music); // temporal, reemplazar por música de tienda cuando esté disponible
 
     this.soundManager = new SoundManager(this);
     this.soundManager.addSounds({

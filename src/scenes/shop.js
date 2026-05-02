@@ -23,11 +23,14 @@ export default class Shop extends Phaser.Scene {
 
         layer.setCollisionByProperty({ colision: true });
         this.soundManager = new SoundManager(this);
+        /*
         this.soundManager.addSounds({
             'movement': { key: 'movement', loop: true, loopDelay: 100 },
             'dash': { key: 'dash', volume: 10 },
             'guitar_attk': { key: 'guitar_attk', volume: 0.5 }
         });
+        */
+       console.log('sound manager tiene estos sondidos: ', this.soundManager.sounds);
 
         const playerStats = this.cache.json.get('data').playerBaseStats;
         const marginX = 130;
@@ -192,6 +195,7 @@ export default class Shop extends Phaser.Scene {
             if (!this._portalEnterTimer) {
                 this._portalEnterTimer = this.time.delayedCall(3000, () => {
                     this._stopPortalBlink();
+                    this.soundManager.stop('shop_music');
                     this.scene.start('level_fondo');
                 });
                 this._startPortalBlink();

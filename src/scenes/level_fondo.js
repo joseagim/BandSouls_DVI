@@ -142,6 +142,9 @@ export default class Level_Fondo extends Level {
                             [this.player.guitar.iconKey]: this.player.guitar._abilityTimer?.getRemaining() ?? 0,
                             [this.player.drum.iconKey]:   this.player.drum._abilityTimer?.getRemaining()   ?? 0,
                         });
+                        this.soundManager.stop('level1_music');
+                        this.soundManager.play('shop_music');
+                        console.log('Entrando a la tienda, guardando estado: ');
                         this.scene.start('shop');
                     });
                     this._startPortalBlink();

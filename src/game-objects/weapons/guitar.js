@@ -30,6 +30,8 @@ export default class Guitar extends Arma {
         this.scene.physics.add.existing(this.riffHurtbox);
         this.riffHurtbox.body.enable = false;
 
+        this.soundManager = this.scene.soundManager;
+
         // Animated wave sprite
         if (!this.scene.anims.exists('guitar_riff_anim')) {
             this.scene.anims.create({
@@ -87,6 +89,8 @@ export default class Guitar extends Arma {
     ability() {
         if (!this.canUseAbility) return;
         this.canUseAbility = false;
+
+        this.soundManager.playRandom('guitar_ability');
 
         const pointer = this.scene.input.activePointer;
         const worldPoint = pointer.positionToCamera(this.scene.cameras.main);

@@ -68,6 +68,8 @@ import bassExplosionAtlas from '../../assets/sprites/weapons/bass/explosion.json
 import keyboardIcon from '../../assets/sprites/weapons/keyboard/keyboard-icon.png'
 import keyboardProjectileSheet from '../../assets/sprites/weapons/keyboard/keyboard-projectile.png'
 import keyboardProjectileAtlas from '../../assets/sprites/weapons/keyboard/keyboard-projectile.json'
+import keyboardUltiProjectileSheet from '../../assets/sprites/weapons/keyboard/keyboard-ulti-projectile.png'
+import keyboardUltiProjectileAtlas from '../../assets/sprites/weapons/keyboard/keyboard-ulti-projectile.json'
 import weaponSelected from '../../assets/sprites/weapons/selected-frame.png'
 import weaponUnselected from '../../assets/sprites/weapons/unselected-frame.png'
 
@@ -241,6 +243,7 @@ export default class Boot extends Phaser.Scene {
     this.load.atlas('bass-explosion', bassExplosionSheet, bassExplosionAtlas);
     this.load.image('keyboard-icon', keyboardIcon);
     this.load.atlas('keyboard_projectile', keyboardProjectileSheet, keyboardProjectileAtlas);
+    this.load.atlas('keyboard-ulti-projectile', keyboardUltiProjectileSheet, keyboardUltiProjectileAtlas);
     this.load.image('weapon-selected', weaponSelected);
     this.load.image('weapon-unselected', weaponUnselected);
 

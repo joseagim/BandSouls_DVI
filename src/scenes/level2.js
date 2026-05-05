@@ -14,7 +14,7 @@ import EasyStar from 'easystarjs';
  * El juego termina cuando el jugador ha recogido 10 estrellas.
  * @extends Phaser.Scene
  */
-export default class Level_Fondo extends Level {
+export default class Level2 extends Level {
     /**
      * Constructor de la escena
      */
@@ -28,14 +28,12 @@ export default class Level_Fondo extends Level {
     create() {
         //this.stars = 10;
         var map = this.make.tilemap({ key: 'level2' });
-        var tiles_grass = map.addTilesetImage('grass', 'tileset_grassland_grass');
-        var tiles_paths = map.addTilesetImage('tileset-grassland-paths ', 'tileset_grassland_paths');
-        var tiles_props = map.addTilesetImage('tileset-grassland-props', 'tileset_grassland_props');
-        var tiles_water = map.addTilesetImage('tileset-grassland-water', 'tileset_grassland_water');
+        var tiles = map.addTilesetImage('Modern_Exteriors_Complete_Tileset_32x32', 'city_tiles');
 
-        var layer_suelo = map.createLayer('suelo', [tiles_grass, tiles_paths, tiles_props, tiles_water], 0, 0);
-        var layer_suelo2 = map.createLayer('suelo2', [tiles_grass, tiles_paths, tiles_props, tiles_water], 0, 0);
-        var layer_objetos = map.createLayer('objetos', [tiles_grass, tiles_paths, tiles_props, tiles_water], 0, 0);
+        var layer_suelo = map.createLayer('suelo', tiles, 0, 0);
+        var layer_deco = map.createLayer('decoraciones', tiles, 0, 0);
+        var layer_objetos = map.createLayer('colisiones', tiles, 0, 0);
+        var layer_sup = map.createLayer('superior', tiles, 0, 0);
         
         layer_objetos.setCollisionByExclusion([-1],true);
 
@@ -45,6 +43,7 @@ export default class Level_Fondo extends Level {
         super.create();
 
         // Spawn manual de kamikaze para probar
+        layer_sup.setDepth(200);
 
                 
         this.physics.add.collider(this.player,layer_objetos);

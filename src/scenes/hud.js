@@ -71,13 +71,18 @@ export default class HUD extends Phaser.Scene {
             fontFamily: 'Verdana',
             stroke: '#000000',
             strokeThickness: 4,
-        }).setOrigin(1, 0.5).setScrollFactor(0).setVisible(false);
+        }).setOrigin(1, 0.5).setScrollFactor(0).setDepth(10).setVisible(false);
 
         const currentScore = this.registry.get('score') || 0;
         this.scoreText.setText(String(currentScore));
+        this._lastScore = currentScore;
+        this._scorePopupIndex = 0;
 
         registerRegistryEvent('changedata-score', (_parent, value) => {
             this.scoreText.setText(String(value) ?? "0");
+            const delta = value - (this._lastScore ?? 0);
+            this._lastScore = value;
+            if (delta !== 0) this._spawnScorePopup(delta);
         });
 
         // Enemigos restantes — centro arriba
@@ -699,6 +704,34 @@ export default class HUD extends Phaser.Scene {
         const fillH = h * this._ultiCooldownFill.value;
         this._ultiCooldownBar.fillStyle(0xff8800, 1);
         this._ultiCooldownBar.fillRect(x, y + h - fillH, w, fillH);
+    }
+
+    _spawnScorePopup(delta) {
+        if (!this.scoreText.visible) return;
+
+        const label = (delta > 0 ? '+' : '') + delta;
+        const color = delta > 0 ? '#ffee00' : '#ff3333';
+
+        const x = this.scoreText.x - 80;
+        const y = this.scoreText.y;
+        const goUp = this._scorePopupIndex % 2 === 0;
+        this._scorePopupIndex++;
+
+        const txt = this.add.text(x, y, label, {
+            fontSize: '18px',
+            fill: color,
+            fontFamily: 'Verdana',
+        }).setOrigin(1, 0.5).setScrollFactor(0).setDepth(5).setAlpha(1);
+
+        this.tweens.add({
+            targets: txt,
+            x: x - 40,
+            y: y + (goUp ? -14 : 14),
+            alpha: 0,
+            duration: 1200,
+            ease: 'Cubic.easeOut',
+            onComplete: () => txt.destroy()
+        });
     }
 
     _showRound(number) {

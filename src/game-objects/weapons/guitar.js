@@ -41,7 +41,7 @@ export default class Guitar extends Arma {
                     start: 0,
                     end: 3
                 }),
-                frameRate: 12,
+                frameRate: 8,
                 repeat: -1
             });
         }
@@ -108,8 +108,17 @@ export default class Guitar extends Arma {
 
         this.riffSprite.setPosition(this.player.x, this.player.y);
         this.riffSprite.setRotation(angle + Math.PI / 2);
+        this.riffSprite.setScale(2);
         this.riffSprite.setVisible(true);
         this.riffSprite.play('guitar_riff_anim', true);
+
+        this._growTween = this.scene.tweens.add({
+            targets: this.riffSprite,
+            scaleX: 4,
+            scaleY: 4,
+            duration: 1500,
+            ease: 'Linear'
+        });
 
         this.scene.game.events.emit('ultiStart', { weaponKey: this.iconKey, cooldown: this.abilityCooldown });
 
@@ -126,6 +135,8 @@ export default class Guitar extends Arma {
     }
 
     _deactivateRiff() {
+        this._growTween?.stop();
+        this._growTween = null;
         this.riffHurtbox.body.enable = false;
         this.riffHurtbox.body.setVelocity(0, 0);
         this.riffHurtbox.active = false;

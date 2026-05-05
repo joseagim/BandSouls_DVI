@@ -55,9 +55,9 @@ export default class Drum extends Arma {
                 frames: this.scene.anims.generateFrameNames('drum-smash', {
                     prefix: 'smash_',
                     start: 0,
-                    end: 5
+                    end: 6
                 }),
-                frameRate: 30,
+                frameRate: 24,
                 repeat: 0
             });
         }
@@ -121,7 +121,8 @@ export default class Drum extends Arma {
         this.smashHurtbox.active = true;
         this.smashHurtbox.enemiesHit.clear();
 
-        this.smashSprite.setPosition(fx, fy - 15);
+        this.smashSprite.setPosition(fx, fy - 35);
+        this.smashSprite.setScale(3.25);
         this.smashSprite.setAlpha(0.9);
         this.smashSprite.setVisible(true);
         this.smashSprite.play('drum_smash_anim', true);

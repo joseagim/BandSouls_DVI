@@ -146,6 +146,7 @@ import tileset_grassland_paths from '../../assets/map/tileset-grassland-paths.pn
 import tileset_grassland_props from '../../assets/map/tileset-grassland-props.png';
 import tileset_grassland_water from '../../assets/map/tileset-grassland-water.png';
 import level2JSON from '../../assets/map/level2.json';
+import bosque_level from '../../assets/map/bosque-map.json';
 
 // data
 import data from '../../assets/data/gameConfig';
@@ -308,6 +309,7 @@ export default class Boot extends Phaser.Scene {
     this.load.tilemapTiledJSON('shop_map', shop_json);
     this.load.atlas('portal', portalSpritesheet, portalJSON);
     this.load.spritesheet('spawn_portal', spawnPortalSpritesheet, { frameWidth: 48, frameHeight: 48 });
+    this.load.tilemapTiledJSON('bosque_map', bosque_level);
 
     // data
     this.cache.json.add('data', data);

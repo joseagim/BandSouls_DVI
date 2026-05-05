@@ -159,6 +159,8 @@ export default class Drum extends Arma {
         const hurtbox = this.hurtboxPool.find(h => !h.active);
         if (!hurtbox) return;
 
+        this.soundManager.playWithPitch('drum_attk');
+
         const pointer = this.scene.input.activePointer;
         const worldPoint = pointer.positionToCamera(this.scene.cameras.main);
         const angle = Phaser.Math.Angle.Between(

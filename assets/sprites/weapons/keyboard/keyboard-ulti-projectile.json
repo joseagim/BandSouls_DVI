@@ -1,0 +1,88 @@
+{
+    "frames": [
+        {
+            "filename": "ulti_color_1",
+            "frame": {
+                "x": 0,
+                "y": 0,
+                "w": 4,
+                "h": 11
+            },
+            "rotated": false,
+            "trimmed": false,
+            "spriteSourceSize": {
+                "x": 0,
+                "y": 0,
+                "w": 4,
+                "h": 11
+            },
+            "sourceSize": {
+                "w": 4,
+                "h": 11
+            }
+        },
+        {
+            "filename": "ulti_color_2",
+            "frame": {
+                "x": 4,
+                "y": 0,
+                "w": 4,
+                "h": 11
+            },
+            "rotated": false,
+            "trimmed": false,
+            "spriteSourceSize": {
+                "x": 0,
+                "y": 0,
+                "w": 4,
+                "h": 11
+            },
+            "sourceSize": {
+                "w": 4,
+                "h": 11
+            }
+        },
+        {
+            "filename": "ulti_color_3",
+            "frame": {
+                "x": 8,
+                "y": 0,
+                "w": 4,
+                "h": 11
+            },
+            "rotated": false,
+            "trimmed": false,
+            "spriteSourceSize": {
+                "x": 0,
+                "y": 0,
+                "w": 4,
+                "h": 11
+            },
+            "sourceSize": {
+                "w": 4,
+                "h": 11
+            }
+        },
+        {
+            "filename": "ulti_color_4",
+            "frame": {
+                "x": 12,
+                "y": 0,
+                "w": 4,
+                "h": 11
+            },
+            "rotated": false,
+            "trimmed": false,
+            "spriteSourceSize": {
+                "x": 0,
+                "y": 0,
+                "w": 4,
+                "h": 11
+            },
+            "sourceSize": {
+                "w": 4,
+                "h": 11
+            }
+        }
+    ]
+}

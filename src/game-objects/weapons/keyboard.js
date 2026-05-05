@@ -48,6 +48,43 @@ export default class Keyboard extends Arma {
 
         this.scene.add.existing(this);
         this.deactivateWeapon();
+
+        // inicializar valores de la ulti
+        this.iconKey = 'keyboard-icon';
+        this.abilityDamage = stats.abilityDamage;
+        this.abilityCooldown = stats.abilityCooldown;
+        this.abilityChargeTime = stats.abilityChargeTime;
+        this.abilityChargeSpeedModifier = stats.abilityChargeSpeedModifier;
+        this.abilityKBmodifier = stats.abilityKBmodifier;
+        this.abilityNumAttacks = stats.abilityNumAttacks;
+        this.abilityFireRate = stats.abilityFireRate;
+        this.canUseAbility = true;
+        this._abilityTimer = null;
+        this._isUltiCharging = false;
+        this._burstActive = false;   // true mientras la minigun está disparando
+        this._ultiChargeTimer = null;
+        this._ultiNormalSpeed = null;
+
+        // pool de proyectiles de la ulti (necesitamos uno por disparo simultáneo posible)
+        const ULTI_POOL_SIZE = this.abilityNumAttacks;
+        this.ultiHurtboxPool = Array.from({ length: ULTI_POOL_SIZE }, () => {
+            const hb = this.scene.add.rectangle(0, 0, 4, 11, 0xffffff);
+            hb.visible = false;
+            hb.active = false;
+            hb.enemiesHit = new Set();
+            this.scene.physics.add.existing(hb);
+            hb.body.enable = false;
+            hb.body.setSize(4, 11);
+
+            // sprite de los proyectiles, cada vez coge un color aleatorio (entre 1 y 4)
+            const colorIdx = Phaser.Math.Between(1, 4);
+            const sprite = this.scene.add.image(0, 0, 'keyboard-ulti-projectile', `ulti_color_${colorIdx}`);
+            sprite.setScale(3);
+            sprite.visible = false;
+            hb.sprite = sprite;
+
+            return hb;
+        });
     }
 
     getAnimSuffix() {
@@ -55,7 +92,7 @@ export default class Keyboard extends Arma {
     }
 
     getHurtboxes() {
-        return this.hurtboxPool;
+        return [...this.hurtboxPool, ...this.ultiHurtboxPool];
     }
 
     posicionarHitbox(hurtbox, angle) {
@@ -72,11 +109,17 @@ export default class Keyboard extends Arma {
     }
 
     attack(enemy, attackMod, hurtbox) {
-        // para poder atravesar enemigos y que no se pare
         if (hurtbox.enemiesHit.has(enemy)) return;
 
-        enemy.getDamage(this.damage * attackMod, 300);
+        // Los proyectiles de la ulti usan abilityDamage
+        const dmg = this.ultiHurtboxPool.includes(hurtbox)
+            ? this.abilityDamage * attackMod
+            : this.damage * attackMod;
+
+        const kbForce = 300 * this.abilityKBmodifier;
+        enemy.getDamage(dmg, kbForce);
         hurtbox.enemiesHit.add(enemy);
+        // No se desactiva → atraviesa enemigos
     }
 
     _deactivateProjectile(hurtbox) {
@@ -85,6 +128,13 @@ export default class Keyboard extends Arma {
         hurtbox.active = false;
         hurtbox.sprite.visible = false;
         if (!this.hurtboxPool.some(h => h.active)) this.isAttacking = false;
+    }
+
+    _deactivateUltiProjectile(hurtbox) {
+        hurtbox.body.enable = false;
+        hurtbox.body.setVelocity(0, 0);
+        hurtbox.active = false;
+        hurtbox.sprite.visible = false;
     }
 
     // "cargar" el ataque
@@ -114,7 +164,7 @@ export default class Keyboard extends Arma {
         });
     }
 
-    // cancela la carga y no dispara
+    // cancela la carga del básico y no dispara
     cancelCharge() {
         if (!this.isCharging) return;
         this._chargeTimer?.remove();
@@ -123,6 +173,111 @@ export default class Keyboard extends Arma {
         this.isAttacking = false;
         this.player.speed = this._normalSpeed;
         this.player.canDash = true;
+    }
+
+    // cancela la carga de la ulti sin disparar y restaura el estado
+    _cancelUltiCharge() {
+        if (!this._isUltiCharging) return;
+        this._ultiChargeTimer?.remove();
+        this._ultiChargeTimer = null;
+        this._isUltiCharging = false;
+        this.canUseAbility = true;   // la ulti se canceló → vuelve a estar disponible
+        if (this._ultiNormalSpeed !== null) {
+            this.player.speed = this._ultiNormalSpeed;
+            this.player.canDash = true;
+            this._ultiNormalSpeed = null;
+        }
+    }
+
+    // ataque de la ulti
+    ability() {
+        if (!this.canUseAbility || this._isUltiCharging) return;
+        this._isUltiCharging = true;
+        this.canUseAbility = false;
+
+        // reducir velocidad durante la carga de la ulti
+        this._ultiNormalSpeed = this.player.speed;
+        this.player.speed *= this.abilityChargeSpeedModifier;
+        this.player.canDash = false;
+
+        // pequeña carga antes de soltar la ráfaga
+        this._ultiChargeTimer = this.scene.time.delayedCall(this.abilityChargeTime, () => {
+            this._isUltiCharging = false;
+            this._startUltiBurst();
+        });
+
+        this.scene.game.events.emit('ultiStart', { weaponKey: this.iconKey, cooldown: this.abilityCooldown });
+    }
+
+    _startUltiBurst() {
+        // restaurar velocidad al empezar la ráfaga
+        if (this._ultiNormalSpeed !== null) {
+            this.player.speed = this._ultiNormalSpeed;
+            this.player.canDash = true;
+            this._ultiNormalSpeed = null;
+        }
+
+        this._burstActive = true;
+        let shotsFired = 0;
+
+        const fireNext = () => {
+            // si el arma se desactivó durante el burst, cortamos la cadena
+            if (!this._burstActive) return;
+
+            if (shotsFired >= this.abilityNumAttacks) {
+                this._burstActive = false;
+                // todos los disparos lanzados → arrancar cooldown
+                this._abilityTimer = this.scene.time.delayedCall(this.abilityCooldown, () => {
+                    this.canUseAbility = true;
+                    this._abilityTimer = null;
+                    this.player.showCooldownCue(0x00ffff);
+                    this.scene.game.events.emit('ultiReady', { weaponKey: this.iconKey });
+                });
+                return;
+            }
+            this._fireUltiProjectile();
+            shotsFired++;
+            this.scene.time.delayedCall(this.abilityFireRate, fireNext);
+        };
+
+        fireNext();
+    }
+
+    // lanzar el proyectil de la ulti
+    _fireUltiProjectile() {
+        const hurtbox = this.ultiHurtboxPool.find(h => !h.active);
+        if (!hurtbox) return;
+
+        // asignar color aleatorio en cada disparo
+        const colorIdx = Phaser.Math.Between(1, 4);
+        hurtbox.sprite.setFrame(`ulti_color_${colorIdx}`);
+
+        const pointer = this.scene.input.activePointer;
+        const worldPoint = pointer.positionToCamera(this.scene.cameras.main);
+
+        // pequeña dispersión para efecto minigun
+        const baseAngle = Phaser.Math.Angle.Between(
+            this.player.x, this.player.y,
+            worldPoint.x, worldPoint.y
+        );
+        const spread = Phaser.Math.FloatBetween(-0.12, 0.12);
+        const angle = baseAngle + spread;
+
+        hurtbox.body.reset(this.player.x, this.player.y);
+        hurtbox.body.enable = true;
+        hurtbox.body.setVelocity(Math.cos(angle) * 700, Math.sin(angle) * 700);
+
+        hurtbox.sprite.setPosition(hurtbox.x, hurtbox.y);
+        hurtbox.sprite.setRotation(angle + Math.PI / 2);
+        hurtbox.sprite.visible = true;
+
+        hurtbox.active = true;
+        hurtbox.enemiesHit.clear();
+
+        // duración del proyectil de ulti (mismo que el básico)
+        this.scene.time.delayedCall(this.duration, () => {
+            this._deactivateUltiProjectile(hurtbox);
+        });
     }
 
     _fireProjectile() {
@@ -165,9 +320,22 @@ export default class Keyboard extends Arma {
     }
 
     deactivateWeapon() {
-        // si se interrumpe le dejamos como antes (usa cancelCharge para no duplicar lógica)
+        // cancela tanto la carga del básico como la de la ulti
         this.cancelCharge();
+        this._cancelUltiCharge();
+        // si se interrumpe durante la ráfaga, cortamos la cadena y devolvemos la ulti
+        if (this._burstActive) {
+            this._burstActive = false;
+            this.canUseAbility = true;
+        }
         this.hurtboxPool?.forEach(h => {
+            h.body?.enable && (h.body.enable = false);
+            h.body?.setVelocity(0, 0);
+            h.active = false;
+            h.enemiesHit?.clear();
+            if (h.sprite) h.sprite.visible = false;
+        });
+        this.ultiHurtboxPool?.forEach(h => {
             h.body?.enable && (h.body.enable = false);
             h.body?.setVelocity(0, 0);
             h.active = false;
@@ -180,6 +348,11 @@ export default class Keyboard extends Arma {
 
     preUpdate() {
         for (const hurtbox of this.hurtboxPool) {
+            if (hurtbox.active) {
+                hurtbox.sprite.setPosition(hurtbox.x, hurtbox.y);
+            }
+        }
+        for (const hurtbox of this.ultiHurtboxPool) {
             if (hurtbox.active) {
                 hurtbox.sprite.setPosition(hurtbox.x, hurtbox.y);
             }

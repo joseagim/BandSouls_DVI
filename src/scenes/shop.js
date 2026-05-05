@@ -109,9 +109,9 @@ export default class Shop extends Phaser.Scene {
         this._portalBlinkTween = null;
     }
 
-
-
-
+    init(data) {
+        this.fromScene = data.from || 'level_fondo'; // fallback in case something breaks
+    }
 
     update() {
         if (!this.player || !this.pillarStates) return;
@@ -196,7 +196,7 @@ export default class Shop extends Phaser.Scene {
                 this._portalEnterTimer = this.time.delayedCall(3000, () => {
                     this._stopPortalBlink();
                     this.soundManager.stop('shop_music');
-                    this.scene.start('level_fondo');
+                    this.scene.start(this.fromScene);
                 });
                 this._startPortalBlink();
             }

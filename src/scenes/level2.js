@@ -90,12 +90,110 @@ export default class Level2 extends Level {
         this.cameras.main.setBackgroundColor(0x000000);
 
 
+        // --- Portal al finalizar oleadas ---
+        this.portal = null;
+        this.portalInteractionRange = 80;
+        this._portalEnterTimer = null;
+        this._portalBlinkTween = null;
+
+        // Crear la animación por si no estuviese creada en esta escena
+        if (!this.anims.exists('portalAnim')) {
+            this.anims.create({
+                key: 'portalAnim',
+                frames: this.anims.generateFrameNames('portal', { prefix: 'Sprite-0001 ', suffix: '.', start: 0, end: 6 }),
+                frameRate: 10,
+                repeat: -1
+            });
+        }
+
+        this.game.events.on('shopTime', () => this._spawnShopPortal());
+
+        this.game.events.on('nextWave', () => {
+            if (this.portal) {
+                this.portal.destroy();
+                this.portal = null;
+            }
+            if (this._portalEnterTimer) {
+                this._portalEnterTimer.remove();
+                this._portalEnterTimer = null;
+            }
+            this._stopPortalBlink();
+        });
 
     }
 
     update() {
         if (this.easystar) this.easystar.calculate();
         if (this.jukeboxMachine) this.jukeboxMachine.update(this.player);
+
+        // Control del portal si ya ha aparecido
+        if (this.portal) {
+            const distToPortal = Phaser.Math.Distance.Between(
+                this.player.x, this.player.y,
+                this.portal.x, this.portal.y
+            );
+
+            if (distToPortal < this.portalInteractionRange) {
+                if (!this._portalEnterTimer) {
+                    this._portalEnterTimer = this.time.delayedCall(3000, () => {
+                        this._stopPortalBlink();
+                        this.registry.set('savedWave', this.waveManager.currentWave);
+                        this.registry.set('ultiCooldown', {
+                            [this.player.guitar.iconKey]: this.player.guitar._abilityTimer?.getRemaining() ?? 0,
+                            [this.player.drum.iconKey]:   this.player.drum._abilityTimer?.getRemaining()   ?? 0,
+                        });
+                        this.soundManager.stop('level1_music');
+                        this.soundManager.play('shop_music');
+                        console.log('Entrando a la tienda, guardando estado: ');
+                        this.scene.start('shop', { from: this.scene.key });
+                    });
+                    this._startPortalBlink();
+                }
+            } else {
+                if (this._portalEnterTimer) {
+                    this._portalEnterTimer.remove();
+                    this._portalEnterTimer = null;
+                    this._stopPortalBlink();
+                }
+            }
+        }
+    }
+
+    getStartingWave() {
+        const saved = this.registry.get('savedWave');
+        if (saved != null) {
+            this.registry.remove('savedWave');
+            return saved;
+        }
+        return 0;
+    }
+
+    _spawnShopPortal() {
+        if (this.portal) return; // evita doble spawn
+        const mapCenterX = 1280 / 2;
+        const mapCenterY = 736 / 2 - 150;
+        this.portal = this.physics.add.sprite(mapCenterX, mapCenterY, 'portal');
+        this.portal.play('portalAnim');
+        this.portal.setScale(2);
+    }
+
+    _startPortalBlink() {
+        this._portalBlinkTween = this.tweens.add({
+            targets: this.player,
+            alpha: 0.15,
+            duration: 250,
+            ease: 'Sine.easeInOut',
+            yoyo: true,
+            repeat: -1
+        });
+    }
+
+    _stopPortalBlink() {
+        if (this._portalBlinkTween) {
+            this._portalBlinkTween.stop();
+            this._portalBlinkTween = null;
+            this.player.setAlpha(1);
+        }
     }
 
     /**

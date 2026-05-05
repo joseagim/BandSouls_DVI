@@ -109,6 +109,10 @@ import redVelvetdieJSON from '../../assets/animations/redVelvet/redvelvet_die_at
 import velvetBeam from '../../assets/animations/redVelvet/velvetBeam.png'
 import velvetMelee from '../../assets/animations/redVelvet/velvetMelee.png'
 
+// machines
+import jukeboxSprite from '../../assets/animations/machines/jukebox-sprite.png'
+import jukeboxAtlas from '../../assets/animations/machines/jukebox-atlas.json'
+
 // boss - beethoven
 import beethovenSprite from '../../assets/bosses/beethoven/beethoven.png'
 import beethovenAlert from '../../assets/bosses/beethoven/alert.png'
@@ -279,6 +283,9 @@ export default class Boot extends Phaser.Scene {
     this.load.atlas('redVelvet_die', redVelvetdie, redVelvetdieJSON);
     this.load.image('velvetBeam', velvetBeam);
     this.load.image('velvetMelee', velvetMelee);
+
+    // machines
+    this.load.atlas('jukebox', jukeboxSprite, jukeboxAtlas);
 
     // boss - beethoven
     this.load.image('beethoven', beethovenSprite);

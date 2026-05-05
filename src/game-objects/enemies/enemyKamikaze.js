@@ -44,8 +44,8 @@ export default class ShadowEnemy extends Enemy {
 
         this.scene.anims.create({
             key: 'kamikaze_die',
-            frames: this.anims.generateFrameNames('kamikaze_die', { prefix: 'kamikaze_die-', start: 1, end: 10 }),
-            frameRate: 60,  // Más rápido para que la explosión sea casi inmediata
+            frames: this.anims.generateFrameNames('kamikaze_die', { prefix: 'kamikaze_die-', start: 1, end: 8 }),
+            frameRate: 20,
             repeat: 0
         });
     }
@@ -218,6 +218,7 @@ export default class ShadowEnemy extends Enemy {
         this.scene.soundManager.play('explosion_kamikaze');
 
         // Reproducir animación de explosión rápida y ocultar al terminar
+        this.setScale(4);
         this.play('kamikaze_die').on('animationcomplete', () => {
             this.setActive(false);
             this.setVisible(false);

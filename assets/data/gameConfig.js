@@ -105,7 +105,7 @@ const gameConfig = {
             chargeTime: 1000,
             chargeSpeedModifier: 0.20,
             abilityDamage: 6,
-            abilityCooldown: 2000,
+            abilityCooldown: 45000,
             abilityChargeTime: 500,
             abilityChargeSpeedModifier: 0.20,
             abilityNumAttacks: 15,

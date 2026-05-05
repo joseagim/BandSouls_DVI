@@ -61,9 +61,7 @@ export default class Keyboard extends Arma {
         this.canUseAbility = true;
         this._abilityTimer = null;
         this._isUltiCharging = false;
-        this._burstActive = false;   // true mientras la minigun está disparando
         this._ultiChargeTimer = null;
-        this._ultiNormalSpeed = null;
 
         // pool de proyectiles de la ulti (necesitamos uno por disparo simultáneo posible)
         const ULTI_POOL_SIZE = this.abilityNumAttacks;
@@ -175,32 +173,20 @@ export default class Keyboard extends Arma {
         this.player.canDash = true;
     }
 
-    // cancela la carga de la ulti sin disparar y restaura el estado
-    _cancelUltiCharge() {
-        if (!this._isUltiCharging) return;
-        this._ultiChargeTimer?.remove();
-        this._ultiChargeTimer = null;
-        this._isUltiCharging = false;
-        this.canUseAbility = true;   // la ulti se canceló → vuelve a estar disponible
-        if (this._ultiNormalSpeed !== null) {
-            this.player.speed = this._ultiNormalSpeed;
-            this.player.canDash = true;
-            this._ultiNormalSpeed = null;
-        }
-    }
-
     // ataque de la ulti
     ability() {
         if (!this.canUseAbility || this._isUltiCharging) return;
         this._isUltiCharging = true;
         this.canUseAbility = false;
 
-        // reducir velocidad durante la carga de la ulti
+        // bloquear al jugador durante toda la ulti (carga + ráfaga)
         this._ultiNormalSpeed = this.player.speed;
         this.player.speed *= this.abilityChargeSpeedModifier;
-        this.player.canDash = false;
+        this.player.isAttacking = true;   // bloquea cambio de arma
+        this.player.canDash = false;       // bloquea dash
+        this.canAttack = false;            // bloquea ataque básico
 
-        // pequeña carga antes de soltar la ráfaga
+        // carga previa antes de la ráfaga
         this._ultiChargeTimer = this.scene.time.delayedCall(this.abilityChargeTime, () => {
             this._isUltiCharging = false;
             this._startUltiBurst();
@@ -211,22 +197,18 @@ export default class Keyboard extends Arma {
 
     _startUltiBurst() {
         // restaurar velocidad al empezar la ráfaga
-        if (this._ultiNormalSpeed !== null) {
-            this.player.speed = this._ultiNormalSpeed;
-            this.player.canDash = true;
-            this._ultiNormalSpeed = null;
-        }
+        this.player.speed = this._ultiNormalSpeed;
+        this._ultiNormalSpeed = null;
 
-        this._burstActive = true;
         let shotsFired = 0;
 
         const fireNext = () => {
-            // si el arma se desactivó durante el burst, cortamos la cadena
-            if (!this._burstActive) return;
-
             if (shotsFired >= this.abilityNumAttacks) {
-                this._burstActive = false;
-                // todos los disparos lanzados → arrancar cooldown
+                // todos los disparos lanzados → desbloquear jugador y arrancar cooldown
+                this.player.isAttacking = false;
+                this.player.canDash = true;
+                this.canAttack = true;
+
                 this._abilityTimer = this.scene.time.delayedCall(this.abilityCooldown, () => {
                     this.canUseAbility = true;
                     this._abilityTimer = null;
@@ -320,14 +302,8 @@ export default class Keyboard extends Arma {
     }
 
     deactivateWeapon() {
-        // cancela tanto la carga del básico como la de la ulti
+        // solo cancela la carga del básico (la ulti no se puede interrumpir)
         this.cancelCharge();
-        this._cancelUltiCharge();
-        // si se interrumpe durante la ráfaga, cortamos la cadena y devolvemos la ulti
-        if (this._burstActive) {
-            this._burstActive = false;
-            this.canUseAbility = true;
-        }
         this.hurtboxPool?.forEach(h => {
             h.body?.enable && (h.body.enable = false);
             h.body?.setVelocity(0, 0);

@@ -27,13 +27,13 @@ export default class Level2 extends Level {
      */
     create() {
         //this.stars = 10;
-        var map = this.make.tilemap({ key: 'level2' });
+        var map = this.make.tilemap({ key: 'bosque_map' });
         var tiles = map.addTilesetImage('Modern_Exteriors_Complete_Tileset_32x32', 'city_tiles');
 
         var layer_suelo = map.createLayer('suelo', tiles, 0, 0);
         var layer_deco = map.createLayer('decoraciones', tiles, 0, 0);
-        var layer_objetos = map.createLayer('colisiones', tiles, 0, 0);
         var layer_sup = map.createLayer('superior', tiles, 0, 0);
+        var layer_objetos = map.createLayer('colisiones', tiles, 0, 0);
         
         layer_objetos.setCollisionByExclusion([-1],true);
 

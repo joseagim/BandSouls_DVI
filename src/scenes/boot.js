@@ -310,6 +310,7 @@ export default class Boot extends Phaser.Scene {
     this.load.atlas('portal', portalSpritesheet, portalJSON);
     this.load.spritesheet('spawn_portal', spawnPortalSpritesheet, { frameWidth: 48, frameHeight: 48 });
     this.load.tilemapTiledJSON('bosque_map', bosque_level);
+    this.load.tilemapTiledJSON('map', city_json);
 
     // data
     this.cache.json.add('data', data);
@@ -345,14 +346,6 @@ export default class Boot extends Phaser.Scene {
     this.soundManager.addSounds({
       'menu_music': { key: 'menu_music', loop: true, category: 'music' },
     })
-
-    //mapa
-    this.load.tilemapTiledJSON('map', city_json);
-    this.load.tilemapTiledJSON('level2', level2JSON);
-    this.load.image('tileset_grassland_grass', tileset_grassland_grass);
-    this.load.image('tileset_grassland_paths', tileset_grassland_paths);
-    this.load.image('tileset_grassland_props', tileset_grassland_props);
-    this.load.image('tileset_grassland_water', tileset_grassland_water);
   }
 
   /**
@@ -409,7 +402,7 @@ export default class Boot extends Phaser.Scene {
     const confirmOption = () => {
       if (this.activeOption === this.startText) {
         this.soundManager.fadeOutMusic(500);
-        this.time.delayedCall(500, () => { this.scene.start('level_fondo'); });
+        this.time.delayedCall(500, () => { this.scene.start('level_2'); });
       } else if (this.activeOption === this.optionsText) {
         this.scene.launch('options_menu');
       }

@@ -42,7 +42,7 @@ export default class RedVelvetEnemy extends Enemy {
             this.scene.physics.add.overlap(circle, this.scene.player, (c, player) => {
                 if (this.thrustHit) return;
                 this.thrustHit = true;
-                player.getDamage(this.meleeAttackDamage );
+                player.getDamage(this.meleeAttackDamage, this.x, this.y);
             });
         }
         this.meleeSprite = this.scene.add.image(this.x, this.y, 'velvetMelee');
@@ -193,7 +193,7 @@ export default class RedVelvetEnemy extends Enemy {
                 this.scene.physics.add.overlap(circle, this.scene.player, (c, player) => {
                     if (beamHit) return;
                     beamHit = true;
-                    player.getDamage(this.rangedAttackDamage );
+                    player.getDamage(this.rangedAttackDamage, this.x, this.y);
                 });
             }
 

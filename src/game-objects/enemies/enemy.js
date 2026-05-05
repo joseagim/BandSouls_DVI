@@ -75,7 +75,7 @@ export default class Enemy extends actor {
 
     attackOnContact(player) {
         if (this.canContactAttack) {
-            player.getDamage(this.ContactDamage);
+            player.getDamage(this.ContactDamage, this.x, this.y);
             this.canContactAttack = false;
             
 

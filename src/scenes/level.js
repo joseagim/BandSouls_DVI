@@ -109,7 +109,7 @@ export default class Level extends Phaser.Scene {
                             this.gettin_hit = true;
                             this.time.delayedCall(1000, () => { this.gettin_hit = false; }, [], this);
                         }
-                        player.getDamage(projectile.damage);
+                        player.getDamage(projectile.damage, projectile.x, projectile.y);
                     }
                 },
                 null, this

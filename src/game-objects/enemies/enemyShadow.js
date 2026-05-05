@@ -98,7 +98,7 @@ export default class EnemyShadow extends Enemy {
                
     attackOnContact(player) {
         if (this.canContactAttack) {
-            player.getDamage(this.ContactDamage);
+            player.getDamage(this.ContactDamage, this.x, this.y);
             this.canContactAttack = false;
             
 
@@ -110,7 +110,7 @@ export default class EnemyShadow extends Enemy {
 
     attack(player) {
         if (this.canAttack) {
-            player.getDamage(this.attackDamage);
+            player.getDamage(this.attackDamage, this.x, this.y);
             this.canAttack = false;
             
 

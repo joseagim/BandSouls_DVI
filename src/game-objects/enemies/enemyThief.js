@@ -90,7 +90,7 @@ export default class EnemyThief extends Enemy {
                 this.hasStolen = true;
             }
 
-            player.getDamage(this.attackDamage);
+            player.getDamage(this.attackDamage, this.x, this.y);
             this.canAttack = false;
             this.scene.time.delayedCall(this.attackCooldown, () => {
                 this.canAttack = true;

@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import Level from './level.js';
 import EasyStar from 'easystarjs';
+import ShieldMachine from '../game-objects/machines/shieldMachine.js';
 
 
 /**
@@ -42,6 +43,7 @@ export default class Level_Fondo extends Level {
         this.bases = this.add.group();
 
         super.create();
+        this.player.setDepth(2);
 
         this.soundManager.play('level1_music');
 
@@ -92,6 +94,12 @@ export default class Level_Fondo extends Level {
         // Opcional: agregar bordes para visualizar la cámara
         this.cameras.main.setBackgroundColor(0x000000);
 
+        // --- Máquina de escudo ---
+        // TODO: ajustar posición a la esquina del seto con el coche
+        this.shieldMachine = new ShieldMachine(this, 280, 140);
+        this.shieldMachine.addCollider(this.player);
+        this.shieldMachine.addCollider(this.spawner.PhysicsGroup());
+
         // --- Portal al finalizar oleadas ---
         this.portal = null;
         this.portalInteractionRange = 80;
@@ -125,6 +133,8 @@ export default class Level_Fondo extends Level {
 
     update() {
         if (this.easystar) this.easystar.calculate();
+
+        this.shieldMachine.update(this.player);
 
         // Control del portal si ya ha aparecido
         if (this.portal) {

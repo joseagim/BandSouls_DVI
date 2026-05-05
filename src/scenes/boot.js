@@ -147,6 +147,13 @@ import tileset_grassland_props from '../../assets/map/tileset-grassland-props.pn
 import tileset_grassland_water from '../../assets/map/tileset-grassland-water.png';
 import level2JSON from '../../assets/map/level2.json';
 
+// machines
+import shieldhouseSprite from '../../assets/animations/machines/shieldhouse-sprite.png';
+import shieldhouseAtlas from '../../assets/animations/machines/shieldhouse-sprite.json';
+import shieldFront from '../../assets/animations/shield/shield-front.png';
+import shieldBack  from '../../assets/animations/shield/shield-back.png';
+import shieldSide  from '../../assets/animations/shield/shield-side.png';
+
 // data
 import data from '../../assets/data/gameConfig';
 import itemsData from '../../assets/data/items.json';
@@ -302,6 +309,12 @@ export default class Boot extends Phaser.Scene {
     this.load.image('keyboard-minigun-button', keyboardMinigunButton);
     this.load.image('keyboard-minigun-button-disabled', keyboardMinigunButtonDisabled);
 
+    // machines
+    this.load.atlas('shieldhouse', shieldhouseSprite, shieldhouseAtlas);
+    this.load.spritesheet('shield-front', shieldFront, { frameWidth: 32, frameHeight: 32 });
+    this.load.spritesheet('shield-back',  shieldBack,  { frameWidth: 32, frameHeight: 32 });
+    this.load.spritesheet('shield-side',  shieldSide,  { frameWidth: 32, frameHeight: 32 });
+
     // mapas
     this.load.image('city_tiles', city_tileset);
     this.load.image('shop_tiles', shop_tileset);
@@ -360,7 +373,7 @@ export default class Boot extends Phaser.Scene {
   create() {
     // Inicializar registro persistente de score y trinkets
     this.scene.stop('hud');
-    this.registry.set('score', 0);
+    this.registry.set('score', 3000);
     this.registry.set('trinkets', []);
     this.registry.set('ultiCooldown', {});
 

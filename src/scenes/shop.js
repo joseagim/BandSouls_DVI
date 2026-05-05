@@ -179,10 +179,9 @@ export default class Shop extends Phaser.Scene {
                     const newScore = currentScore - state.item.price;
                     this.registry.set('score', newScore);
 
-
                     state.purchased = true;
 
-
+                    this.sound.play('buy');
                     this.player.addTrinket(state.item);
 
                     // Refrescar el panel visual actual

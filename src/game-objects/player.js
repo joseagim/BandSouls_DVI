@@ -440,28 +440,28 @@ export default class Player extends actor {
         const vel = this.body.velocity;
         const suffix = this.arma.getAnimSuffix();
 
-        // si el teclado está cargando, animación de keyboard attack (sin reiniciarla si ya está en curso)
-        if (this.arma.getAnimSuffix() === '-keyboard' && this.arma.isCharging) {
+        // si el teclado (o mk2) está cargando, animación de keyboard attack (sin reiniciarla si ya está en curso)
+        if ((suffix === '-keyboard' || suffix === '-keyboard-mk2') && this.arma.isCharging) {
             const currentKey = this.anims.currentAnim?.key;
-            if (currentKey && currentKey.endsWith('-keyboard') && currentKey.startsWith('attack-')) return;
+            if (currentKey && currentKey.startsWith('attack-') && currentKey.endsWith(suffix)) return;
 
             switch (this.lastDirection) {
                 case 'left':
                     this.flipX = true;
-                    this.play('attack-right-keyboard', true);
+                    this.play(`attack-right${suffix}`, true);
                     break;
                 case 'right':
                     this.flipX = false;
-                    this.play('attack-right-keyboard', true);
+                    this.play(`attack-right${suffix}`, true);
                     break;
                 case 'up':
                     this.flipX = false;
-                    this.play('attack-up-keyboard', true);
+                    this.play(`attack-up${suffix}`, true);
                     break;
                 case 'down':
                 default:
                     this.flipX = false;
-                    this.play('attack-down-keyboard', true);
+                    this.play(`attack-down${suffix}`, true);
                     break;
             }
             return;
@@ -850,6 +850,41 @@ export default class Player extends actor {
             frameRate: 6.5,
             repeat: -1
         });
+
+        // Animaciones guitarra MK2
+        this.scene.anims.create({ key: 'idle-down-guitar-mk2', frames: this.anims.generateFrameNames('laude_guitar_mk2', { prefix: 'idle_down_', start: 1, end: 4 }), frameRate: 4, repeat: -1 });
+        this.scene.anims.create({ key: 'idle-up-guitar-mk2', frames: this.anims.generateFrameNames('laude_guitar_mk2', { prefix: 'idle_up_', start: 1, end: 4 }), frameRate: 4, repeat: -1 });
+        this.scene.anims.create({ key: 'idle-right-guitar-mk2', frames: this.anims.generateFrameNames('laude_guitar_mk2', { prefix: 'idle_right_', start: 1, end: 4 }), frameRate: 4, repeat: -1 });
+        this.scene.anims.create({ key: 'run-down-guitar-mk2', frames: this.anims.generateFrameNames('laude_guitar_mk2', { prefix: 'run_down_', start: 1, end: 4 }), frameRate: 8, repeat: -1 });
+        this.scene.anims.create({ key: 'run-up-guitar-mk2', frames: this.anims.generateFrameNames('laude_guitar_mk2', { prefix: 'run_up_', start: 1, end: 4 }), frameRate: 8, repeat: -1 });
+        this.scene.anims.create({ key: 'run-right-guitar-mk2', frames: this.anims.generateFrameNames('laude_guitar_mk2', { prefix: 'run_right_', start: 1, end: 4 }), frameRate: 8, repeat: -1 });
+
+        // Animaciones bajo MK2
+        this.scene.anims.create({ key: 'idle-down-bass-mk2', frames: this.anims.generateFrameNames('laude_bass_mk2', { prefix: 'idle_down_', start: 1, end: 4 }), frameRate: 4, repeat: -1 });
+        this.scene.anims.create({ key: 'idle-up-bass-mk2', frames: this.anims.generateFrameNames('laude_bass_mk2', { prefix: 'idle_up_', start: 1, end: 4 }), frameRate: 4, repeat: -1 });
+        this.scene.anims.create({ key: 'idle-right-bass-mk2', frames: this.anims.generateFrameNames('laude_bass_mk2', { prefix: 'idle_right_', start: 1, end: 4 }), frameRate: 4, repeat: -1 });
+        this.scene.anims.create({ key: 'run-down-bass-mk2', frames: this.anims.generateFrameNames('laude_bass_mk2', { prefix: 'run_down_', start: 1, end: 4 }), frameRate: 8, repeat: -1 });
+        this.scene.anims.create({ key: 'run-up-bass-mk2', frames: this.anims.generateFrameNames('laude_bass_mk2', { prefix: 'run_up_', start: 1, end: 4 }), frameRate: 8, repeat: -1 });
+        this.scene.anims.create({ key: 'run-right-bass-mk2', frames: this.anims.generateFrameNames('laude_bass_mk2', { prefix: 'run_right_', start: 1, end: 4 }), frameRate: 8, repeat: -1 });
+
+        // Animaciones batería MK2
+        this.scene.anims.create({ key: 'idle-down-drum-mk2', frames: this.anims.generateFrameNames('laude_drum_mk2', { prefix: 'idle_down_', start: 1, end: 4 }), frameRate: 4, repeat: -1 });
+        this.scene.anims.create({ key: 'idle-up-drum-mk2', frames: this.anims.generateFrameNames('laude_drum_mk2', { prefix: 'idle_up_', start: 1, end: 4 }), frameRate: 4, repeat: -1 });
+        this.scene.anims.create({ key: 'idle-right-drum-mk2', frames: this.anims.generateFrameNames('laude_drum_mk2', { prefix: 'idle_right_', start: 1, end: 4 }), frameRate: 4, repeat: -1 });
+        this.scene.anims.create({ key: 'run-down-drum-mk2', frames: this.anims.generateFrameNames('laude_drum_mk2', { prefix: 'run_down_', start: 1, end: 4 }), frameRate: 8, repeat: -1 });
+        this.scene.anims.create({ key: 'run-up-drum-mk2', frames: this.anims.generateFrameNames('laude_drum_mk2', { prefix: 'run_up_', start: 1, end: 4 }), frameRate: 8, repeat: -1 });
+        this.scene.anims.create({ key: 'run-right-drum-mk2', frames: this.anims.generateFrameNames('laude_drum_mk2', { prefix: 'run_right_', start: 1, end: 4 }), frameRate: 8, repeat: -1 });
+
+        // Animaciones teclado MK2
+        this.scene.anims.create({ key: 'idle-down-keyboard-mk2', frames: this.anims.generateFrameNames('laude_keyboard_mk2_idle', { prefix: 'idle_down_', start: 0, end: 3 }), frameRate: 4, repeat: -1 });
+        this.scene.anims.create({ key: 'idle-up-keyboard-mk2', frames: this.anims.generateFrameNames('laude_keyboard_mk2_idle', { prefix: 'idle_up_', start: 0, end: 3 }), frameRate: 4, repeat: -1 });
+        this.scene.anims.create({ key: 'idle-right-keyboard-mk2', frames: this.anims.generateFrameNames('laude_keyboard_mk2_idle', { prefix: 'idle_right_', start: 0, end: 3 }), frameRate: 4, repeat: -1 });
+        this.scene.anims.create({ key: 'run-down-keyboard-mk2', frames: this.anims.generateFrameNames('laude_keyboard_mk2_run', { prefix: 'run_down_', start: 0, end: 3 }), frameRate: 8, repeat: -1 });
+        this.scene.anims.create({ key: 'run-up-keyboard-mk2', frames: this.anims.generateFrameNames('laude_keyboard_mk2_run', { prefix: 'run_up_', start: 0, end: 3 }), frameRate: 8, repeat: -1 });
+        this.scene.anims.create({ key: 'run-right-keyboard-mk2', frames: this.anims.generateFrameNames('laude_keyboard_mk2_run', { prefix: 'run_right_', start: 0, end: 3 }), frameRate: 8, repeat: -1 });
+        this.scene.anims.create({ key: 'attack-down-keyboard-mk2', frames: this.anims.generateFrameNames('laude_keyboard_mk2_attack', { prefix: 'attack_down_', start: 0, end: 6 }), frameRate: 6.5, repeat: -1 });
+        this.scene.anims.create({ key: 'attack-up-keyboard-mk2', frames: this.anims.generateFrameNames('laude_keyboard_mk2_attack', { prefix: 'attack_up_', start: 0, end: 6 }), frameRate: 6.5, repeat: -1 });
+        this.scene.anims.create({ key: 'attack-right-keyboard-mk2', frames: this.anims.generateFrameNames('laude_keyboard_mk2_attack', { prefix: 'attack_right_', start: 0, end: 6 }), frameRate: 6.5, repeat: -1 });
 
         this.scene.anims.create({
             key: 'cooldown_reset',

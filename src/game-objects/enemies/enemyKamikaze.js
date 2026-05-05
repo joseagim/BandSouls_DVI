@@ -227,7 +227,7 @@ export default class ShadowEnemy extends Enemy {
         // Daño al jugador si está en el radio de explosión
         const playerDist = Phaser.Math.Distance.Between(this.x, this.y, this.scene.player.x, this.scene.player.y);
         if (playerDist <= this.attackRadius && !this.scene.player.invincible) {
-            this.scene.player.getDamage(this.attackDamage);
+            this.scene.player.getDamage(this.attackDamage, this.x, this.y);
         }
 
         const allEnemies = this.scene.spawner.pool.physicsGroup.getChildren();

@@ -139,6 +139,11 @@ export default class Player extends actor {
             }
         });
 
+        // Escudo
+        this.hasShield = false;
+        this.shieldHP = 0;
+        this._shieldSprite = null;
+
         //seccion de items no consumibles(trinkets)
         this.trinket = [];
 
@@ -213,6 +218,7 @@ export default class Player extends actor {
         super.preUpdate(t, dt);
 
         this.updateVisualCues();
+        this._updateShieldPosition();
 
         if (this.dashEaseout) {
             this.body.velocity.scale(this.easeOutScale);
@@ -333,11 +339,77 @@ export default class Player extends actor {
         }
     }
 
-    getDamage(dmg) {
+    getDamage(dmg, sourceX = null, sourceY = null) {
+        if (this.hasShield && this._isFromBehind(sourceX, sourceY)) {
+            this.shieldHP -= dmg;
+            this._updateShieldPosition();
+            this.scene.cameras.main.shake(20, 0.003);
+            if (this.shieldHP <= 0) this.deactivateShield();
+            return;
+        }
         super.getDamage(dmg);
         this.lastDamageTime = this.scene.time.now;
         this.scene.cameras.main.shake(50, 0.01);
+    }
 
+    _isFromBehind(sourceX, sourceY) {
+        if (sourceX === null || sourceY === null) return false;
+        const dx = sourceX - this.x;
+        const dy = sourceY - this.y;
+        switch (this.lastDirection) {
+            case 'right': return dx < 0;
+            case 'left':  return dx > 0;
+            case 'up':    return dy > 0;
+            case 'down':  return dy < 0;
+        }
+        return false;
+    }
+
+    activateShield() {
+        this.hasShield = true;
+        this.shieldHP = 200;
+        this._shieldSprite = this.scene.add.sprite(this.x, this.y, 'shield-front');
+        this._shieldSprite.setScale(1.8);
+        this._updateShieldPosition();
+    }
+
+    deactivateShield() {
+        this.hasShield = false;
+        this.shieldHP = 0;
+        if (this._shieldSprite) {
+            const s = this._shieldSprite;
+            this._shieldSprite = null;
+            this.scene.tweens.add({
+                targets: s,
+                alpha: 0,
+                scaleX: 1.5,
+                scaleY: 1.5,
+                duration: 300,
+                ease: 'Cubic.easeOut',
+                onComplete: () => s.destroy()
+            });
+        }
+    }
+
+    _updateShieldPosition() {
+        if (!this._shieldSprite) return;
+        const pct = this.shieldHP / 200;
+        const frame = pct > 0.6 ? 0 : pct > 0.2 ? 1 : 2;
+        this._shieldSprite.setPosition(this.x, this.y);
+        switch (this.lastDirection) {
+            case 'down':
+                this._shieldSprite.setTexture('shield-front', frame).setFlipX(false).setDepth(1);
+                break;
+            case 'up':
+                this._shieldSprite.setTexture('shield-back', frame).setFlipX(false).setDepth(3);
+                break;
+            case 'right':
+                this._shieldSprite.setTexture('shield-side', frame).setFlipX(false).setDepth(1);
+                break;
+            case 'left':
+                this._shieldSprite.setTexture('shield-side', frame).setFlipX(true).setDepth(1);
+                break;
+        }
     }
 
     getDirection() {

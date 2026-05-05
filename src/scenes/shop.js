@@ -92,7 +92,7 @@ export default class Shop extends Phaser.Scene {
         this.activePillarIndex = -1; 5
 
 
-        this.keyE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
+        this.keyF = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
 
         this.anims.create({
             key: 'portalAnim',
@@ -167,7 +167,7 @@ export default class Shop extends Phaser.Scene {
         );
 
 
-        if (Phaser.Input.Keyboard.JustDown(this.keyE)) {
+        if (Phaser.Input.Keyboard.JustDown(this.keyF)) {
             if (this.activePillarIndex >= 0) {
                 const state = this.pillarStates[this.activePillarIndex];
                 const currentScore = this.registry.get('score') || 0;

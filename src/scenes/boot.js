@@ -109,6 +109,10 @@ import redVelvetdieJSON from '../../assets/animations/redVelvet/redvelvet_die_at
 import velvetBeam from '../../assets/animations/redVelvet/velvetBeam.png'
 import velvetMelee from '../../assets/animations/redVelvet/velvetMelee.png'
 
+// machines
+import jukeboxSprite from '../../assets/animations/machines/jukebox-sprite.png'
+import jukeboxAtlas from '../../assets/animations/machines/jukebox-atlas.json'
+
 // boss - beethoven
 import beethovenSprite from '../../assets/bosses/beethoven/beethoven.png'
 import beethovenAlert from '../../assets/bosses/beethoven/alert.png'
@@ -147,6 +151,13 @@ import tileset_grassland_props from '../../assets/map/tileset-grassland-props.pn
 import tileset_grassland_water from '../../assets/map/tileset-grassland-water.png';
 import level2JSON from '../../assets/map/level2.json';
 import bosque_level from '../../assets/map/bosque-map.json';
+
+// machines
+import shieldhouseSprite from '../../assets/animations/machines/shieldhouse-sprite.png';
+import shieldhouseAtlas from '../../assets/animations/machines/shieldhouse-sprite.json';
+import shieldFront from '../../assets/animations/shield/shield-front.png';
+import shieldBack  from '../../assets/animations/shield/shield-back.png';
+import shieldSide  from '../../assets/animations/shield/shield-side.png';
 
 // data
 import data from '../../assets/data/gameConfig';
@@ -274,6 +285,9 @@ export default class Boot extends Phaser.Scene {
     this.load.image('velvetBeam', velvetBeam);
     this.load.image('velvetMelee', velvetMelee);
 
+    // machines
+    this.load.atlas('jukebox', jukeboxSprite, jukeboxAtlas);
+
     // boss - beethoven
     this.load.image('beethoven', beethovenSprite);
     this.load.image('beethoven_alert', beethovenAlert);
@@ -302,6 +316,12 @@ export default class Boot extends Phaser.Scene {
     this.load.image('drum-smash-button-disabled', drumSmashButtonDisabled);
     this.load.image('keyboard-minigun-button', keyboardMinigunButton);
     this.load.image('keyboard-minigun-button-disabled', keyboardMinigunButtonDisabled);
+
+    // machines
+    this.load.atlas('shieldhouse', shieldhouseSprite, shieldhouseAtlas);
+    this.load.spritesheet('shield-front', shieldFront, { frameWidth: 32, frameHeight: 32 });
+    this.load.spritesheet('shield-back',  shieldBack,  { frameWidth: 32, frameHeight: 32 });
+    this.load.spritesheet('shield-side',  shieldSide,  { frameWidth: 32, frameHeight: 32 });
 
     // mapas
     this.load.image('city_tiles', city_tileset);
@@ -355,7 +375,7 @@ export default class Boot extends Phaser.Scene {
   create() {
     // Inicializar registro persistente de score y trinkets
     this.scene.stop('hud');
-    this.registry.set('score', 0);
+    this.registry.set('score', 3000);
     this.registry.set('trinkets', []);
     this.registry.set('ultiCooldown', {});
 

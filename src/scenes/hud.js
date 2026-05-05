@@ -31,7 +31,7 @@ export default class HUD extends Phaser.Scene {
             this._registryEventHandlers.length = 0;
         }, this);
 
-        const GAMEPLAY_SCENES = ['level_fondo', 'level2'];
+        const GAMEPLAY_SCENES = ['level_fondo', 'level_2', 'shop'];
 
         // Pause button — top-left corner, 8px margin from edges
         const pauseBtn = this.add.image(8, 8, 'pause-button')
@@ -269,12 +269,31 @@ export default class HUD extends Phaser.Scene {
             });
         });
 
+        // --- Machine panel (oculto por defecto) ---
+        this._machinePanelElements = [];
+        registerGameEvent('showMachinePanel', (name, subtitle, price, canAfford) => {
+            this._showMachinePanel(name, subtitle, price, canAfford);
+        });
+        registerGameEvent('hideMachinePanel', () => {
+            this._hideMachinePanel();
+        });
+
         // --- Shop item panel (oculto por defecto) ---
         this._itemPanelElements = [];
         this._currentPanelItemId = null;
         this._currentPanelCanAfford = null;
         this._currentPanelIsPurchased = null;
         this.trinketIcons = [];
+
+        // --- Machine panel ---
+        this._machinePanelElements = [];
+
+        registerGameEvent('showMachinePanel', (name, subtitle, price, canAfford, hasShield) => {
+            this._showMachinePanel(name, subtitle, price, canAfford, hasShield);
+        });
+        registerGameEvent('hideMachinePanel', () => {
+            this._hideMachinePanel();
+        });
 
         // Escuchar eventos del shop para mostrar/ocultar panel
         const shopScene = this.scene.get('shop');
@@ -540,6 +559,71 @@ export default class HUD extends Phaser.Scene {
         }
     }
 
+    _showMachinePanel(name, subtitle, price, canAfford) {
+        this._hideMachinePanel();
+
+        const panelWidth = 260;
+        const panelX = this.scale.width / 2 - panelWidth / 2;
+        const panelY = this.scale.height - 240;
+        const contentX = panelX + 15;
+        let currentY = panelY + 15;
+
+        // Create text elements first to measure total height
+        const nameText = this.add.text(contentX, currentY, name, {
+            fontSize: '22px', fill: '#ffffff',
+            fontFamily: '"System-ui", Courier, monospace', fontStyle: 'bold',
+            wordWrap: { width: panelWidth - 30 }
+        }).setScrollFactor(0).setDepth(1);
+        currentY += nameText.height + 12;
+
+        const hr1 = this.add.graphics().setScrollFactor(0).setDepth(1);
+        hr1.lineStyle(1, 0xffffff, 0.8);
+        hr1.lineBetween(panelX + 10, currentY, panelX + panelWidth - 10, currentY);
+        currentY += 15;
+
+        const subText = this.add.text(contentX, currentY, subtitle, {
+            fontSize: '14px', fill: '#cccccc',
+            fontFamily: 'Verdana', wordWrap: { width: panelWidth - 30 }
+        }).setScrollFactor(0).setDepth(1);
+        currentY += subText.height + 15;
+
+        const hr2 = this.add.graphics().setScrollFactor(0).setDepth(1);
+        hr2.lineStyle(1, 0xffffff, 0.8);
+        hr2.lineBetween(panelX + 10, currentY, panelX + panelWidth - 10, currentY);
+        currentY += 20;
+
+        const priceText = this.add.text(contentX, currentY, `Puntos: ${price}`, {
+            fontSize: '18px', fill: canAfford ? '#ffffff' : '#ff0000',
+            fontFamily: '"System-ui", Courier, monospace', fontStyle: 'bold'
+        }).setScrollFactor(0).setDepth(1);
+        currentY += priceText.height;
+
+        let hintText = null;
+        if (canAfford) {
+            hintText = this.add.text(contentX, currentY + 4, '[F] Comprar', {
+                fontSize: '12px', fill: '#aaaaaa', fontFamily: 'Verdana'
+            }).setScrollFactor(0).setDepth(1);
+            currentY += hintText.height + 4;
+        }
+        currentY += 15;
+
+        // Now draw background with exact measured height
+        const panelH = currentY - panelY;
+        const bg = this.add.graphics().setScrollFactor(0).setDepth(0);
+        bg.fillStyle(0x000000, 0.4);
+        bg.fillRect(panelX, panelY, panelWidth, panelH);
+        bg.lineStyle(2, 0xffffff, 1);
+        bg.strokeRect(panelX, panelY, panelWidth, panelH);
+
+        this._machinePanelElements.push(bg, nameText, hr1, subText, hr2, priceText);
+        if (hintText) this._machinePanelElements.push(hintText);
+    }
+
+    _hideMachinePanel() {
+        this._machinePanelElements.forEach(el => el.destroy());
+        this._machinePanelElements = [];
+    }
+
     /**
      * Muestra el panel de info de un item de la tienda.
      * @param {Item} item
@@ -615,11 +699,11 @@ export default class HUD extends Phaser.Scene {
 
         // Precio (blanco si se puede comprar, rojo si no)
         let priceTextContent = `Puntos: ${item.price}`;
-        let priceColor = canAfford ? '#ffffff' : '#ff0000';
+        let priceColor = canAfford ? '#ffee00' : '#ff0000';
 
         if (isPurchased) {
             priceTextContent = 'objeto equipado';
-            priceColor = '#aaaaaa';
+            priceColor = '#ffffff';
         }
 
         const priceText = this.add.text(contentX, currentY, priceTextContent, {
@@ -632,7 +716,7 @@ export default class HUD extends Phaser.Scene {
 
         // Texto de instrucción para comprar
         if (canAfford && !isPurchased) {
-            const buyHint = this.add.text(contentX, currentY + priceText.height + 4, '[E] Buy', {
+            const buyHint = this.add.text(contentX, currentY + priceText.height + 4, '[F] Comprar', {
                 fontSize: '12px',
                 fill: '#aaaaaa',
                 fontFamily: 'Verdana'
@@ -732,6 +816,92 @@ export default class HUD extends Phaser.Scene {
             ease: 'Cubic.easeOut',
             onComplete: () => txt.destroy()
         });
+    }
+
+    _showMachinePanel(name, subtitle, price, canAfford, hasShield) {
+        this._hideMachinePanel();
+
+        const panelWidth = 260;
+        const panelX = this.scale.width / 2 - panelWidth / 2;
+        const padX = panelX + 15;
+        const padTop = 15;
+        const padBottom = 15;
+
+        // — Contenido primero para medir altura real —
+        let currentY = padTop; // relativo al panel; se convierte a pantalla al posicionar
+
+        const nameText = this.add.text(0, 0, name, {
+            fontSize: '22px', fill: '#ffffff',
+            fontFamily: '"System-ui", Courier, monospace', fontStyle: 'bold',
+            wordWrap: { width: panelWidth - 30 }
+        }).setDepth(1);
+        currentY += nameText.height + 12;
+
+        currentY += 15; // hr1
+
+        const descText = this.add.text(0, 0, subtitle, {
+            fontSize: '14px', fill: '#cccccc',
+            fontFamily: 'Verdana', wordWrap: { width: panelWidth - 30 }
+        }).setDepth(1);
+        currentY += descText.height + 15;
+
+        currentY += 20; // hr2
+
+        let priceContent = `Puntos: ${price}`;
+        let priceColor = canAfford ? '#ffee00' : '#ff0000';
+        if (hasShield) { priceContent = 'Escudo activo'; priceColor = '#ffffff'; }
+
+        const priceText = this.add.text(0, 0, priceContent, {
+            fontSize: '18px', fill: priceColor,
+            fontFamily: '"System-ui", Courier, monospace', fontStyle: 'bold'
+        }).setDepth(1);
+        currentY += priceText.height;
+
+        let buyHint = null;
+        if (canAfford && !hasShield) {
+            buyHint = this.add.text(0, 0, '[F] Comprar', {
+                fontSize: '12px', fill: '#aaaaaa', fontFamily: 'Verdana'
+            }).setDepth(1);
+            currentY += 4 + buyHint.height;
+        }
+
+        const panelHeight = currentY + padBottom;
+        const panelY = this.scale.height - panelHeight - 20;
+
+        // — Fondo y borde con altura exacta —
+        const graphics = this.add.graphics().setDepth(0);
+        graphics.fillStyle(0x000000, 0.4).fillRect(panelX, panelY, panelWidth, panelHeight);
+        graphics.lineStyle(2, 0xffffff, 1).strokeRect(panelX, panelY, panelWidth, panelHeight);
+
+        // — Posicionar contenido —
+        let y = panelY + padTop;
+
+        nameText.setPosition(padX, y);
+        y += nameText.height + 12;
+
+        const hr1 = this.add.graphics().setDepth(1);
+        hr1.lineStyle(1, 0xffffff, 0.8).lineBetween(panelX + 10, y, panelX + panelWidth - 10, y);
+        y += 15;
+
+        descText.setPosition(padX, y);
+        y += descText.height + 15;
+
+        const hr2 = this.add.graphics().setDepth(1);
+        hr2.lineStyle(1, 0xffffff, 0.8).lineBetween(panelX + 10, y, panelX + panelWidth - 10, y);
+        y += 20;
+
+        priceText.setPosition(padX, y);
+        y += priceText.height + 4;
+
+        if (buyHint) buyHint.setPosition(padX, y);
+
+        this._machinePanelElements.push(graphics, nameText, hr1, descText, hr2, priceText);
+        if (buyHint) this._machinePanelElements.push(buyHint);
+    }
+
+    _hideMachinePanel() {
+        this._machinePanelElements.forEach(el => el.destroy());
+        this._machinePanelElements = [];
     }
 
     _showRound(number) {

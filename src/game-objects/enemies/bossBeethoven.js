@@ -244,7 +244,7 @@ export default class EnemyBeethoven extends Enemy {
         if (!this.active || this.isDead || player.invincible) return;
 
         // Aplicamos daño de contacto
-        player.getDamage(this.collisionDamage);
+        player.getDamage(this.collisionDamage, this.x, this.y);
     }
 
     /** Sobreescribimos getDamage para emitir el evento de vida al HUD. */

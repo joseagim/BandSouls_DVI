@@ -1,0 +1,60 @@
+{
+    "frames": [
+        {
+            "filename": "shieldhouse-0",
+            "frame": {
+                "x": 0,
+                "y": 0,
+                "w": 40,
+                "h": 40
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "shieldhouse-1",
+            "frame": {
+                "x": 40,
+                "y": 0,
+                "w": 40,
+                "h": 40
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "shieldhouse-2",
+            "frame": {
+                "x": 80,
+                "y": 0,
+                "w": 40,
+                "h": 40
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "shieldhouse-3",
+            "frame": {
+                "x": 120,
+                "y": 0,
+                "w": 40,
+                "h": 40
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        }
+    ],
+    "meta": {
+        "description": "Atlas generado con Atlas Packer Gamma V2",
+        "web": "https://gammafp.github.io/atlas-packer-phaser/"
+    }
+}

@@ -4,6 +4,7 @@ import Player from '../game-objects/player.js';
 import Enemy from '../game-objects/enemies/enemy.js'
 import Level from './level.js';
 import EasyStar from 'easystarjs';
+import JukeboxMachine from '../game-objects/machines/jukeboxMachine.js';
 
 
 /**
@@ -76,9 +77,13 @@ export default class Level2 extends Level {
         const mapPixelHeight = gridHeight * map.tileHeight;
         this.physics.world.setBounds(0, 0, mapPixelWidth, mapPixelHeight);
 
+        // Jukebox upgrade machine — position TBD
+        this.jukeboxMachine = new JukeboxMachine(this, 400, 300);
+        this.jukeboxMachine.addCollider(this.player);
+        this.jukeboxMachine.addCollider(this.spawner.PhysicsGroup());
+
         // Configurar cámara
         this.cameras.main.setBounds(0, 0, 1280, 720);
-        this.cameras.main.setZoom(1); // Ventana de visualización
         this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
         
         // Opcional: agregar bordes para visualizar la cámara
@@ -90,6 +95,7 @@ export default class Level2 extends Level {
 
     update() {
         if (this.easystar) this.easystar.calculate();
+        if (this.jukeboxMachine) this.jukeboxMachine.update(this.player);
     }
 
     /**

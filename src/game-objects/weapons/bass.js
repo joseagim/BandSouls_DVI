@@ -119,9 +119,8 @@ export default class Bass extends Arma {
         this.isCharging = false;
         this.chargeTime = this.scene.time.now - this.chargeStartTime;
         console.log(`Bass charged for ${this.chargeTime} ms`);
-        this.player.soundManager.setSFXVolume(1 + Math.min(this.chargeTime / this.maxChargeTime, 1) * 0.5);
-        this.player.soundManager.playWithPitch('bajo_attk');
-        this.player.soundManager.setSFXVolume(0.5);
+        const chargeVolume = 0.7 + Math.min(this.chargeTime / this.maxChargeTime, 1) * 0.3;
+        this.player.soundManager.playWithPitch('bajo_attk', 0.8, 1.2, { volume: chargeVolume });
 
         const chargeRatio = Math.min(this.chargeTime / this.maxChargeTime, 1);
         this.currentDamageMultiplier = 1 + chargeRatio * (this.maxDamageMultiplier - 1);

@@ -43,6 +43,8 @@ export default class Level2 extends Level {
         
         super.create();
 
+        this.soundManager.play('level1_music');
+
         this.player.setDepth(1);
 
         // Spawn manual de kamikaze para probar

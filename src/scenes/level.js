@@ -19,7 +19,6 @@ export default class Level extends Phaser.Scene {
      */
     constructor(key_nombre) {
         super({ key: key_nombre });
-        this.gettin_hit = false;
         this.enemy_hurt
     }
 
@@ -45,7 +44,9 @@ export default class Level extends Phaser.Scene {
             'explosion_kamikaze': { key: 'explosion_kamikaze', volume: 0.7 },
             'guitar_ability': { key: 'guitar_ability', volume: 1.0 },
             'drum_ability': { key: 'drum_ability', volume: 1.0 },
-            'shop_music': { key: 'shop_music', loop: true, volume: 0.7, category: 'music' }
+            'shop_music': { key: 'shop_music', loop: true, volume: 0.7, category: 'music' },
+            'buy': { key: 'buy', volume: 1.0 },
+            'shield_hit': { key: 'shield_hit', volume: 1.0 }
 
         })
         const playerStats = this.cache.json.get('data').playerBaseStats;
@@ -104,11 +105,6 @@ export default class Level extends Phaser.Scene {
                 boss.projectilePool.physicsGroup,
                 (player, projectile) => {
                     if (!player.invincible && projectile.active) {
-                        if (!this.gettin_hit) {
-                            this.soundManager.play('get_hit');
-                            this.gettin_hit = true;
-                            this.time.delayedCall(1000, () => { this.gettin_hit = false; }, [], this);
-                        }
                         player.getDamage(projectile.damage, projectile.x, projectile.y);
                     }
                 },
@@ -134,11 +130,6 @@ export default class Level extends Phaser.Scene {
 
         this.physics.add.overlap(this.player, this.spawner.PhysicsGroup(), function (player, enemy) {
             if (enemy.active && !player.invincible) {
-                if (!this.gettin_hit) {
-                    this.soundManager.play('get_hit');
-                    this.gettin_hit = true;
-                    this.time.delayedCall(1000, () => { this.gettin_hit = false; }, [], this);
-                }
                 enemy.attackOnContact(player);
             }
         }, null, this);
@@ -167,6 +158,10 @@ export default class Level extends Phaser.Scene {
         this.setWeaponCollision(this.player.bajo);
         this.setWeaponCollision(this.player.drum);
         this.setWeaponCollision(this.player.teclado);
+
+        this.game.events.on('weaponReplaced', (newWeapon) => {
+            this.setWeaponCollision(newWeapon);
+        }, this);
 
     }
 

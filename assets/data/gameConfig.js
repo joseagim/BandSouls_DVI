@@ -247,7 +247,7 @@ const gameConfig = {
 
     ],
 
-    shopWaves: [3, 6, 9],
+    shopWaves: [3, 6],
 
     //...
 

@@ -4,6 +4,7 @@ class SoundManager {
 
     constructor(scene) {
         if(SoundManager.instance) {
+            SoundManager.instance.scene = scene;
             return SoundManager.instance;
         }
         SoundManager.instance = this;
@@ -85,8 +86,19 @@ class SoundManager {
 
     // Crear el sonido directamente - NO usar this.scene.sound.get(key)
     try {
+        // Si es música, evitar duplicados y parar la anterior
+        if (soundConfig.category === this.categories.MUSIC) {
+            if (this.currentMusic && this.currentMusic.key === key && this.currentMusic.isPlaying) {
+                return this.currentMusic;
+            }
+            if (this.currentMusic && this.currentMusic.isPlaying) {
+                this.currentMusic.stop();
+                this.currentMusic = null;
+            }
+        }
+
         const sound = this.scene.sound.add(key, playConfig);
-        
+
         if (!sound.isPlaying) {
             sound.play(playConfig);
         }
@@ -220,14 +232,16 @@ class SoundManager {
      * Detener un sonido específico
      */
     stop(key) {
-    // Detener todos los sonidos con esta key
-    const sounds = this.scene.sound.getAllPlaying();
-    sounds.forEach(sound => {
-        if (sound.key === key) {
-            sound.stop();
+        const sounds = this.scene.sound.getAllPlaying();
+        sounds.forEach(sound => {
+            if (sound.key === key) {
+                sound.stop();
+            }
+        });
+        if (this.currentMusic && this.currentMusic.key === key) {
+            this.currentMusic = null;
         }
-    });
-}
+    }
 
     /**
      * Detener todos los sonidos

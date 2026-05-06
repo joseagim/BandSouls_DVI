@@ -184,9 +184,9 @@ const gameConfig = {
             speedMult: 0.75,
             cooldownMult: 1,
             enemies: [
-                { type: "shadow", count: 1, spawnDelay: 2000 },
-                { type: "shadow", count: 0, spawnDelay: 3000 },
-                { type: "redVelvet", count: 0, spawnDelay: 6000 }
+                { type: "shadow", count: 1, spawnDelay: 500 },
+                //{ type: "thief", count: 3, spawnDelay: 500 },
+                { type: "redVelvet", count: 0, spawnDelay: 100 }
             ],
             delay: 3000,
         },

@@ -200,6 +200,7 @@ import explosion_kamikaze from '../../assets/sounds/fx/explosion-kamikaze.mp3';
 import guitar_ability from '../../assets/sounds/fx/guitar-ability.mp3';
 import drum_ability from '../../assets/sounds/fx/drum-ability.mp3';
 import buy from '../../assets/sounds/fx/buy.mp3';
+import shieldHit from '../../assets/sounds/fx/shield-hit.mp3';
 
 //musica
 import menu_music from '../../assets/sounds/music/menu-music.mp3';
@@ -389,6 +390,7 @@ export default class Boot extends Phaser.Scene {
     this.load.audio('guitar_ability', guitar_ability);
     this.load.audio('drum_ability', drum_ability);
     this.load.audio('buy', buy);
+    this.load.audio('shield_hit', shieldHit);
 
 
     // música
@@ -409,7 +411,7 @@ export default class Boot extends Phaser.Scene {
   create() {
     // Inicializar registro persistente de score y trinkets
     this.scene.stop('hud');
-    this.registry.set('score', 5000);
+    this.registry.set('score', 10000000);
     this.registry.set('trinkets', []);
     this.registry.set('ultiCooldown', {});
 
@@ -456,7 +458,7 @@ export default class Boot extends Phaser.Scene {
     const confirmOption = () => {
       if (this.activeOption === this.startText) {
         this.soundManager.fadeOutMusic(500);
-        this.time.delayedCall(500, () => { this.scene.start('level_2'); });
+        this.time.delayedCall(500, () => { this.scene.start('level_fondo'); });
       } else if (this.activeOption === this.optionsText) {
         this.scene.launch('options_menu');
       }

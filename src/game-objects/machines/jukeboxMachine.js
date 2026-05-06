@@ -1,18 +1,22 @@
 import Phaser from 'phaser';
 
 const PRICE = 3500;
-const NAME = 'Jukebox';
-const SUBTITLE = 'Mejora tu arma al ritmo de la música';
+const NAME = 'Potenciadora';
+const SUBTITLE = 'Para ser aún más notas';
+const HITBOX_SIZE = 40;
 
 export default class JukeboxMachine {
     constructor(scene, x, y) {
         this._scene = scene;
 
-        this.sprite = scene.physics.add.staticSprite(x, y, 'jukebox', 'jukebox-0');
+        // Sprite puramente visual, sin física
+        this.sprite = scene.add.sprite(x, y, 'jukebox', 'jukebox-0');
         this.sprite.setScale(2);
-        this.sprite.setDepth(1);
-        this.sprite.body.setSize(60, 60);
-        this.sprite.refreshBody();
+        this.sprite.setDepth(0);
+
+        // Hitbox física independiente, tamaño controlable
+        this.hitbox = scene.add.rectangle(x, y, HITBOX_SIZE, HITBOX_SIZE);
+        scene.physics.add.existing(this.hitbox, true); // true = static
 
         if (!scene.anims.exists('jukebox_anim')) {
             scene.anims.create({
@@ -29,7 +33,7 @@ export default class JukeboxMachine {
     }
 
     addCollider(physicsTarget) {
-        this._scene.physics.add.collider(physicsTarget, this.sprite);
+        this._scene.physics.add.collider(physicsTarget, this.hitbox);
     }
 
     update(player) {
@@ -46,10 +50,14 @@ export default class JukeboxMachine {
             }
         }
 
+        // Y-sort: máquina por delante si el jugador está por encima, por detrás si está por debajo
+        this.sprite.setDepth(player.y < this.sprite.y ? 2 : 0);
+
         if (this._inRange && Phaser.Input.Keyboard.JustDown(this._fKey)) {
             const score = this._scene.registry.get('score') || 0;
             if (score >= PRICE) {
                 this._scene.registry.set('score', score - PRICE);
+                this._scene.sound.play('buy');
                 // TODO: apply weapon upgrade logic
             }
         }

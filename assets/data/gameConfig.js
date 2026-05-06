@@ -185,8 +185,6 @@ const gameConfig = {
             cooldownMult: 1,
             enemies: [
                 { type: "shadow", count: 1, spawnDelay: 2000 },
-                { type: "shadow", count: 0, spawnDelay: 3000 },
-                { type: "redVelvet", count: 0, spawnDelay: 6000 }
             ],
             delay: 3000,
         },
@@ -195,9 +193,8 @@ const gameConfig = {
             speedMult: 0.75,
             cooldownMult: 1,
             enemies: [
-                { type: "shadow", count: 1, spawnDelay: 3000 },
-                { type: "shadow", count: 0, spawnDelay: 2000 },
-                { type: "kamikaze", count: 0, spawnDelay: 4000 }
+                { type: "shadow", count: 4, spawnDelay: 3000 },
+                { type: "kamikaze", count: 1, spawnDelay: 4000 }
             ],
             delay: 5000,
         },
@@ -206,108 +203,48 @@ const gameConfig = {
             speedMult: 0.75,
             cooldownMult: 0.8,
             enemies: [
-                { type: "shadow", count: 1, spawnDelay: 2000 },
-                { type: "shadow", count: 0, spawnDelay: 2000 },
-                { type: "kamikaze", count: 0, spawnDelay: 5000 }
+                { type: "shadow", count: 10, spawnDelay: 2000 },
+                { type: "kamikaze", count: 2, spawnDelay: 5000 }
             ],
             delay: 20000,
         },
+
         {
             waveNumber: 4,
-            speedMult: 1,
-            cooldownMult: 0.8,
-            enemies: [
-                { type: "shadow", count: 10, spawnDelay: 3000 },
-                { type: "shadow", count: 6, spawnDelay: 2000 },
-                { type: "thief", count: 5, spawnDelay: 3000 },
-                { type: "kamikaze", count: 4, spawnDelay: 3000 },
-            ],
-            delay: 3000,
-        },
-        {
-            waveNumber: 5,
-            speedMult: 1,
-            cooldownMult: 0.8,
-            enemies: [
-                { type: "shadow", count: 6, spawnDelay: 3000 },
-                { type: "shadow", count: 3, spawnDelay: 2000 },
-                { type: "thief", count: 5, spawnDelay: 3000 },
-                { type: "kamikaze", count: 3, spawnDelay: 4000 },
-                { type: "redVelvet", count: 1, spawnDelay: 6000 }
-            ],
-            delay: 3000,
-        },
-        {
-            waveNumber: 6,
-            speedMult: 1,
-            cooldownMult: 0.8,
-            enemies: [
-                { type: "shadow", count: 8, spawnDelay: 3000 },
-                { type: "shadow", count: 4, spawnDelay: 2000 },
-                { type: "thief", count: 7, spawnDelay: 3000 },
-                { type: "kamikaze", count: 5, spawnDelay: 4000 },
-                { type: "redVelvet", count: 2, spawnDelay: 6000 }
-            ],
-            delay: 20000,
-        },
-        {
-            waveNumber: 7,
-            speedMult: 1,
-            cooldownMult: 0.8,
-            enemies: [
-                { type: "shadow", count: 8, spawnDelay: 2000 },
-                { type: "thief", count: 5, spawnDelay: 3000 },
-                { type: "thief", count: 5, spawnDelay: 2500 },
-                { type: "thief", count: 5, spawnDelay: 3500 },
-                { type: "kamikaze", count: 5, spawnDelay: 5000 },
-                { type: "redVelvet", count: 3, spawnDelay: 6000 }
-            ],
-            delay: 3000,
-        },
-        {
-            waveNumber: 8,
-            speedMult: 1.2,
-            cooldownMult: 0.8,
-            enemies: [
-                { type: "shadow", count: 8, spawnDelay: 2000 },
-                { type: "thief", count: 7, spawnDelay: 2500 },
-                { type: "thief", count: 7, spawnDelay: 3000 },
-                { type: "thief", count: 7, spawnDelay: 3500 },
-                { type: "kamikaze", count: 8, spawnDelay: 5000 },
-                { type: "redVelvet", count: 3, spawnDelay: 6000 }
-            ],
-            delay: 3000,
-        },
-        {
-            waveNumber: 9,
-            speedMult: 1.2,
-            cooldownMult: 0.7,
-            enemies: [
-                { type: "shadow", count: 10, spawnDelay: 2000 },
-                { type: "thief", count: 7, spawnDelay: 2500 },
-                { type: "thief", count: 7, spawnDelay: 3000 },
-                { type: "thief", count: 7, spawnDelay: 3500 },
-                { type: "kamikaze", count: 8, spawnDelay: 5000 },
-                { type: "redVelvet", count: 3, spawnDelay: 6000 }
-            ],
-            delay: 20000,
-        },
-        {
-            waveNumber: 10,
             enemies: [
                 { type: "beethoven", count: 1, spawnDelay: 0 }
             ],
             delay: 3000,
         },
+
         {
-            waveNumber: 11,
-            speedMult: 1.2,
-            cooldownMult: 0.7,
+            waveNumber: 5,
+            speedMult: 1,
+            cooldownMult: 1,
             enemies: [
-                { type: "shadow", count: 100000, spawnDelay: 200 },
+                { type: "shadow", count: 10, spawnDelay: 3000 },
+                { type: "kamikaze", count: 2, spawnDelay: 4000 },
+                { type: "thief", count: 4, spawnDelay: 4000},
+                { type: "shadow", count: 10, spawnDelay: 6000 },
+                { type: "redVelvet", count: 1, spawnDelay: 7000}
             ],
-            delay: 3000,
-        },
+            delay: 5000,
+        }
+
+        {
+            waveNumber: 6,
+            speedMult: 1,
+            cooldownMult: 1,
+            enemies: [
+                { type: "shadow", count: 400, spawnDelay: 3000 },
+                { type: "kamikaze", count: 30, spawnDelay: 4000 },
+                { type: "thief", count: 100, spawnDelay: 4000},
+                { type: "shadow", count: 200, spawnDelay: 6000 },
+                { type: "redVelvet", count: 3, spawnDelay: 7000}
+            ],
+            delay: 5000,
+        }
+
     ],
 
     shopWaves: [3, 6, 9],

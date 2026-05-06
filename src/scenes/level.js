@@ -99,7 +99,7 @@ export default class Level extends Phaser.Scene {
         // Colisión: proyectiles del boss → jugador
         // Nos suscribimos al evento que emite EnemyBeethoven al spawnearse
         // para registrar el overlap con su pool de proyectiles.
-        this.game.events.on('beethovenSpawned', (boss) => {
+        const beethovenHandler = (boss) => {
             this.physics.add.overlap(
                 this.player,
                 boss.projectilePool.physicsGroup,
@@ -117,16 +117,19 @@ export default class Level extends Phaser.Scene {
                 duration: 1500,
                 ease: 'Sine.easeInOut',
             });
-        });
+        };
 
-        this.game.events.on('bossDefeated', () => {
+        const bossDefeatedHandler = () => {
             this.tweens.add({
                 targets: this.cameras.main,
                 zoom: 1.5,
                 duration: 1000,
                 ease: 'Sine.easeInOut',
             });
-        });
+        };
+
+        this.game.events.on('beethovenSpawned', beethovenHandler);
+        this.game.events.on('bossDefeated', bossDefeatedHandler);
 
         this.physics.add.overlap(this.player, this.spawner.PhysicsGroup(), function (player, enemy) {
             if (enemy.active && !player.invincible) {
@@ -159,9 +162,16 @@ export default class Level extends Phaser.Scene {
         this.setWeaponCollision(this.player.drum);
         this.setWeaponCollision(this.player.teclado);
 
-        this.game.events.on('weaponReplaced', (newWeapon) => {
+        const weaponReplacedHandler = (newWeapon) => {
             this.setWeaponCollision(newWeapon);
-        }, this);
+        };
+        this.game.events.on('weaponReplaced', weaponReplacedHandler);
+
+        this.events.once('shutdown', () => {
+            this.game.events.off('beethovenSpawned', beethovenHandler);
+            this.game.events.off('bossDefeated', bossDefeatedHandler);
+            this.game.events.off('weaponReplaced', weaponReplacedHandler);
+        });
 
     }
 

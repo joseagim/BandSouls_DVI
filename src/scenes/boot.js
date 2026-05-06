@@ -411,7 +411,7 @@ export default class Boot extends Phaser.Scene {
   create() {
     // Inicializar registro persistente de score y trinkets
     this.scene.stop('hud');
-    this.registry.set('score', 10000000);
+    this.registry.set('score', 10000);
     this.registry.set('trinkets', []);
     this.registry.set('ultiCooldown', {});
 

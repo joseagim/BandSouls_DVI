@@ -117,10 +117,9 @@ export default class Level_Fondo extends Level {
             });
         }
 
-        this.game.events.on('shopTime', () => this._spawnShopPortal());
-        this.game.events.on('nextLevelTime', () => this._spawnNextLevelPortal());
-
-        this.game.events.on('nextWave', () => {
+        const shopTimeHandler = () => this._spawnShopPortal();
+        const nextLevelTimeHandler = () => this._spawnNextLevelPortal();
+        const nextWaveHandler = () => {
             if (this.portal) {
                 this.portal.destroy();
                 this.portal = null;
@@ -130,6 +129,16 @@ export default class Level_Fondo extends Level {
                 this._portalEnterTimer = null;
             }
             this._stopPortalBlink();
+        };
+
+        this.game.events.on('shopTime', shopTimeHandler);
+        this.game.events.on('nextLevelTime', nextLevelTimeHandler);
+        this.game.events.on('nextWave', nextWaveHandler);
+
+        this.events.once('shutdown', () => {
+            this.game.events.off('shopTime', shopTimeHandler);
+            this.game.events.off('nextLevelTime', nextLevelTimeHandler);
+            this.game.events.off('nextWave', nextWaveHandler);
         });
     }
 

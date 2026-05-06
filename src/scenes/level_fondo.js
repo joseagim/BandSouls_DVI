@@ -33,10 +33,11 @@ export default class Level_Fondo extends Level {
         var tiles = map.addTilesetImage('city_tileset', 'city_tiles');
 
         var layer_suelo = map.createLayer('suelo', tiles, 0, 0);
-        var layer_edif = map.createLayer('edificios', tiles, 0, 0);
-        var layer_deco = map.createLayer('decorado', tiles, 0, 0);
-        var layer_deco_sin = map.createLayer('decoradoSin', tiles, 0, 0);
-        var layer_obj = map.createLayer('objetos', tiles, 0, 0);
+        var layer_deco = map.createLayer('decoraciones', tiles, 0, 0);
+        var layer_deco2 = map.createLayer('decoraciones2', tiles, 0, 0);
+        var layer_colisiones = map.createLayer('colisiones', tiles, 0, 0);
+
+
 
         layer_edif.setCollisionByExclusion([-1], true);
         layer_deco.setCollisionByExclusion([-1], true);
@@ -49,9 +50,8 @@ export default class Level_Fondo extends Level {
 
         this.soundManager.play('level1_music');
 
-        this.physics.add.collider(this.player, layer_edif);
-        this.physics.add.collider(this.player, layer_deco);
-        this.physics.add.collider(this.player, layer_obj);
+        this.physics.add.collider(this.player, layer_colisiones);
+        //  this.physics.add.collider(this.player, layer_objetos);
 
         this.physics.add.collider(this.spawner.pool, layer_edif);
         this.physics.add.collider(this.spawner.pool, layer_deco);
@@ -60,6 +60,13 @@ export default class Level_Fondo extends Level {
         // Inicializar pathfinding A* con el grid del tilemap
         const gridWidth = map.width;
         const gridHeight = map.height;
+        this.bounds = {
+            x: 0,
+            y: 0,
+            right: gridWidth * map.tileWidth,
+            bottom: gridHeight * map.tileHeight
+        }
+        this.physics.world.setBounds(0, 0, this.bounds.right, this.bounds.bottom);
         const grid = [];
         for (let y = 0; y < gridHeight; y++) {
             const row = [];
@@ -123,9 +130,66 @@ export default class Level_Fondo extends Level {
                 this.portal.x, this.portal.y
             );
 
-            if (distToPortal < this.portalInteractionRange && Phaser.Input.Keyboard.JustDown(this.keyEnter)) {
-                this.scene.start('shop');
+            if (distToPortal < this.portalInteractionRange) {
+                if (!this._portalEnterTimer) {
+                    this._portalEnterTimer = this.time.delayedCall(3000, () => {
+                        this._stopPortalBlink();
+                        this.registry.set('savedWave', this.waveManager.currentWave);
+                        this.registry.set('ultiCooldown', {
+                            [this.player.guitar.iconKey]: this.player.guitar._abilityTimer?.getRemaining() ?? 0,
+                            [this.player.drum.iconKey]: this.player.drum._abilityTimer?.getRemaining() ?? 0,
+                        });
+                        this.soundManager.stop('level1_music');
+                        this.soundManager.play('shop_music');
+                        console.log('Entrando a la tienda, guardando estado: ');
+                        this.scene.start('shop');
+                    });
+                    this._startPortalBlink();
+                }
+            } else {
+                if (this._portalEnterTimer) {
+                    this._portalEnterTimer.remove();
+                    this._portalEnterTimer = null;
+                    this._stopPortalBlink();
+                }
             }
+        }
+    }
+
+    getStartingWave() {
+        const saved = this.registry.get('savedWave');
+        if (saved != null) {
+            this.registry.remove('savedWave');
+            return saved;
+        }
+        return 0;
+    }
+
+    _spawnShopPortal() {
+        if (this.portal) return; // evita doble spawn
+        const mapCenterX = 1280 / 2;
+        const mapCenterY = 736 / 2 - 150;
+        this.portal = this.physics.add.sprite(mapCenterX, mapCenterY, 'portal');
+        this.portal.play('portalAnim');
+        this.portal.setScale(2);
+    }
+
+    _startPortalBlink() {
+        this._portalBlinkTween = this.tweens.add({
+            targets: this.player,
+            alpha: 0.15,
+            duration: 250,
+            ease: 'Sine.easeInOut',
+            yoyo: true,
+            repeat: -1
+        });
+    }
+
+    _stopPortalBlink() {
+        if (this._portalBlinkTween) {
+            this._portalBlinkTween.stop();
+            this._portalBlinkTween = null;
+            this.player.setAlpha(1);
         }
     }
 

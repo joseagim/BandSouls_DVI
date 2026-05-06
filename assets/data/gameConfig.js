@@ -80,8 +80,10 @@ const gameConfig = {
         {
             waveNumber: 1,
             enemies: [
-                { type: "beethoven", count: 1, spawnDelay: 0 }
-                //{ type: "shadow", count: 1, spawnDelay: 2000 }
+                { type: "beethoven", count: 1, spawnDelay: 0 },
+                { type: "shadow", count: 0, spawnDelay: 2000 },
+                { type: "shadow", count: 0, spawnDelay: 3000 },
+                { type: "redVelvet", count: 0, spawnDelay: 6000 }
             ],
             delay: 3000,
         },

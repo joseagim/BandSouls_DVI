@@ -196,8 +196,13 @@ export default class EnemyBeethoven extends Enemy {
     // HELPERS
     // ─────────────────────────────────────────────────────────────────────────
     _laneY(pos) {
-        // Pantalla dividida en 8 carriles: pos va de 1 a 8
-        return (this.scene.scale.height / 9) * pos;
+        // Usamos el menor entre el alto del mundo (mapa) y el alto del canvas.
+        // - Mapa grande (> canvas): effectiveH = scale.height  → misma lógica que antes.
+        // - Mapa pequeño (< canvas, cámara estática): effectiveH = worldHeight
+        //   → los carriles no se salen del área jugable.
+        const worldH     = this.scene.physics.world.bounds.height;
+        const effectiveH = Math.min(worldH, this.scene.scale.height);
+        return (effectiveH / 9) * pos;
     }
 
     _getInactiveAlert() {

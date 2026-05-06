@@ -267,6 +267,7 @@ const gameConfig = {
     ],
 
     shopWaves: [3, 6, 9],
+    nextLevelWaves: [4],
 
     //...
 

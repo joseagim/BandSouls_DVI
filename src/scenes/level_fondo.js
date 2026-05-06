@@ -102,6 +102,7 @@ export default class Level_Fondo extends Level {
 
         // --- Portal al finalizar oleadas ---
         this.portal = null;
+        this._portalIsNextLevel = false;
         this.portalInteractionRange = 80;
         this._portalEnterTimer = null;
         this._portalBlinkTween = null;
@@ -117,6 +118,7 @@ export default class Level_Fondo extends Level {
         }
 
         this.game.events.on('shopTime', () => this._spawnShopPortal());
+        this.game.events.on('nextLevelTime', () => this._spawnNextLevelPortal());
 
         this.game.events.on('nextWave', () => {
             if (this.portal) {
@@ -147,15 +149,18 @@ export default class Level_Fondo extends Level {
                 if (!this._portalEnterTimer) {
                     this._portalEnterTimer = this.time.delayedCall(3000, () => {
                         this._stopPortalBlink();
-                        this.registry.set('savedWave', this.waveManager.currentWave);
                         this.registry.set('ultiCooldown', {
                             [this.player.guitar.iconKey]: this.player.guitar._abilityTimer?.getRemaining() ?? 0,
                             [this.player.drum.iconKey]:   this.player.drum._abilityTimer?.getRemaining()   ?? 0,
                         });
                         this.soundManager.stop('level1_music');
-                        this.soundManager.play('shop_music');
-                        console.log('Entrando a la tienda, guardando estado: ');
-                        this.scene.start('shop', { from: this.scene.key });
+                        if (this._portalIsNextLevel) {
+                            this.scene.start('level_2');
+                        } else {
+                            this.registry.set('savedWave', this.waveManager.currentWave);
+                            this.soundManager.play('shop_music');
+                            this.scene.start('shop', { from: this.scene.key });
+                        }
                     });
                     this._startPortalBlink();
                 }
@@ -179,7 +184,21 @@ export default class Level_Fondo extends Level {
     }
 
     _spawnShopPortal() {
-        if (this.portal) return; // evita doble spawn
+        if (this.portal) return;
+        this._portalIsNextLevel = false;
+        const mapCenterX = 1280 / 2;
+        const mapCenterY = 736 / 2 - 150;
+        this.portal = this.physics.add.sprite(mapCenterX, mapCenterY, 'portal');
+        this.portal.play('portalAnim');
+        this.portal.setScale(2);
+    }
+
+    _spawnNextLevelPortal() {
+        if (this.portal) {
+            this.portal.destroy();
+            this.portal = null;
+        }
+        this._portalIsNextLevel = true;
         const mapCenterX = 1280 / 2;
         const mapCenterY = 736 / 2 - 150;
         this.portal = this.physics.add.sprite(mapCenterX, mapCenterY, 'portal');

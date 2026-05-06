@@ -15,7 +15,7 @@ import JukeboxMachine from '../game-objects/machines/jukeboxMachine.js';
  * El juego termina cuando el jugador ha recogido 10 estrellas.
  * @extends Phaser.Scene
  */
-export default class Level_Fondo extends Level {
+export default class Level2 extends Level {
     /**
      * Constructor de la escena
      */
@@ -28,15 +28,13 @@ export default class Level_Fondo extends Level {
      */
     create() {
         //this.stars = 10;
-        var map = this.make.tilemap({ key: 'level2' });
-        var tiles_grass = map.addTilesetImage('grass', 'tileset_grassland_grass');
-        var tiles_paths = map.addTilesetImage('tileset-grassland-paths ', 'tileset_grassland_paths');
-        var tiles_props = map.addTilesetImage('tileset-grassland-props', 'tileset_grassland_props');
-        var tiles_water = map.addTilesetImage('tileset-grassland-water', 'tileset_grassland_water');
+        var map = this.make.tilemap({ key: 'bosque_map' });
+        var tiles = map.addTilesetImage('Modern_Exteriors_Complete_Tileset_32x32', 'city_tiles');
 
-        var layer_suelo = map.createLayer('suelo', [tiles_grass, tiles_paths, tiles_props, tiles_water], 0, 0);
-        var layer_suelo2 = map.createLayer('suelo2', [tiles_grass, tiles_paths, tiles_props, tiles_water], 0, 0);
-        var layer_objetos = map.createLayer('objetos', [tiles_grass, tiles_paths, tiles_props, tiles_water], 0, 0);
+        var layer_suelo = map.createLayer('suelo', tiles, 0, 0);
+        var layer_deco = map.createLayer('decoraciones', tiles, 0, 0);
+        var layer_sup = map.createLayer('superior', tiles, 0, 0);
+        var layer_objetos = map.createLayer('colisiones', tiles, 0, 0);
         
         layer_objetos.setCollisionByExclusion([-1],true);
 
@@ -45,9 +43,12 @@ export default class Level_Fondo extends Level {
         
         super.create();
 
+        this.soundManager.play('level1_music');
+
         this.player.setDepth(1);
 
         // Spawn manual de kamikaze para probar
+        layer_sup.setDepth(200);
 
                 
         this.physics.add.collider(this.player,layer_objetos);
@@ -93,12 +94,110 @@ export default class Level_Fondo extends Level {
         this.cameras.main.setBackgroundColor(0x000000);
 
 
+        // --- Portal al finalizar oleadas ---
+        this.portal = null;
+        this.portalInteractionRange = 80;
+        this._portalEnterTimer = null;
+        this._portalBlinkTween = null;
+
+        // Crear la animación por si no estuviese creada en esta escena
+        if (!this.anims.exists('portalAnim')) {
+            this.anims.create({
+                key: 'portalAnim',
+                frames: this.anims.generateFrameNames('portal', { prefix: 'Sprite-0001 ', suffix: '.', start: 0, end: 6 }),
+                frameRate: 10,
+                repeat: -1
+            });
+        }
+
+        this.game.events.on('shopTime', () => this._spawnShopPortal());
+
+        this.game.events.on('nextWave', () => {
+            if (this.portal) {
+                this.portal.destroy();
+                this.portal = null;
+            }
+            if (this._portalEnterTimer) {
+                this._portalEnterTimer.remove();
+                this._portalEnterTimer = null;
+            }
+            this._stopPortalBlink();
+        });
 
     }
 
     update() {
         if (this.easystar) this.easystar.calculate();
         if (this.jukeboxMachine) this.jukeboxMachine.update(this.player);
+
+        // Control del portal si ya ha aparecido
+        if (this.portal) {
+            const distToPortal = Phaser.Math.Distance.Between(
+                this.player.x, this.player.y,
+                this.portal.x, this.portal.y
+            );
+
+            if (distToPortal < this.portalInteractionRange) {
+                if (!this._portalEnterTimer) {
+                    this._portalEnterTimer = this.time.delayedCall(3000, () => {
+                        this._stopPortalBlink();
+                        this.registry.set('savedWave', this.waveManager.currentWave);
+                        this.registry.set('ultiCooldown', {
+                            [this.player.guitar.iconKey]: this.player.guitar._abilityTimer?.getRemaining() ?? 0,
+                            [this.player.drum.iconKey]:   this.player.drum._abilityTimer?.getRemaining()   ?? 0,
+                        });
+                        this.soundManager.stop('level1_music');
+                        this.soundManager.play('shop_music');
+                        console.log('Entrando a la tienda, guardando estado: ');
+                        this.scene.start('shop', { from: this.scene.key });
+                    });
+                    this._startPortalBlink();
+                }
+            } else {
+                if (this._portalEnterTimer) {
+                    this._portalEnterTimer.remove();
+                    this._portalEnterTimer = null;
+                    this._stopPortalBlink();
+                }
+            }
+        }
+    }
+
+    getStartingWave() {
+        const saved = this.registry.get('savedWave');
+        if (saved != null) {
+            this.registry.remove('savedWave');
+            return saved;
+        }
+        return 0;
+    }
+
+    _spawnShopPortal() {
+        if (this.portal) return; // evita doble spawn
+        const mapCenterX = 1280 / 2;
+        const mapCenterY = 736 / 2 - 150;
+        this.portal = this.physics.add.sprite(mapCenterX, mapCenterY, 'portal');
+        this.portal.play('portalAnim');
+        this.portal.setScale(2);
+    }
+
+    _startPortalBlink() {
+        this._portalBlinkTween = this.tweens.add({
+            targets: this.player,
+            alpha: 0.15,
+            duration: 250,
+            ease: 'Sine.easeInOut',
+            yoyo: true,
+            repeat: -1
+        });
+    }
+
+    _stopPortalBlink() {
+        if (this._portalBlinkTween) {
+            this._portalBlinkTween.stop();
+            this._portalBlinkTween = null;
+            this.player.setAlpha(1);
+        }
     }
 
     /**

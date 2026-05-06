@@ -378,10 +378,18 @@ export default class HUD extends Phaser.Scene {
         this._weaponSlots.forEach(s => { s.frame.destroy(); if (s.icon) s.icon.destroy(); });
         this._weaponSlots = [];
 
+        // Mapa de iconos MK2 → base para mantener el orden de slots
+        const iconBaseMap = {
+            'guitarmk2-icon':   'guitar-icon',
+            'drummk2-icon':     'drum-icon',
+            'bassmk2-icon':     'bass-icon',
+            'keyboardmk2-icon': 'keyboard-icon',
+        };
         // Orden fijo: guitarra, batería, bajo, teclado
         const weaponOrder = ['guitar-icon', 'drum-icon', 'bass-icon', 'keyboard-icon'];
         const sortedKeys = [...iconKeys].sort((a, b) => {
-            const ai = weaponOrder.indexOf(a); const bi = weaponOrder.indexOf(b);
+            const ai = weaponOrder.indexOf(iconBaseMap[a] ?? a);
+            const bi = weaponOrder.indexOf(iconBaseMap[b] ?? b);
             return (ai < 0 ? 999 : ai) - (bi < 0 ? 999 : bi);
         });
 
@@ -394,16 +402,24 @@ export default class HUD extends Phaser.Scene {
         if (!this._ultiCooldownState) this._ultiCooldownState = {};
 
         this._ultiKeyMap = {
-            'guitar-icon':   'guitar-vibe-button',
-            'drum-icon':     'drum-smash-button',
-            'bass-icon':     'bass-grenade-button',
-            'keyboard-icon': 'keyboard-minigun-button',
+            'guitar-icon':       'guitar-vibe-button',
+            'drum-icon':         'drum-smash-button',
+            'bass-icon':         'bass-grenade-button',
+            'keyboard-icon':     'keyboard-minigun-button',
+            'guitarmk2-icon':    'guitar-vibe-button',
+            'drummk2-icon':      'drum-smash-button',
+            'bassmk2-icon':      'bass-grenade-button',
+            'keyboardmk2-icon':  'keyboard-minigun-button',
         };
         this._ultiDisabledKeyMap = {
-            'guitar-icon':   'guitar-vibe-button-disabled',
-            'drum-icon':     'drum-smash-button-disabled',
-            'bass-icon':     'bass-grenade-button-disabled',
-            'keyboard-icon': 'keyboard-minigun-button-disabled',
+            'guitar-icon':       'guitar-vibe-button-disabled',
+            'drum-icon':         'drum-smash-button-disabled',
+            'bass-icon':         'bass-grenade-button-disabled',
+            'keyboard-icon':     'keyboard-minigun-button-disabled',
+            'guitarmk2-icon':    'guitar-vibe-button-disabled',
+            'drummk2-icon':      'drum-smash-button-disabled',
+            'bassmk2-icon':      'bass-grenade-button-disabled',
+            'keyboardmk2-icon':  'keyboard-minigun-button-disabled',
         };
 
         // Layout — slots abajo-derecha, crecen hacia la izquierda
@@ -849,7 +865,7 @@ export default class HUD extends Phaser.Scene {
 
         let priceContent = `Puntos: ${price}`;
         let priceColor = canAfford ? '#ffee00' : '#ff0000';
-        if (hasShield) { priceContent = 'Escudo activo'; priceColor = '#ffffff'; }
+        if (hasShield) { priceContent = typeof hasShield === 'string' ? hasShield : 'Escudo activo'; priceColor = '#ffffff'; }
 
         const priceText = this.add.text(0, 0, priceContent, {
             fontSize: '18px', fill: priceColor,

@@ -155,7 +155,7 @@ export default class Level_Fondo extends Level {
                         this.soundManager.stop('level1_music');
                         this.soundManager.play('shop_music');
                         console.log('Entrando a la tienda, guardando estado: ');
-                        this.scene.start('shop');
+                        this.scene.start('shop', { from: this.scene.key });
                     });
                     this._startPortalBlink();
                 }

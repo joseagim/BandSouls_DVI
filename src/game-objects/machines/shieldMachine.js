@@ -58,7 +58,7 @@ export default class ShieldMachine {
         if (near && Phaser.Input.Keyboard.JustDown(this._keyF)) {
             if (canAfford && !player.hasShield) {
                 this._scene.registry.set('score', score - PRICE);
-                this._scene.sound.play('buy');
+                this._scene.soundManager.play('buy');
                 player.activateShield();
                 this._lastStateKey = null;
             }

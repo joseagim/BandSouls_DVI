@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 
 const CURSOR_SCALE    = 1;
-const GAMEPLAY_SCENES = ['level_fondo', 'level2'];
+const GAMEPLAY_SCENES = ['level_fondo', 'level_2'];
 
 export default class CursorScene extends Phaser.Scene {
     constructor() {

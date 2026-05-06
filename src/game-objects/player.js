@@ -4,6 +4,10 @@ import Guitar from './weapons/guitar';
 import Drum from './weapons/drum';
 import Bass from './weapons/bass';
 import Keyboard from './weapons/keyboard';
+import GuitarMK2 from './weapons/guitar_mk2';
+import DrumMK2 from './weapons/drum_mk2';
+import BassMK2 from './weapons/bass_mk2';
+import KeyboardMK2 from './weapons/keyboard_mk2';
 import Item from './item';
 import SoundManager from './sound-manager';
 import GunManager from './gun-manager';
@@ -344,8 +348,14 @@ export default class Player extends actor {
             this.shieldHP -= dmg;
             this._updateShieldPosition();
             this.scene.cameras.main.shake(20, 0.003);
+            this.soundManager.play('shield_hit');
             if (this.shieldHP <= 0) this.deactivateShield();
             return;
+        }
+        if (!this._gettingHit) {
+            this.soundManager.play('get_hit');
+            this._gettingHit = true;
+            this.scene.time.delayedCall(1000, () => { this._gettingHit = false; });
         }
         super.getDamage(dmg);
         this.lastDamageTime = this.scene.time.now;
@@ -433,6 +443,62 @@ export default class Player extends actor {
 
     setEnemigo(enemigo) {
         this.enemigo = enemigo;
+    }
+
+    upgradeCurrentWeapon() {
+        const weaponStats = this.scene.cache.json.get('data').weaponStats;
+        const idx = this.gunManager.currentIndex;
+        const current = this.arma;
+
+        let upgraded = null;
+        let iconKey = null;
+
+        if (current === this.guitar) {
+            upgraded = new GuitarMK2(this.scene, this.x, this.y, this, weaponStats.guitar_mk2);
+            iconKey = 'guitarmk2-icon';
+            this.guitar = upgraded;
+        } else if (current === this.drum) {
+            upgraded = new DrumMK2(this.scene, this.x, this.y, this, weaponStats.drum_mk2);
+            iconKey = 'drummk2-icon';
+            this.drum = upgraded;
+        } else if (current === this.bajo) {
+            upgraded = new BassMK2(this.scene, this.x, this.y, this, weaponStats.bass_mk2);
+            iconKey = 'bassmk2-icon';
+            this.bajo = upgraded;
+        } else if (current === this.teclado) {
+            upgraded = new KeyboardMK2(this.scene, this.x, this.y, this, weaponStats.keyboard_mk2);
+            iconKey = 'keyboardmk2-icon';
+            this.teclado = upgraded;
+        }
+
+        if (upgraded) {
+            this.gunManager.replaceWeapon(idx, upgraded, iconKey);
+            this._playUpgradeFlash();
+        }
+    }
+
+    _playUpgradeFlash() {
+        if (!this.scene.textures.exists('_upgrade_particle')) {
+            const gfx = this.scene.make.graphics({ x: 0, y: 0, add: false });
+            gfx.fillStyle(0xffffff, 1);
+            gfx.fillCircle(4, 4, 4);
+            gfx.generateTexture('_upgrade_particle', 8, 8);
+            gfx.destroy();
+        }
+
+        const emitter = this.scene.add.particles(this.x, this.y - 12, '_upgrade_particle', {
+            speed:    { min: 60, max: 200 },
+            angle:    { min: 0, max: 360 },
+            scale:    { start: 1.4, end: 0 },
+            alpha:    { start: 1, end: 0 },
+            tint:     [0xffee00, 0xffaa00, 0xffffff, 0xffcc33],
+            lifespan: 500,
+            emitting: false,
+        });
+        emitter.setDepth(this.depth + 1);
+        emitter.explode(30);
+
+        this.scene.time.delayedCall(600, () => emitter.destroy());
     }
 
     updateAnimation() {

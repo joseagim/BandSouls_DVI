@@ -8,6 +8,7 @@ export default class WaveManager {
         this.enemies = 0;
         this.wavesData = scene.cache.json.get('data').waves;
         this.shopWaves = scene.cache.json.get('data').shopWaves ?? [];
+        this.nextLevelWaves = scene.cache.json.get('data').nextLevelWaves ?? [];
         this.waveDelay = 3000;
     }
 
@@ -53,6 +54,8 @@ export default class WaveManager {
             // Si era la última oleada
             if (this.currentWave >= this.wavesData.length) {
                 this.scene.game.events.emit('allWavesComplete');
+            } else if (this.nextLevelWaves.includes(this.currentWave)) {
+                this.scene.game.events.emit('nextLevelTime', this.currentWave);
             } else if (this.shopWaves.includes(this.currentWave)) {
                 this.scene.game.events.emit('shopTime', this.currentWave);
                 this.scene.time.delayedCall(this.waveDelay, () => this.startNextWave());

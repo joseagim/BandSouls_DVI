@@ -43,6 +43,10 @@ export default class Level2 extends Level {
         
         super.create();
 
+        this.soundManager.play('level1_music');
+
+        this.player.setDepth(1);
+
         // Spawn manual de kamikaze para probar
         layer_sup.setDepth(200);
 
@@ -78,7 +82,7 @@ export default class Level2 extends Level {
         this.physics.world.setBounds(0, 0, mapPixelWidth, mapPixelHeight);
 
         // Jukebox upgrade machine — position TBD
-        this.jukeboxMachine = new JukeboxMachine(this, 400, 300);
+        this.jukeboxMachine = new JukeboxMachine(this, 1070, 70);
         this.jukeboxMachine.addCollider(this.player);
         this.jukeboxMachine.addCollider(this.spawner.PhysicsGroup());
 

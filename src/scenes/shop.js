@@ -23,14 +23,10 @@ export default class Shop extends Phaser.Scene {
 
         layer.setCollisionByProperty({ colision: true });
         this.soundManager = new SoundManager(this);
-        /*
         this.soundManager.addSounds({
-            'movement': { key: 'movement', loop: true, loopDelay: 100 },
-            'dash': { key: 'dash', volume: 10 },
-            'guitar_attk': { key: 'guitar_attk', volume: 0.5 }
+            'buy': { key: 'buy', volume: 1.0 },
+            'shop_music': { key: 'shop_music', loop: true, volume: 0.7, category: 'music' },
         });
-        */
-       console.log('sound manager tiene estos sondidos: ', this.soundManager.sounds);
 
         const playerStats = this.cache.json.get('data').playerBaseStats;
         const marginX = 130;
@@ -179,10 +175,9 @@ export default class Shop extends Phaser.Scene {
                     const newScore = currentScore - state.item.price;
                     this.registry.set('score', newScore);
 
-
                     state.purchased = true;
 
-
+                    this.soundManager.play('buy');
                     this.player.addTrinket(state.item);
 
                     // Refrescar el panel visual actual

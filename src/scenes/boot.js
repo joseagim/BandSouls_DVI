@@ -48,6 +48,13 @@ import laudeAtlas from '../../assets/animations/laude/laude_atlas.json'
 import laudeBassAtlas from '../../assets/animations/laude/bass-sprite.json'
 import cooldownResetVisualCueSheet from '../../assets/animations/laude/CooldownResetVisualCue-Sheet.png'
 import cooldownResetVisualCueJSON from '../../assets/animations/laude/CooldownResetVisualCue.json'
+// player MK2
+import laudeGuitarMK2SpriteSheet from '../../assets/animations/laude/guitarmk2-sprite.png'
+import laudeDrumMK2SpriteSheet from '../../assets/animations/laude/drummk2-sprite.png'
+import laudeBassMK2Spritesheet from '../../assets/animations/laude/bassmk2-sprite.png'
+import laudeKeyboardMK2IdleSheet from '../../assets/animations/laude/keyboardmk2-idle.png'
+import laudeKeyboardMK2AttackSheet from '../../assets/animations/laude/keyboardmk2-attack.png'
+import laudeKeyboardMK2RunSheet from '../../assets/animations/laude/keyboardmk2-run.png'
 
 // weapons
 import guitarSprite from '../../assets/sprites/weapons/guitar/guitar-sprite.png'
@@ -72,6 +79,15 @@ import keyboardUltiProjectileSheet from '../../assets/sprites/weapons/keyboard/k
 import keyboardUltiProjectileAtlas from '../../assets/sprites/weapons/keyboard/keyboard-ulti-projectile.json'
 import weaponSelected from '../../assets/sprites/weapons/selected-frame.png'
 import weaponUnselected from '../../assets/sprites/weapons/unselected-frame.png'
+// weapons MK2
+import guitarmk2Sprite from '../../assets/sprites/weapons/guitar/guitarmk2-sprite.png'
+import guitarmk2Icon from '../../assets/sprites/weapons/guitar/guitarmk2-icon.png'
+import bassmk2Sprite from '../../assets/sprites/weapons/bass/bassmk2-sprite.png'
+import bassmk2Icon from '../../assets/sprites/weapons/bass/bassmk2-icon.png'
+import drummk2Sticks from '../../assets/sprites/weapons/drum/drummk2-sticks.png'
+import drummk2Icon from '../../assets/sprites/weapons/drum/drummk2-icon.png'
+import keyboardmk2Icon from '../../assets/sprites/weapons/keyboard/keyboardmk2-icon.png'
+import keyboardmk2ProjectileSheet from '../../assets/sprites/weapons/keyboard/keyboardmk2-projectile.png'
 
 // enemies - shadow
 import shadowIdle from '../../assets/animations/enemy_shadow/shadow_idle.png'
@@ -183,6 +199,8 @@ import fuse_kamikaze from '../../assets/sounds/fx/fuse-kamikaze.mp3';
 import explosion_kamikaze from '../../assets/sounds/fx/explosion-kamikaze.mp3';
 import guitar_ability from '../../assets/sounds/fx/guitar-ability.mp3';
 import drum_ability from '../../assets/sounds/fx/drum-ability.mp3';
+import buy from '../../assets/sounds/fx/buy.mp3';
+import shieldHit from '../../assets/sounds/fx/shield-hit.mp3';
 
 //musica
 import menu_music from '../../assets/sounds/music/menu-music.mp3';
@@ -243,6 +261,13 @@ export default class Boot extends Phaser.Scene {
     this.load.atlas('laude_keyboard_attack', laudeKeyboardAttackSheet, laudeKeyboardAttackAtlas);
     this.load.atlas('laude_keyboard_run', laudeKeyboardRunSheet, laudeKeyboardRunAtlas);
     this.load.atlas('cooldownResetVisualCue', cooldownResetVisualCueSheet, cooldownResetVisualCueJSON);
+    // player MK2 (reutilizan los mismos atlas JSON que los originales)
+    this.load.atlas('laude_guitar_mk2', laudeGuitarMK2SpriteSheet, laudeAtlas);
+    this.load.atlas('laude_drum_mk2', laudeDrumMK2SpriteSheet, laudeAtlas);
+    this.load.atlas('laude_bass_mk2', laudeBassMK2Spritesheet, laudeBassAtlas);
+    this.load.atlas('laude_keyboard_mk2_idle', laudeKeyboardMK2IdleSheet, laudeKeyboardIdleAtlas);
+    this.load.atlas('laude_keyboard_mk2_attack', laudeKeyboardMK2AttackSheet, laudeKeyboardAttackAtlas);
+    this.load.atlas('laude_keyboard_mk2_run', laudeKeyboardMK2RunSheet, laudeKeyboardRunAtlas);
 
     // weapons
     this.load.image('guitarSprite', guitarSprite);
@@ -261,6 +286,15 @@ export default class Boot extends Phaser.Scene {
     this.load.atlas('keyboard-ulti-projectile', keyboardUltiProjectileSheet, keyboardUltiProjectileAtlas);
     this.load.image('weapon-selected', weaponSelected);
     this.load.image('weapon-unselected', weaponUnselected);
+    // weapons MK2
+    this.load.image('guitarmk2-sprite', guitarmk2Sprite);
+    this.load.image('guitarmk2-icon', guitarmk2Icon);
+    this.load.image('bassmk2-sprite', bassmk2Sprite);
+    this.load.image('bassmk2-icon', bassmk2Icon);
+    this.load.image('drummk2-sticks', drummk2Sticks);
+    this.load.image('drummk2-icon', drummk2Icon);
+    this.load.image('keyboardmk2-icon', keyboardmk2Icon);
+    this.load.atlas('keyboardmk2_projectile', keyboardmk2ProjectileSheet, keyboardProjectileAtlas);
 
     // enemies - shadow
     this.load.atlas('shadow_idle', shadowIdle, shadowIdleJSON);
@@ -355,6 +389,8 @@ export default class Boot extends Phaser.Scene {
     this.load.audio('explosion_kamikaze', explosion_kamikaze);
     this.load.audio('guitar_ability', guitar_ability);
     this.load.audio('drum_ability', drum_ability);
+    this.load.audio('buy', buy);
+    this.load.audio('shield_hit', shieldHit);
 
 
     // música
@@ -375,7 +411,7 @@ export default class Boot extends Phaser.Scene {
   create() {
     // Inicializar registro persistente de score y trinkets
     this.scene.stop('hud');
-    this.registry.set('score', 3000);
+    this.registry.set('score', 10000000);
     this.registry.set('trinkets', []);
     this.registry.set('ultiCooldown', {});
 
@@ -422,7 +458,7 @@ export default class Boot extends Phaser.Scene {
     const confirmOption = () => {
       if (this.activeOption === this.startText) {
         this.soundManager.fadeOutMusic(500);
-        this.time.delayedCall(500, () => { this.scene.start('level_2'); });
+        this.time.delayedCall(500, () => { this.scene.start('level_fondo'); });
       } else if (this.activeOption === this.optionsText) {
         this.scene.launch('options_menu');
       }

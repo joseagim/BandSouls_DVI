@@ -73,4 +73,20 @@ export default class GunManager {
         this.scene.registry.set('weaponSelectorIndex', this.currentIndex);
         this.scene.game.events.emit('weaponChanged', this.currentIndex);
     }
+
+    replaceWeapon(index, newWeapon, newIconKey) {
+        const old = this.weapons[index];
+        if (old.cancelCharge) old.cancelCharge();
+        old.deactivateWeapon();
+
+        this.weapons[index] = newWeapon;
+        this.iconKeys[index] = newIconKey;
+
+        this.scene.registry.set('weaponSelectorData', {
+            iconKeys: [...this.iconKeys],
+            currentIndex: this.currentIndex
+        });
+        this.scene.game.events.emit('weaponSelectorInit');
+        this.scene.game.events.emit('weaponReplaced', newWeapon);
+    }
 }

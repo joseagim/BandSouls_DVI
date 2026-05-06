@@ -229,7 +229,7 @@ const gameConfig = {
                 { type: "redVelvet", count: 1, spawnDelay: 7000}
             ],
             delay: 5000,
-        }
+        },
 
         {
             waveNumber: 6,

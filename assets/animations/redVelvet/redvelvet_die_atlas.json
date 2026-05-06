@@ -1,0 +1,22 @@
+{
+    "frames": [
+        { "filename": "die 1", "frame": { "w": 64, "h": 64, "x": 0, "y": 0 }, "anchor": { "x": 0.5, "y": 0.5 } },
+        { "filename": "die 2", "frame": { "w": 64, "h": 64, "x": 64, "y": 0 }, "anchor": { "x": 0.5, "y": 0.5 } },
+        { "filename": "die 3", "frame": { "w": 64, "h": 64, "x": 0, "y": 64 }, "anchor": { "x": 0.5, "y": 0.5 } },
+        { "filename": "die 4", "frame": { "w": 64, "h": 64, "x": 64, "y": 64 }, "anchor": { "x": 0.5, "y": 0.5 } },
+        { "filename": "die 5", "frame": { "w": 64, "h": 64, "x": 128, "y": 0 }, "anchor": { "x": 0.5, "y": 0.5 } },
+        { "filename": "die 6", "frame": { "w": 64, "h": 64, "x": 128, "y": 64 }, "anchor": { "x": 0.5, "y": 0.5 } },
+        { "filename": "die 7", "frame": { "w": 64, "h": 64, "x": 0, "y": 128 }, "anchor": { "x": 0.5, "y": 0.5 } },
+        { "filename": "die 8", "frame": { "w": 64, "h": 64, "x": 64, "y": 128 }, "anchor": { "x": 0.5, "y": 0.5 } },
+        { "filename": "die 9", "frame": { "w": 64, "h": 64, "x": 128, "y": 128 }, "anchor": { "x": 0.5, "y": 0.5 } },
+        { "filename": "die 10", "frame": { "w": 64, "h": 64, "x": 192, "y": 0 }, "anchor": { "x": 0.5, "y": 0.5 } },
+        { "filename": "die 11", "frame": { "w": 64, "h": 64, "x": 192, "y": 64 }, "anchor": { "x": 0.5, "y": 0.5 } },
+        { "filename": "die 12", "frame": { "w": 64, "h": 64, "x": 192, "y": 128 }, "anchor": { "x": 0.5, "y": 0.5 } },
+        { "filename": "die 13", "frame": { "w": 64, "h": 64, "x": 0, "y": 192 }, "anchor": { "x": 0.5, "y": 0.5 } },
+        { "filename": "die 14", "frame": { "w": 64, "h": 64, "x": 64, "y": 192 }, "anchor": { "x": 0.5, "y": 0.5 } }
+    ],
+    "meta": {
+        "description": "Atlas generado con Atlas Packer Gamma V2",
+        "web": "https://gammafp.github.io/atlas-packer-phaser/"
+    }
+}

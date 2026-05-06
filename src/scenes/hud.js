@@ -7,43 +7,101 @@ export default class HUD extends Phaser.Scene {
     }
 
     create() {
-        // crear la barra abajo a la izquierda
-        this.healthBar = new Bar(this, 20, this.scale.height - 50, 'hud_health_border', 'hud_health_bar');
-        this.healthBar.setScale(3);
-        this.healthBar.setScrollFactor(0);
+        this._gameEventHandlers = [];
+        this._registryEventHandlers = [];
 
-        // --- Score display (rojo, centrado arriba) ---
-        this.scoreText = this.add.text(this.scale.width / 2, 20, '0', {
-            fontSize: '36px',
-            fill: '#ff0000',
-            fontFamily: '"System-ui", Courier, monospace',
+        const registerGameEvent = (eventName, callback, context = this) => {
+            this.game.events.on(eventName, callback, context);
+            this._gameEventHandlers.push({ eventName, callback, context });
+        };
+
+        const registerRegistryEvent = (eventName, callback, context = this) => {
+            this.registry.events.on(eventName, callback, context);
+            this._registryEventHandlers.push({ eventName, callback, context });
+        };
+
+        this.events.on('shutdown', () => {
+            this._gameEventHandlers.forEach(({ eventName, callback, context }) => {
+                this.game.events.off(eventName, callback, context);
+            });
+            this._gameEventHandlers.length = 0;
+            this._registryEventHandlers.forEach(({ eventName, callback, context }) => {
+                this.registry.events.off(eventName, callback, context);
+            });
+            this._registryEventHandlers.length = 0;
+        }, this);
+
+        const GAMEPLAY_SCENES = ['level_fondo', 'level2'];
+
+        // Pause button — top-left corner, 8px margin from edges
+        const pauseBtn = this.add.image(8, 8, 'pause-button')
+            .setScale(2).setOrigin(-0.15, -0.1).setScrollFactor(0).setDepth(100)
+            .setInteractive({ useHandCursor: true });
+
+        // Panel + barra de vida — arriba izquierda, a la derecha del botón de pausa
+        this.healthBar = new Bar(this, 0, 0, 'hud_health_border', 'hud_health_bar_green');
+        this.healthBar.setScrollFactor(0);
+        const hpBarScale = 2;
+        const hpPadX = 80;
+        const hpPadY = 8;
+        const hpPanelW = Math.round(this.healthBar.frame.width * hpBarScale) + 20;
+        const hpPanelH = Math.round(this.healthBar.frame.height * hpBarScale) + 16;
+        this.add.graphics()
+            .fillStyle(0x000000, 0.4)
+            .fillRoundedRect(hpPadX, hpPadY, hpPanelW, hpPanelH, 8)
+            .setDepth(-1)
+            .setScrollFactor(0);
+        this.healthBar.setScale(hpBarScale);
+        this.healthBar.setPosition(hpPadX + 10, hpPadY + 8);
+        this.healthBar.setVisible(true);
+        pauseBtn.on('pointerover', () => pauseBtn.setTint(0xaaaaaa));
+        pauseBtn.on('pointerout', () => pauseBtn.clearTint());
+        pauseBtn.on('pointerdown', () => pauseBtn.setTint(0x888888));
+        pauseBtn.on('pointerup', () => pauseBtn.setTint(0xaaaaaa));
+        pauseBtn.on('pointerup', () => {
+            if (this.scene.isActive('pause_menu')) return;
+            const active = GAMEPLAY_SCENES.find(k => this.scene.isActive(k));
+            if (active) this.scene.launch('pause_menu', { callerKey: active });
+        });
+
+        // Score — se posiciona en _createWeaponSelector
+        this.scoreText = this.add.text(0, 0, '0', {
+            fontSize: '26px',
+            fill: '#ffffff',
+            fontFamily: 'Verdana',
             stroke: '#000000',
             strokeThickness: 4,
-            shadow: { offsetX: 2, offsetY: 2, color: '#000000', blur: 0, stroke: true, fill: true }
-        }).setOrigin(0.5, 0).setScrollFactor(0);
+        }).setOrigin(1, 0.5).setScrollFactor(0).setVisible(false);
 
-        // Mostrar el score actual del registro (por si venimos de otra escena)
         const currentScore = this.registry.get('score') || 0;
         this.scoreText.setText(String(currentScore));
 
-        // Escuchar cambios en el registry para actualizar el score
-        this.registry.events.on('changedata-score', (_parent, value) => {
-            this.scoreText.setText(String(value));
+        registerRegistryEvent('changedata-score', (_parent, value) => {
+            this.scoreText.setText(String(value) ?? "0");
         });
 
-        // crear el texto de info oleadas
-        this.remainingEnemies = this.add.text(20, 120, 'Enemigos restantes: X', {
+        // Enemigos restantes — centro arriba
+        this.remainingEnemies = this.add.text(this.scale.width / 2, 20, 'Enemigos restantes: X', {
             fontSize: '22px',
             fill: '#ffffff',
-            fontFamily: 'Arial',
+            fontFamily: 'Verdana',
             stroke: '#000000',
             strokeThickness: 4
-        }).setScrollFactor(0);
+        }).setOrigin(0.5, 0).setScrollFactor(0);
 
-        this.waitingNextWave = this.add.text(this.scale.width / 2, 180, 'La siguiente oleada comenzará en X', {
+        this.portalBanner = this.add.text(this.scale.width / 2, 140, '¡Ha aparecido un portal!', {
+            fontSize: '32px',
+            fill: '#ffe066',
+            fontFamily: 'Verdana',
+            stroke: '#000000',
+            strokeThickness: 5
+        }).setOrigin(0.5, 0).setScrollFactor(0);
+        this.portalBanner.visible = false;
+
+        this.waitingNextWave = this.add.text(this.scale.width / 2, 185, 'La siguiente oleada comenzará en X', {
             fontSize: '32px',
             fill: '#ffffff',
-            fontFamily: 'Arial',
+            fontFamily: 'Verdana',
             stroke: '#000000',
             strokeThickness: 4
         }).setOrigin(0.5, 0).setScrollFactor(0);
@@ -54,19 +112,20 @@ export default class HUD extends Phaser.Scene {
         this._showRound(1);
 
         // evento: actualizar salud del jugador
-        this.game.events.on('updateHealth', (player) => {
+        registerGameEvent('updateHealth', (player) => {
             const percentage = player.life / player.maxHP;
             this.healthBar.setValue(percentage);
+            this.healthBar.setBarTexture(percentage <= 0.3 ? 'hud_health_bar' : 'hud_health_bar_green');
         });
 
         // ─── Barra de vida del Boss (abajo a la derecha) ────────────────────────
         this._bossBarContainer = this.add.container(0, 0).setScrollFactor(0).setVisible(false);
         this._bossBarContainer.setDepth(200);
 
-        const barW   = 280;  // ancho total de la barra
-        const barH   = 18;
-        const barX   = this.scale.width  - barW - 20;  // borde derecho con margen
-        const barY   = this.scale.height - 60;          // mismo nivel que la barra del jugador
+        const barW = 280;  // ancho total de la barra
+        const barH = 18;
+        const barX = this.scale.width - barW - 20;  // borde derecho con margen
+        const barY = this.scale.height - 60;          // mismo nivel que la barra del jugador
 
         // Fondo semitransparente detrás de toda la sección
         const bgPanel = this.add.graphics()
@@ -112,9 +171,9 @@ export default class HUD extends Phaser.Scene {
         this._bossBarContainer.add([bgPanel, bossLabel, barBg, this._bossHealthFill, barBorder, this._bossHealthText]);
 
         // Escuchar actualizaciones de vida del boss
-        this.game.events.on('bossHealthUpdate', (current, max) => {
+        registerGameEvent('bossHealthUpdate', (current, max) => {
             this._bossBarContainer.setVisible(true);
-            const pct    = Math.max(0, Math.min(1, current / max));
+            const pct = Math.max(0, Math.min(1, current / max));
             const { x, y, w, h } = this._bossBarBounds;
             this._bossHealthFill.clear();
             // Color: verde > 50%, amarillo > 25%, rojo <= 25%
@@ -125,7 +184,7 @@ export default class HUD extends Phaser.Scene {
         });
 
         // Al morir el boss, ocultar la barra tras un breve delay
-        this.game.events.on('bossDefeated', () => {
+        registerGameEvent('bossDefeated', () => {
             this.time.delayedCall(2000, () => {
                 this._bossBarContainer.setVisible(false);
             });
@@ -134,7 +193,7 @@ export default class HUD extends Phaser.Scene {
 
         // El botón de dash se crea en _createWeaponSelector para posicionarlo a su derecha
         this._dashButton = null;
-        this.game.events.on('dashStart', (cooldown) => {
+        registerGameEvent('dashStart', (cooldown) => {
             if (this._dashButton) this._dashButton.setTexture('dash-button-disabled');
             if (this._dashCooldownBar) this._dashCooldownBar.setVisible(true);
             this._dashCooldownFill = { value: 0 };
@@ -147,23 +206,44 @@ export default class HUD extends Phaser.Scene {
                 onUpdate: () => this._redrawDashBar()
             });
         });
-        this.game.events.on('dashReady', () => {
+        registerGameEvent('dashReady', () => {
             if (this._dashButton) this._dashButton.setTexture('dash-button');
             if (this._dashCooldownBar) this._dashCooldownBar.setVisible(false);
         });
 
+        registerGameEvent('ultiStart', ({ weaponKey, cooldown }) => {
+            if (!this._ultiCooldownState) this._ultiCooldownState = {};
+            this._ultiCooldownState[weaponKey] = { startTime: Date.now(), cooldown };
+            if (this._getCurrentUltiIconKey() === weaponKey) {
+                if (this._ultiCooldownTween) { this._ultiCooldownTween.stop(); this._ultiCooldownTween = null; }
+                this._startUltiCooldownUI(0, cooldown);
+            }
+        });
+        registerGameEvent('ultiReady', ({ weaponKey }) => {
+            if (this._ultiCooldownState) delete this._ultiCooldownState[weaponKey];
+            if (this._getCurrentUltiIconKey() === weaponKey) {
+                this._stopUltiCooldownUI(weaponKey);
+            }
+        });
+
         // evento: actualizar número de oleada
-        this.game.events.on('nextWave', (waveNumber) => {
+        registerGameEvent('nextWave', (waveNumber) => {
             this._showRound(waveNumber);
+            this.portalBanner.visible = false;
         });
 
         // evento: actualizar enemigos restantes
-        this.game.events.on('enemyDead', (enemiesLeft) => {
+        registerGameEvent('enemyDead', (enemiesLeft) => {
             this.remainingEnemies.setText('Enemigos restantes: ' + enemiesLeft);
         });
 
+        // evento: portal de tienda aparecido
+        registerGameEvent('shopTime', () => {
+            this.portalBanner.visible = true;
+        });
+
         // evento: mensaje de espera para la siguiente oleada
-        this.game.events.on('finishWave', (waveDelay) => {
+        registerGameEvent('finishWave', (waveDelay) => {
             let timeLeft = Math.floor(waveDelay / 1000);
 
             this.waitingNextWave.visible = true;
@@ -225,7 +305,7 @@ export default class HUD extends Phaser.Scene {
 
         // Render trinkets
         this._updateTrinketsDisplay(this.registry.get('trinkets') || []);
-        this.registry.events.on('changedata-trinkets', (_parent, values) => {
+        registerRegistryEvent('changedata-trinkets', (_parent, values) => {
             this._updateTrinketsDisplay(values);
         });
 
@@ -237,16 +317,34 @@ export default class HUD extends Phaser.Scene {
             if (data) this._createWeaponSelector(data.iconKeys, data.currentIndex);
         };
 
-        this.game.events.on('weaponSelectorInit', buildWeaponSelector);
+        registerGameEvent('weaponSelectorInit', buildWeaponSelector);
         // Por si ya se emitió antes de que el HUD estuviera listo
         buildWeaponSelector();
 
-        this.game.events.on('weaponChanged', (index) => {
+        registerGameEvent('weaponChanged', (index) => {
+            this._currentWeaponPlayerIndex = index;
             this._updateWeaponSelector(index);
             if (this._ultiButton && this._weaponIconKeys) {
-                const key = this._ultiKeyMap[this._weaponIconKeys[index]];
-                if (key) this._ultiButton.setTexture(key);
+                const si = this._playerToSortedIndex?.[index] ?? index;
+                const iconKey = this._weaponIconKeys[si];
+                if (this._ultiCooldownTween) { this._ultiCooldownTween.stop(); this._ultiCooldownTween = null; }
+                const state = this._ultiCooldownState?.[iconKey];
+                if (state) {
+                    const elapsed = Date.now() - state.startTime;
+                    const progress = Math.min(elapsed / state.cooldown, 1);
+                    const remaining = Math.max(state.cooldown - elapsed, 0);
+                    this._startUltiCooldownUI(progress, remaining);
+                } else {
+                    this._stopUltiCooldownUI(iconKey);
+                }
             }
+        });
+
+        // TAB key → pause menu
+        this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TAB).on('down', () => {
+            if (this.scene.isActive('pause_menu')) return;
+            const active = GAMEPLAY_SCENES.find(k => this.scene.isActive(k));
+            if (active) this.scene.launch('pause_menu', { callerKey: active });
         });
 
         this.events.emit('hud-ready');
@@ -256,76 +354,135 @@ export default class HUD extends Phaser.Scene {
         this._weaponSlots.forEach(s => { s.frame.destroy(); if (s.icon) s.icon.destroy(); });
         this._weaponSlots = [];
 
-        const slotSpacing = 70;
-        const startX = 60;
-        const y = 70;
+        // Orden fijo: guitarra, batería, bajo, teclado
+        const weaponOrder = ['guitar-icon', 'drum-icon', 'bass-icon', 'keyboard-icon'];
+        const sortedKeys = [...iconKeys].sort((a, b) => {
+            const ai = weaponOrder.indexOf(a); const bi = weaponOrder.indexOf(b);
+            return (ai < 0 ? 999 : ai) - (bi < 0 ? 999 : bi);
+        });
+
+        this._playerToSortedIndex = {};
+        iconKeys.forEach((key, pi) => { this._playerToSortedIndex[pi] = sortedKeys.indexOf(key); });
+        const sortedCurrentIndex = this._playerToSortedIndex[currentIndex] ?? 0;
+        this._weaponIconKeys = sortedKeys;
+
+        this._currentWeaponPlayerIndex = currentIndex;
+        if (!this._ultiCooldownState) this._ultiCooldownState = {};
 
         this._ultiKeyMap = {
-            'guitar-icon':   'guitar-vibe-button',
-            'drum-icon':     'drum-smash-button',
-            'bass-icon':     'bass-grenade-button',
+            'guitar-icon': 'guitar-vibe-button',
+            'drum-icon': 'drum-smash-button',
+            'bass-icon': 'bass-grenade-button',
             'keyboard-icon': 'keyboard-minigun-button',
         };
-        this._weaponIconKeys = iconKeys;
+        this._ultiDisabledKeyMap = {
+            'guitar-icon': 'guitar-vibe-button-disabled',
+            'drum-icon': 'drum-smash-button-disabled',
+            'bass-icon': 'bass-grenade-button-disabled',
+            'keyboard-icon': 'keyboard-minigun-button-disabled',
+        };
 
-        // Botones de habilidad a la derecha del último slot
+        // Layout — slots abajo-derecha, crecen hacia la izquierda
+        const slotSpacing = 85;
+        const slotScale = 2.1;
+        const slotY = this.scale.height - 60;
+        const rightEdge = this.scale.width - 60;
+        const firstSlotX = rightEdge - (sortedKeys.length - 1) * slotSpacing;
+
+        // Panel translúcido que cubre los slots
+        if (this._hudTopPanel) this._hudTopPanel.destroy();
+        if (this._scorePanelGfx) this._scorePanelGfx.destroy();
+        const panelPad = 35;
+        const panelLeft = firstSlotX - panelPad - 20;
+        const panelW = rightEdge + panelPad - panelLeft + 20;
+        const panelTop = slotY - 50;
+        const panelH = slotY + 50 - panelTop;
+        this._hudTopPanel = this.add.graphics()
+            .fillStyle(0x000000, 0.4)
+            .fillRoundedRect(panelLeft, panelTop, panelW, panelH, 8)
+            .setDepth(-1)
+            .setScrollFactor(0);
+
+        // Panel de puntuación: encima del panel de armas, alineado a la derecha
+        const scoreH = 46;
+        const scoreW = Math.round(190 * 1.3);
+        const scoreLeft = this.scale.width - scoreW;
+        const scoreTop = panelTop - 40 - scoreH;
+        const sg = this.add.graphics().setScrollFactor(0).setDepth(-1);
+        const fadeZone = 70;
+        const fadeSteps = 14;
+        const stripW = fadeZone / fadeSteps;
+        // Centro sólido (sin solapamiento)
+        sg.fillStyle(0x000000, 0.4);
+        sg.fillRect(scoreLeft + fadeZone, scoreTop, scoreW - 2 * fadeZone, scoreH);
+        // Franjas de fade en ambos lados
+        for (let i = 0; i < fadeSteps; i++) {
+            const alpha = ((i + 1) / fadeSteps) * 0.4;
+            const leftX = scoreLeft + i * stripW;
+            const rightX = scoreLeft + scoreW - (i + 1) * stripW;
+            sg.fillStyle(0x000000, alpha);
+            sg.fillRect(leftX, scoreTop, stripW, scoreH);
+            sg.fillRect(rightX, scoreTop, stripW, scoreH);
+        }
+        this._scorePanelGfx = sg;
+
+        this.scoreText.setPosition(scoreLeft + scoreW - 60, scoreTop + scoreH / 2);
+        this.scoreText.setVisible(true);
+
+        // Dash + ulti abajo-izquierda, más grandes
         if (this._dashButton) this._dashButton.destroy();
         if (this._ultiButton) this._ultiButton.destroy();
         if (this._dashCooldownBar) this._dashCooldownBar.destroy();
-        const dashX = startX + iconKeys.length * slotSpacing + 10;
-        const dashY = y - 35;
+        if (this._ultiCooldownBar) this._ultiCooldownBar.destroy();
+        if (this._ultiCooldownTween) { this._ultiCooldownTween.stop(); this._ultiCooldownTween = null; }
 
-        this._dashButton = this.add.image(dashX, dashY, 'dash-button')
-            .setScrollFactor(0)
-            .setDepth(100)
-            .setScale(1.3);
+        const dashX = 50;
+        const ultiX = dashX + 90;
 
-        const initialUltiKey = this._ultiKeyMap[iconKeys[currentIndex]] || 'guitar-vibe-button';
-        this._ultiButton = this.add.image(dashX, y + 25, initialUltiKey)
-            .setScrollFactor(0)
-            .setDepth(100)
-            .setScale(1.3);
+        this._dashButton = this.add.image(dashX, slotY, 'dash-button')
+            .setScrollFactor(0).setDepth(100).setScale(1.8);
 
-        // Barra de cooldown del dash (a la derecha del botón, carga de abajo a arriba)
-        this._dashBarBounds = { x: dashX + 25, y: dashY - 20, w: 5, h: 40 };
+        const initialUltiKey = this._ultiKeyMap[sortedKeys[sortedCurrentIndex]] || 'guitar-vibe-button';
+        this._ultiButton = this.add.image(ultiX, slotY, initialUltiKey)
+            .setScrollFactor(0).setDepth(100).setScale(1.8);
+
+        this._dashBarBounds = { x: dashX + 28, y: slotY - 22, w: 5, h: 44 };
         this._dashCooldownFill = { value: 0 };
         this._dashCooldownBar = this.add.graphics().setScrollFactor(0).setDepth(100).setVisible(false);
         this._redrawDashBar();
 
-        // Panel translúcido detrás de los iconos (ajustado dinámicamente al número de slots)
-        if (this._hudTopPanel) this._hudTopPanel.destroy();
-        const panelLeft = startX - 45;
-        const panelRight = startX + (iconKeys.length - 1) * slotSpacing + 45;
-        this._hudTopPanel = this.add.graphics()
-            .fillStyle(0x000000, 0.4)
-            .fillRoundedRect(panelLeft, 14, panelRight - panelLeft, 105, 8)
-            .setDepth(-1)
-            .setScrollFactor(0);
+        this._ultiBarBounds = { x: ultiX + 28, y: slotY - 22, w: 5, h: 44 };
+        this._ultiCooldownFill = { value: 0 };
+        this._ultiCooldownBar = this.add.graphics().setScrollFactor(0).setDepth(100).setVisible(false);
+        this._redrawUltiBar();
 
-        this._weaponSlots = iconKeys.map((iconKey, i) => {
-            const x = startX + i * slotSpacing;
-            const isSelected = i === currentIndex;
+        // Restore cooldown state for the currently equipped weapon
+        const currentIconKey = this._weaponIconKeys[sortedCurrentIndex];
+        const existingState = this._ultiCooldownState?.[currentIconKey];
+        if (existingState) {
+            const elapsed = Date.now() - existingState.startTime;
+            const progress = Math.min(elapsed / existingState.cooldown, 1);
+            const remaining = Math.max(existingState.cooldown - elapsed, 0);
+            this._startUltiCooldownUI(progress, remaining);
+        }
 
-            const frame = this.add.image(x, y, isSelected ? 'weapon-selected' : 'weapon-unselected')
-                .setScrollFactor(0)
-                .setDepth(100)
-                .setScale(1.8);
-
-            let icon = null;
-            if (iconKey) {
-                icon = this.add.image(x, y, iconKey)
-                    .setScrollFactor(0)
-                    .setDepth(101)
-                    .setScale(1.8);
-            }
-
+        // Slots de arma
+        this._weaponSlots = sortedKeys.map((iconKey, i) => {
+            const x = firstSlotX + i * slotSpacing;
+            const isSelected = i === sortedCurrentIndex;
+            const frame = this.add.image(x, slotY, isSelected ? 'weapon-selected' : 'weapon-unselected')
+                .setScrollFactor(0).setDepth(100).setScale(slotScale);
+            const icon = iconKey
+                ? this.add.image(x, slotY, iconKey).setScrollFactor(0).setDepth(101).setScale(slotScale)
+                : null;
             return { frame, icon };
         });
     }
 
-    _updateWeaponSelector(currentIndex) {
+    _updateWeaponSelector(playerIndex) {
+        const sortedIndex = this._playerToSortedIndex?.[playerIndex] ?? playerIndex;
         this._weaponSlots.forEach((slot, i) => {
-            slot.frame.setTexture(i === currentIndex ? 'weapon-selected' : 'weapon-unselected');
+            slot.frame.setTexture(i === sortedIndex ? 'weapon-selected' : 'weapon-unselected');
         });
     }
 
@@ -335,46 +492,45 @@ export default class HUD extends Phaser.Scene {
 
         if (!trinkets || trinkets.length === 0) return;
 
-        const startX = 20;
-        const startY = 150;
+        const maxPerRow = 7;
         const iconSize = 40;
         const gap = 5;
-        const maxPerRow = 3;
-        const rowHeight = iconSize + gap;
+        const rowH = iconSize + gap;
+        const totalRowW = maxPerRow * iconSize + (maxPerRow - 1) * gap;
+        const startX = this.scale.width / 2 - totalRowW / 2;
+        const bottomY = this.scale.height - 12; // casi pegados al borde inferior
 
         if (this._trinketExpanded === undefined) this._trinketExpanded = false;
 
-        const visibleRows = this._trinketExpanded ? Math.ceil(trinkets.length / maxPerRow) : 1;
-        const visibleCount = visibleRows * maxPerRow;
+        const totalRows = Math.ceil(trinkets.length / maxPerRow);
+        const visibleRows = this._trinketExpanded ? totalRows : 1;
+        const visibleCount = Math.min(trinkets.length, visibleRows * maxPerRow);
         const hasMore = trinkets.length > maxPerRow;
 
+        // Filas crecen hacia arriba: fila 0 es la más baja
         trinkets.slice(0, visibleCount).forEach((t, i) => {
             if (!t.image) return;
             const col = i % maxPerRow;
             const row = Math.floor(i / maxPerRow);
-            const icon = this.add.image(startX + col * (iconSize + gap), startY + row * rowHeight, t.image)
-                .setOrigin(0, 0)
-                .setDisplaySize(iconSize, iconSize)
-                .setAlpha(0.6)
-                .setScrollFactor(0);
+            const icon = this.add.image(
+                startX + col * (iconSize + gap),
+                bottomY - row * rowH,
+                t.image
+            ).setOrigin(0, 1).setDisplaySize(iconSize, iconSize).setAlpha(0.35).setScrollFactor(0);
             this.trinketIcons.push(icon);
         });
 
         if (hasMore) {
-            const dotsRow = this._trinketExpanded ? Math.ceil(trinkets.length / maxPerRow) : 1;
-            const dotsText = this.add.text(startX, startY + dotsRow * rowHeight, '...', {
-                fontSize: '20px',
-                fill: '#ffffff',
-                fontFamily: 'Arial',
-                stroke: '#000000',
-                strokeThickness: 3
-            }).setScrollFactor(0).setInteractive({ useHandCursor: true });
+            const dotsY = bottomY - visibleRows * rowH - 4;
+            const dotsText = this.add.text(startX, dotsY, '...', {
+                fontSize: '20px', fill: '#ffffff', fontFamily: 'Verdana',
+                stroke: '#000000', strokeThickness: 3
+            }).setOrigin(0, 1).setScrollFactor(0).setInteractive({ useHandCursor: true });
 
             dotsText.on('pointerdown', () => {
                 this._trinketExpanded = !this._trinketExpanded;
                 this._updateTrinketsDisplay(this.registry.get('trinkets') || []);
             });
-
             this.trinketIcons.push(dotsText);
         }
     }
@@ -426,7 +582,7 @@ export default class HUD extends Phaser.Scene {
         const descText = this.add.text(contentX, currentY, item.description, {
             fontSize: '14px',
             fill: '#cccccc',
-            fontFamily: 'Arial',
+            fontFamily: 'Verdana',
             wordWrap: { width: panelWidth - 30 }
         });
         this._itemPanelElements.push(descText);
@@ -438,7 +594,7 @@ export default class HUD extends Phaser.Scene {
             const statsDisplay = this.add.text(contentX, currentY, statsText, {
                 fontSize: '14px',
                 fill: '#88ff88',
-                fontFamily: 'Arial',
+                fontFamily: 'Verdana',
                 wordWrap: { width: panelWidth - 30 }
             });
             this._itemPanelElements.push(statsDisplay);
@@ -474,7 +630,7 @@ export default class HUD extends Phaser.Scene {
             const buyHint = this.add.text(contentX, currentY + priceText.height + 4, '[E] Buy', {
                 fontSize: '12px',
                 fill: '#aaaaaa',
-                fontFamily: 'Arial'
+                fontFamily: 'Verdana'
             });
             this._itemPanelElements.push(buyHint);
         }
@@ -488,17 +644,61 @@ export default class HUD extends Phaser.Scene {
         this._itemPanelElements = [];
     }
 
+    _getCurrentUltiIconKey() {
+        if (!this._weaponIconKeys || this._currentWeaponPlayerIndex == null) return null;
+        const si = this._playerToSortedIndex?.[this._currentWeaponPlayerIndex] ?? this._currentWeaponPlayerIndex;
+        return this._weaponIconKeys[si] ?? null;
+    }
+
+    _startUltiCooldownUI(startProgress, duration) {
+        const iconKey = this._getCurrentUltiIconKey();
+        const disabledKey = this._ultiDisabledKeyMap?.[iconKey];
+        if (this._ultiButton && disabledKey) this._ultiButton.setTexture(disabledKey);
+        if (this._ultiCooldownBar) this._ultiCooldownBar.setVisible(true);
+        this._ultiCooldownFill = { value: startProgress };
+        this._redrawUltiBar();
+        this._ultiCooldownTween = this.tweens.add({
+            targets: this._ultiCooldownFill,
+            value: 1,
+            duration,
+            ease: 'Linear',
+            onUpdate: () => this._redrawUltiBar(),
+            onComplete: () => {
+                if (iconKey) {
+                    delete this._ultiCooldownState?.[iconKey];
+                    this._stopUltiCooldownUI(iconKey);
+                }
+            }
+        });
+    }
+
+    _stopUltiCooldownUI(iconKey) {
+        if (this._ultiCooldownTween) { this._ultiCooldownTween.stop(); this._ultiCooldownTween = null; }
+        const enabledKey = this._ultiKeyMap?.[iconKey];
+        if (this._ultiButton && enabledKey) this._ultiButton.setTexture(enabledKey);
+        if (this._ultiCooldownBar) this._ultiCooldownBar.setVisible(false);
+    }
+
     _redrawDashBar() {
         if (!this._dashCooldownBar || !this._dashBarBounds) return;
         const { x, y, w, h } = this._dashBarBounds;
         this._dashCooldownBar.clear();
-        // Fondo oscuro
         this._dashCooldownBar.fillStyle(0x222222, 0.8);
         this._dashCooldownBar.fillRect(x, y, w, h);
-        // Relleno de abajo a arriba
         const fillH = h * this._dashCooldownFill.value;
         this._dashCooldownBar.fillStyle(0x00ccff, 1);
         this._dashCooldownBar.fillRect(x, y + h - fillH, w, fillH);
+    }
+
+    _redrawUltiBar() {
+        if (!this._ultiCooldownBar || !this._ultiBarBounds) return;
+        const { x, y, w, h } = this._ultiBarBounds;
+        this._ultiCooldownBar.clear();
+        this._ultiCooldownBar.fillStyle(0x222222, 0.8);
+        this._ultiCooldownBar.fillRect(x, y, w, h);
+        const fillH = h * this._ultiCooldownFill.value;
+        this._ultiCooldownBar.fillStyle(0xff8800, 1);
+        this._ultiCooldownBar.fillRect(x, y + h - fillH, w, fillH);
     }
 
     _showRound(number) {

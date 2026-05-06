@@ -1,5 +1,4 @@
 import Phaser from 'phaser';
-import EnemyShadow from './enemy';
 
 export default class Pool {
     constructor(scene, poolsData, factory) {

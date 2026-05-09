@@ -3,6 +3,7 @@ import Player from '../game-objects/player.js';
 import Spawner from '../game-objects/spawner.js';
 import WaveManager from '../game-objects/wave-manager.js';
 import SoundManager from '../game-objects/sound-manager.js';
+import Pickup from '../game-objects/pickup.js';
 
 
 /**
@@ -50,7 +51,9 @@ export default class Level extends Phaser.Scene {
 
         })
         const playerStats = this.cache.json.get('data').playerBaseStats;
-        this.player = new Player(this, 400, 400, playerStats);
+        const spawnPos = this.registry.get('spawnPosition');
+        if (spawnPos) this.registry.remove('spawnPosition');
+        this.player = new Player(this, spawnPos?.x ?? 400, spawnPos?.y ?? 400, playerStats);
 
         this.scene.launch('hud');
 
@@ -60,6 +63,18 @@ export default class Level extends Phaser.Scene {
         this.spawner = new Spawner(this, enemyPoolsData, enemyStats);
 
         this.waveManager = new WaveManager(this, this.spawner);
+
+        const crossState = this.registry.get('levelCrossState');
+        if (crossState) {
+            this.registry.remove('levelCrossState');
+            this._pendingCrossState = crossState;
+        }
+
+        const playerState = this.registry.get('playerState');
+        if (playerState) {
+            this.registry.remove('playerState');
+            this._pendingPlayerState = playerState;
+        }
 
         // Restaurar cooldowns de ulti guardados al salir de la sala anterior
         const savedCooldown = this.registry.get('ultiCooldown') || {};
@@ -81,8 +96,20 @@ export default class Level extends Phaser.Scene {
         }
 
         this.scene.get('hud').events.once('hud-ready', () => {
+            // Aplicar bloqueos aquí para que el HUD ya tenga el listener registrado
+            this._initWeaponLocks();
+
             this.waveManager.currentWave = this.getStartingWave();
-            this.waveManager.startNextWave();
+            this.waveManager.startNextWave(!!this._pendingCrossState);
+
+            if (this._pendingCrossState) {
+                this._restoreCrossState(this._pendingCrossState);
+                this._pendingCrossState = null;
+            } else if (this._pendingPlayerState) {
+                this._restorePlayerState(this._pendingPlayerState);
+                this._pendingPlayerState = null;
+            }
+
             for (const { weapon } of ultiWeapons) {
                 if (!weapon.canUseAbility && weapon._abilityTimer) {
                     this.game.events.emit('ultiStart', {
@@ -155,6 +182,12 @@ export default class Level extends Phaser.Scene {
             this
         );
 
+        // Grupo de pickups y overlap con el jugador
+        this.pickupGroup = this.physics.add.group();
+        this.physics.add.overlap(this.player, this.pickupGroup, (player, pickup) => {
+            pickup.collect(player);
+        }, null, this);
+
         this.cameras.main.setZoom(1.5); // Ventana de visualización
 
         this.setWeaponCollision(this.player.guitar);
@@ -179,6 +212,44 @@ export default class Level extends Phaser.Scene {
         return 0;
     }
 
+    _restorePlayerState(state) {
+        this.player.life = state.life;
+        this.player.updateHealth();
+
+        if (state.hasShield && state.shieldHP > 0) {
+            this.player.activateShield();
+            this.player.shieldHP = state.shieldHP;
+            this.player.updateHealth();
+        }
+
+        if (state.weapons) {
+            this.player.restoreWeaponUpgrades(state.weapons);
+        }
+
+        if (state.currentWeaponIndex != null) {
+            this.player.gunManager.currentIndex = state.currentWeaponIndex;
+            this.player.gunManager._updateUI();
+        }
+    }
+
+    _restoreCrossState(state) {
+        this._restorePlayerState(state);
+
+        if (state.remainingEnemies) {
+            let extra = 0;
+            for (const [type, count] of Object.entries(state.remainingEnemies)) {
+                if (count > 0) {
+                    extra += count;
+                    this.spawner.spawnMultiple({ type, count, spawnDelay: 500 });
+                }
+            }
+            if (extra > 0) {
+                this.waveManager.enemies += extra;
+                this.game.events.emit('enemyDead', this.waveManager.enemies);
+            }
+        }
+    }
+
     enemyDies(enemy) {
         if (enemy.life <= 0 || enemy.exploded) {
             this.waveManager.enemyDies();
@@ -186,6 +257,41 @@ export default class Level extends Phaser.Scene {
             const newScore = (this.registry.get('score') || 0) + 100;
             this.registry.set('score', newScore);
             this.events.emit('updateScore', newScore);
+            this._tryDropPickup(enemy);
+        }
+    }
+
+    _initWeaponLocks() {
+        const cfg = this.cache.json.get('data').pickupConfig;
+        if (!cfg) return;
+
+        // Bloquear armas según config
+        for (const slot of (cfg.lockedWeapons ?? [])) {
+            const idx = cfg.weaponSlots[slot];
+            if (idx !== undefined) this.player.gunManager.lockWeapon(idx);
+        }
+
+        // Re-desbloquear las que el jugador ya tenía de niveles anteriores
+        const unlocked = this.registry.get('unlockedWeapons') || [];
+        for (const slot of unlocked) {
+            const idx = cfg.weaponSlots[slot];
+            if (idx !== undefined) this.player.gunManager.unlockWeapon(idx);
+        }
+    }
+
+    _tryDropPickup(enemy) {
+        const cfg = this.cache.json.get('data').pickupConfig;
+        if (!cfg?.dropTables) return;
+
+        const table = cfg.dropTables[enemy.tag];
+        if (!table) return;
+
+        for (const entry of table) {
+            if (Math.random() < entry.chance) {
+                const pickup = new Pickup(this, enemy.x, enemy.y, entry);
+                this.pickupGroup.add(pickup);
+                break;
+            }
         }
     }
 

@@ -250,7 +250,22 @@ const gameConfig = {
     shopWaves: [3, 6, 9],
     nextLevelWaves: [4],
 
-    //...
+    pickupConfig: {
+        powerups: [
+            { id: 'heal_small',    label: '+20 HP',   instant: true,  stat: 'life',      value: 20,   tint: 0xff4477 },
+            { id: 'speed_boost',   label: 'Turbo',    instant: false, stat: 'speed',     value: 50,   duration: 8000, tint: 0x44ffcc },
+            { id: 'attack_boost',  label: 'Furia',    instant: false, stat: 'attackMod', value: 0.5,  duration: 8000, tint: 0xff8800 },
+        ],
+        dropTables: {
+            shadow:    [{ pickupType: 'powerup', id: 'heal_small',   chance: 0.10 }],
+            thief:     [{ pickupType: 'powerup', id: 'speed_boost',  chance: 0.20 }],
+            kamikaze:  [{ pickupType: 'powerup', id: 'attack_boost', chance: 0.25 }],
+            redVelvet: [{ pickupType: 'weapon',  slot: 'drum',       chance: 1.00 }],
+            beethoven: [{ pickupType: 'weapon',  slot: 'keyboard',   chance: 1.00 }],
+        },
+        weaponSlots: { guitar: 0, drum: 1, bass: 2, keyboard: 3 },
+        lockedWeapons: ['bass', 'keyboard'],
+    },
 
 };
 

@@ -38,6 +38,22 @@ export default class Shop extends Phaser.Scene {
             320,
             playerStats
         );
+        this.player.setDepth(2);
+
+        const savedPlayerState = this.registry.get('playerState');
+        if (savedPlayerState) {
+            if (savedPlayerState.weapons) {
+                this.player.restoreWeaponUpgrades(savedPlayerState.weapons);
+            }
+            if (savedPlayerState.hasShield && savedPlayerState.shieldHP > 0) {
+                this.player.activateShield();
+                this.player.shieldHP = savedPlayerState.shieldHP;
+            }
+            if (savedPlayerState.currentWeaponIndex != null) {
+                this.player.gunManager.currentIndex = savedPlayerState.currentWeaponIndex;
+                this.player.gunManager._updateUI();
+            }
+        }
 
 
 

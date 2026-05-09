@@ -158,9 +158,10 @@ import city_tileset from '../../assets/map/Modern_Exteriors_Complete_Tileset_32x
 import city_json from '../../assets/map/level_refactor_2.json'
 import shop_tileset from '../../assets/map/gj.png'
 import shop_json from '../../assets/map/garajefinal.json'
-import portalSpritesheet from '../../assets/animations/portal/portal-spritesheet.png'
+import portalSpritesheet from '../../assets/animations/portal/portal-shop-spritesheet.png'
 import portalJSON from '../../assets/animations/portal/portaljson.json'
 import spawnPortalSpritesheet from '../../assets/animations/portal/spawn-portal-spritesheet.png'
+import portalLevelSpritesheet from '../../assets/animations/portal/portal-level-spritesheet.png'
 import tileset_grassland_grass from '../../assets/map/tileset-grassland-grass.png';
 import tileset_grassland_paths from '../../assets/map/tileset-grassland-paths.png';
 import tileset_grassland_props from '../../assets/map/tileset-grassland-props.png';
@@ -363,6 +364,7 @@ export default class Boot extends Phaser.Scene {
     this.load.tilemapTiledJSON('shop_map', shop_json);
     this.load.atlas('portal', portalSpritesheet, portalJSON);
     this.load.spritesheet('spawn_portal', spawnPortalSpritesheet, { frameWidth: 48, frameHeight: 48 });
+    this.load.spritesheet('portal_level', portalLevelSpritesheet, { frameWidth: 48, frameHeight: 48 });
     this.load.tilemapTiledJSON('bosque_map', bosque_level);
     this.load.tilemapTiledJSON('map', city_json);
 

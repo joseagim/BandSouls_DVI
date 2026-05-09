@@ -335,6 +335,7 @@ export default class HUD extends Phaser.Scene {
 
         // --- Weapon selector ---
         this._weaponSlots = [];
+        this._lockedPlayerIndices = new Set();
 
         const buildWeaponSelector = () => {
             const data = this.registry.get('weaponSelectorData');
@@ -344,6 +345,13 @@ export default class HUD extends Phaser.Scene {
         registerGameEvent('weaponSelectorInit', buildWeaponSelector);
         // Por si ya se emitió antes de que el HUD estuviera listo
         buildWeaponSelector();
+
+        registerGameEvent('weaponLocksChanged', (lockedIndices) => {
+            this._lockedPlayerIndices = new Set(lockedIndices);
+            const data = this.registry.get('weaponSelectorData');
+            const idx  = this._currentWeaponPlayerIndex ?? data?.currentIndex ?? 0;
+            if (data) this._createWeaponSelector(data.iconKeys, idx);
+        });
 
         registerGameEvent('weaponChanged', (index) => {
             this._currentWeaponPlayerIndex = index;
@@ -387,14 +395,23 @@ export default class HUD extends Phaser.Scene {
         };
         // Orden fijo: guitarra, batería, bajo, teclado
         const weaponOrder = ['guitar-icon', 'drum-icon', 'bass-icon', 'keyboard-icon'];
-        const sortedKeys = [...iconKeys].sort((a, b) => {
-            const ai = weaponOrder.indexOf(iconBaseMap[a] ?? a);
-            const bi = weaponOrder.indexOf(iconBaseMap[b] ?? b);
+
+        // Filtrar armas bloqueadas: solo mostrar las desbloqueadas
+        const locked = this._lockedPlayerIndices ?? new Set();
+        const unlockedEntries = iconKeys
+            .map((key, pi) => ({ key, pi }))
+            .filter(({ pi }) => !locked.has(pi));
+
+        unlockedEntries.sort((a, b) => {
+            const ai = weaponOrder.indexOf(iconBaseMap[a.key] ?? a.key);
+            const bi = weaponOrder.indexOf(iconBaseMap[b.key] ?? b.key);
             return (ai < 0 ? 999 : ai) - (bi < 0 ? 999 : bi);
         });
 
+        const sortedKeys = unlockedEntries.map(e => e.key);
+
         this._playerToSortedIndex = {};
-        iconKeys.forEach((key, pi) => { this._playerToSortedIndex[pi] = sortedKeys.indexOf(key); });
+        unlockedEntries.forEach(({ pi }, si) => { this._playerToSortedIndex[pi] = si; });
         const sortedCurrentIndex = this._playerToSortedIndex[currentIndex] ?? 0;
         this._weaponIconKeys = sortedKeys;
 

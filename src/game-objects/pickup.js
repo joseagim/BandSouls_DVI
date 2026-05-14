@@ -13,7 +13,7 @@ export default class Pickup extends Phaser.GameObjects.Sprite {
 
         this.pickupConfig = config;
         this.setScale(1.2);
-        this.setDepth(5);
+        this.setDepth(1);
 
         if (config.tint) this.setTint(config.tint);
 
@@ -28,13 +28,17 @@ export default class Pickup extends Phaser.GameObjects.Sprite {
             repeat: -1,
         });
 
-        // desvanece y destruye si nadie lo recoge
-        this._expireTimer = scene.time.delayedCall(12000, () => this._fadeAndDestroy());
+        // las armas no caducan; los powerups desaparecen a los 10s
+        if (config.pickupType !== 'weapon') {
+            this._expireTimer = scene.time.delayedCall(10000, () => this._fadeAndDestroy());
+        }
     }
 
     static _ensureTexture(scene, config) {
-        if (config.pickupType === 'weapon') return `${config.slot}-icon`;
+        if (config.pickupType === 'weapon') return `${config.slot}-pickup`;
+        if (config.icon && scene.textures.exists(config.icon)) return config.icon;
 
+        // fallback: círculo de color generado en runtime
         const key = `pickup-${config.id}`;
         if (!scene.textures.exists(key)) {
             const gfx = scene.make.graphics({ add: false });

@@ -100,6 +100,11 @@ export default class Level2 extends Level {
         this._portalEnterTimer = null;
         this._returnPortalTimer = null;
         this._portalBlinkTween = null;
+        // Cooldown de 20s al llegar desde level_fondo para no volver inmediatamente
+        this._returnPortalLocked = !!this._pendingPlayerState;
+        if (this._returnPortalLocked) {
+            this.time.delayedCall(20000, () => { this._returnPortalLocked = false; });
+        }
 
         if (!this.anims.exists('portalAnim')) {
             this.anims.create({
@@ -180,6 +185,7 @@ export default class Level2 extends Level {
                             },
                             currentWeaponIndex: this.player.gunManager.currentIndex,
                         });
+                        this.registry.set('spawnPosition', { x: this.portal.x, y: this.portal.y });
                         this.soundManager.stop('level1_music');
                         this.soundManager.play('shop_music');
                         this.scene.start('shop', { from: this.scene.key });
@@ -196,7 +202,7 @@ export default class Level2 extends Level {
         }
 
         // Portal de retorno al nivel 1
-        if (this.returnPortal) {
+        if (this.returnPortal && !this._returnPortalLocked) {
             const distToReturn = Phaser.Math.Distance.Between(
                 this.player.x, this.player.y,
                 this.returnPortal.x, this.returnPortal.y

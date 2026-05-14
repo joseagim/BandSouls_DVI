@@ -99,8 +99,11 @@ export default class Level extends Phaser.Scene {
             // Aplicar bloqueos aquí para que el HUD ya tenga el listener registrado
             this._initWeaponLocks();
 
-            this.waveManager.currentWave = this.getStartingWave();
-            this.waveManager.startNextWave(!!this._pendingCrossState);
+            const startWave = this.getStartingWave();
+            if (startWave != null) {
+                this.waveManager.currentWave = startWave;
+                this.waveManager.startNextWave(!!this._pendingCrossState);
+            }
 
             if (this._pendingCrossState) {
                 this._restoreCrossState(this._pendingCrossState);
@@ -254,7 +257,8 @@ export default class Level extends Phaser.Scene {
         if (enemy.life <= 0 || enemy.exploded) {
             this.waveManager.enemyDies();
             // Sumar puntos por matar al enemigo
-            const newScore = (this.registry.get('score') || 0) + 100;
+            const multiplier = this.player.scoreMultiplier ?? 1;
+            const newScore = (this.registry.get('score') || 0) + (100 * multiplier);
             this.registry.set('score', newScore);
             this.events.emit('updateScore', newScore);
             this._tryDropPickup(enemy);
@@ -288,7 +292,17 @@ export default class Level extends Phaser.Scene {
 
         for (const entry of table) {
             if (Math.random() < entry.chance) {
-                const pickup = new Pickup(this, enemy.x, enemy.y, entry);
+                let pickupCfg = { ...entry };
+
+                if (pickupCfg.pickupType === 'powerup') {
+                    const pool = cfg.powerups;
+                    const chosen = entry.id === 'random'
+                        ? pool[Math.floor(Math.random() * pool.length)]
+                        : pool.find(p => p.id === entry.id);
+                    if (chosen) pickupCfg = { ...pickupCfg, ...chosen };
+                }
+
+                const pickup = new Pickup(this, enemy.x, enemy.y, pickupCfg);
                 this.pickupGroup.add(pickup);
                 break;
             }

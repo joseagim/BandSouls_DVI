@@ -24,8 +24,11 @@ export default class Level_Fondo extends Level {
      * Creación de los elementos de la escena principal de juego
      */
     create() {
-        //this.stars = 10;
-
+        // Fresh game start (no saved cross-state) — reset weapon unlocks so locked weapons
+        // don't carry over from a previous run
+        if (this.registry.get('savedWave') == null && this.registry.get('levelCrossState') == null) {
+            this.registry.remove('unlockedWeapons');
+        }
 
         var map = this.make.tilemap({ key: 'map' });
         var tiles = map.addTilesetImage('Modern_Exteriors_Complete_Tileset_32x32', 'city_tiles');
@@ -105,6 +108,7 @@ export default class Level_Fondo extends Level {
         this.nextLevelPortal = null;     // portal permanente a level_2
         this.portalInteractionRange = 80;
         this._portalEnterTimer = null;
+        this._nextLevelPortalLocked = false;
         this._nextLevelPortalTimer = null;
         this._portalBlinkTween = null;
 
@@ -126,10 +130,11 @@ export default class Level_Fondo extends Level {
             });
         }
 
-        this._spawnNextLevelPortal();
-
         const shopTimeHandler = () => this._spawnShopPortal();
-        const nextLevelTimeHandler = () => this._spawnNextLevelPortal();
+        const nextLevelTimeHandler = () => {
+            this._spawnNextLevelPortal();
+            this._spawnShopPortal();
+        };
         const nextWaveHandler = () => {
             if (this.portal) {
                 this.portal.destroy();
@@ -186,6 +191,7 @@ export default class Level_Fondo extends Level {
                             },
                             currentWeaponIndex: this.player.gunManager.currentIndex,
                         });
+                        this.registry.set('spawnPosition', { x: this.portal.x, y: this.portal.y });
                         this.soundManager.stop('level1_music');
                         this.soundManager.play('shop_music');
                         this.scene.start('shop', { from: this.scene.key });
@@ -202,7 +208,7 @@ export default class Level_Fondo extends Level {
         }
 
         // Portal permanente al nivel 2
-        if (this.nextLevelPortal) {
+        if (this.nextLevelPortal && !this._nextLevelPortalLocked) {
             const distToNext = Phaser.Math.Distance.Between(
                 this.player.x, this.player.y,
                 this.nextLevelPortal.x, this.nextLevelPortal.y
@@ -212,16 +218,12 @@ export default class Level_Fondo extends Level {
                 if (!this._nextLevelPortalTimer) {
                     this._nextLevelPortalTimer = this.time.delayedCall(3000, () => {
                         this._stopPortalBlink();
-                        this.registry.set('savedWave', this.waveManager.currentWave - 1);
+                        this.registry.set('savedWave', this.waveManager.currentWave);
                         this.registry.set('ultiCooldown', {
                             [this.player.guitar.iconKey]: this.player.guitar._abilityTimer?.getRemaining() ?? 0,
                             [this.player.drum.iconKey]:   this.player.drum._abilityTimer?.getRemaining()   ?? 0,
                         });
-                        const remainingEnemies = {};
-                        for (const type of Object.keys(this.spawner.pool.active)) {
-                            remainingEnemies[type] = this.spawner.pool.active[type].length;
-                        }
-                        this.registry.set('levelCrossState', {
+                        this.registry.set('playerState', {
                             life: this.player.life,
                             hasShield: this.player.hasShield,
                             shieldHP: this.player.shieldHP,
@@ -232,7 +234,6 @@ export default class Level_Fondo extends Level {
                                 teclado: this.player.teclado.iconKey,
                             },
                             currentWeaponIndex: this.player.gunManager.currentIndex,
-                            remainingEnemies,
                         });
                         this.registry.set('spawnPosition', { x: 60, y: 60 });
                         this.soundManager.stop('level1_music');
@@ -254,6 +255,24 @@ export default class Level_Fondo extends Level {
         const saved = this.registry.get('savedWave');
         if (saved != null) {
             this.registry.remove('savedWave');
+            const nextLevelWaves = this.cache.json.get('data').nextLevelWaves ?? [];
+            if (nextLevelWaves.includes(saved)) {
+                // Volvemos de la tienda después de matar a Beethoven — restaurar estado sin iniciar nueva oleada
+                this.waveManager.currentWave = saved;
+                this.game.events.emit('nextWave', saved);
+                this.game.events.emit('enemyDead', 0);
+                // Cooldown de 20s si venimos de level_2 (levelCrossState presente)
+                if (this._pendingCrossState) {
+                    this._nextLevelPortalLocked = true;
+                    this.time.delayedCall(20000, () => { this._nextLevelPortalLocked = false; });
+                }
+                this.time.delayedCall(50, () => {
+                    this._spawnNextLevelPortal();
+                    this._spawnShopPortal();
+                    this.game.events.emit('nextLevelTime');
+                });
+                return null;
+            }
             return saved;
         }
         return 0;

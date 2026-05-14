@@ -58,11 +58,23 @@ export default class GunManager {
     }
 
     switchNext() {
-        this.switchTo((this.currentIndex + 1) % this.weapons.length);
+        const len = this.weapons.length;
+        let next = (this.currentIndex + 1) % len;
+        for (let i = 0; i < len - 1; i++) {
+            if (!this.lockedWeapons.has(next)) break;
+            next = (next + 1) % len;
+        }
+        this.switchTo(next);
     }
 
     switchPrev() {
-        this.switchTo((this.currentIndex - 1 + this.weapons.length) % this.weapons.length);
+        const len = this.weapons.length;
+        let prev = (this.currentIndex - 1 + len) % len;
+        for (let i = 0; i < len - 1; i++) {
+            if (!this.lockedWeapons.has(prev)) break;
+            prev = (prev - 1 + len) % len;
+        }
+        this.switchTo(prev);
     }
 
     _setupInput() {

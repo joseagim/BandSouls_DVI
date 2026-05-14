@@ -143,6 +143,9 @@ export default class Player extends actor {
             }
         });
 
+        // Multiplicador de puntuación (usado por powerups)
+        this.scoreMultiplier = 1;
+
         // Escudo
         this.hasShield = false;
         this.shieldHP = 0;

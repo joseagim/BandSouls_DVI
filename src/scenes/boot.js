@@ -79,6 +79,21 @@ import keyboardUltiProjectileSheet from '../../assets/sprites/weapons/keyboard/k
 import keyboardUltiProjectileAtlas from '../../assets/sprites/weapons/keyboard/keyboard-ulti-projectile.json'
 import weaponSelected from '../../assets/sprites/weapons/selected-frame.png'
 import weaponUnselected from '../../assets/sprites/weapons/unselected-frame.png'
+// weapon pickups (sprites del mundo)
+import drumPickup     from '../../assets/sprites/weapons/drum/drum-pickup.png'
+import bassPickup     from '../../assets/sprites/weapons/bass/bass-pickup.png'
+import keyboardPickup from '../../assets/sprites/weapons/keyboard/keyboard-pickup.png'
+
+// power-ups (sprites del mundo)
+import pickupDamageSprite   from '../../assets/animations/power-ups/more-damage-sprite.png'
+import pickupSpeedSprite    from '../../assets/animations/power-ups/more-speed-sprite.png'
+import pickupX2PointsSprite from '../../assets/animations/power-ups/x2points-sprite.png'
+import pickupBase           from '../../assets/animations/power-ups/power-up-base.png'
+// power-ups (iconos HUD)
+import hudPickupDamage   from '../../assets/sprites/hud/power-ups/power-up-more-damage.png'
+import hudPickupSpeed    from '../../assets/sprites/hud/power-ups/power-up-more-speed.png'
+import hudPickupX2Points from '../../assets/sprites/hud/power-ups/power-up-x2points.png'
+
 // weapons MK2
 import guitarmk2Sprite from '../../assets/sprites/weapons/guitar/guitarmk2-sprite.png'
 import guitarmk2Icon from '../../assets/sprites/weapons/guitar/guitarmk2-icon.png'
@@ -287,6 +302,19 @@ export default class Boot extends Phaser.Scene {
     this.load.atlas('keyboard-ulti-projectile', keyboardUltiProjectileSheet, keyboardUltiProjectileAtlas);
     this.load.image('weapon-selected', weaponSelected);
     this.load.image('weapon-unselected', weaponUnselected);
+    // weapon pickups
+    this.load.image('drum-pickup',     drumPickup);
+    this.load.image('bass-pickup',     bassPickup);
+    this.load.image('keyboard-pickup', keyboardPickup);
+    // power-ups: sprites del mundo (pickup en el suelo)
+    this.load.image('pickup-damage',   pickupDamageSprite);
+    this.load.image('pickup-speed',    pickupSpeedSprite);
+    this.load.image('pickup-x2points', pickupX2PointsSprite);
+    this.load.image('pickup-base',     pickupBase);
+    // power-ups: iconos HUD (activo en pantalla)
+    this.load.image('hud-pickup-damage',   hudPickupDamage);
+    this.load.image('hud-pickup-speed',    hudPickupSpeed);
+    this.load.image('hud-pickup-x2points', hudPickupX2Points);
     // weapons MK2
     this.load.image('guitarmk2-sprite', guitarmk2Sprite);
     this.load.image('guitarmk2-icon', guitarmk2Icon);

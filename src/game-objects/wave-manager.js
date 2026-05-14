@@ -50,17 +50,19 @@ export default class WaveManager {
         this.scene.game.events.emit('enemyDead', this.enemies);
 
         if (this.enemies <= 0) {
-            this.scene.game.events.emit('finishWave', this.waveDelay);
-
             // Si era la última oleada
             if (this.currentWave >= this.wavesData.length) {
+                this.scene.game.events.emit('finishWave', this.waveDelay);
                 this.scene.game.events.emit('allWavesComplete');
             } else if (this.nextLevelWaves.includes(this.currentWave)) {
+                // Sin countdown: no hay siguiente oleada que esperar
                 this.scene.game.events.emit('nextLevelTime', this.currentWave);
             } else if (this.shopWaves.includes(this.currentWave)) {
+                this.scene.game.events.emit('finishWave', this.waveDelay);
                 this.scene.game.events.emit('shopTime', this.currentWave);
                 this.scene.time.delayedCall(this.waveDelay, () => this.startNextWave());
             } else {
+                this.scene.game.events.emit('finishWave', this.waveDelay);
                 this.scene.time.delayedCall(this.waveDelay, () => this.startNextWave());
             }
         }

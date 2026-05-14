@@ -211,14 +211,6 @@ const gameConfig = {
 
         {
             waveNumber: 4,
-            enemies: [
-                { type: "beethoven", count: 1, spawnDelay: 0 }
-            ],
-            delay: 3000,
-        },
-
-        {
-            waveNumber: 5,
             speedMult: 1,
             cooldownMult: 1,
             enemies: [
@@ -229,6 +221,14 @@ const gameConfig = {
                 { type: "redVelvet", count: 1, spawnDelay: 7000}
             ],
             delay: 5000,
+        },
+
+        {
+            waveNumber: 5,
+            enemies: [
+                { type: "beethoven", count: 1, spawnDelay: 0 }
+            ],
+            delay: 3000,
         },
 
         {
@@ -252,16 +252,16 @@ const gameConfig = {
 
     pickupConfig: {
         powerups: [
-            { id: 'heal_small',    label: '+20 HP',   instant: true,  stat: 'life',      value: 20,   tint: 0xff4477 },
-            { id: 'speed_boost',   label: 'Turbo',    instant: false, stat: 'speed',     value: 50,   duration: 8000, tint: 0x44ffcc },
-            { id: 'attack_boost',  label: 'Furia',    instant: false, stat: 'attackMod', value: 0.5,  duration: 8000, tint: 0xff8800 },
+            { id: 'insta_kill',  icon: 'pickup-damage',   hudIcon: 'hud-pickup-damage',   instant: false, stat: 'attackMod',       value: 9999, duration: 8000  },
+            { id: 'speed_boost', icon: 'pickup-speed',    hudIcon: 'hud-pickup-speed',    instant: false, stat: 'speed',           value: 80,   duration: 8000  },
+            { id: 'x2_points',   icon: 'pickup-x2points', hudIcon: 'hud-pickup-x2points', instant: false, stat: 'scoreMultiplier', value: 1,    duration: 10000 },
         ],
         dropTables: {
-            shadow:    [{ pickupType: 'powerup', id: 'heal_small',   chance: 0.10 }],
-            thief:     [{ pickupType: 'powerup', id: 'speed_boost',  chance: 0.20 }],
-            kamikaze:  [{ pickupType: 'powerup', id: 'attack_boost', chance: 0.25 }],
-            redVelvet: [{ pickupType: 'weapon',  slot: 'drum',       chance: 1.00 }],
-            beethoven: [{ pickupType: 'weapon',  slot: 'keyboard',   chance: 1.00 }],
+            shadow:    [{ pickupType: 'powerup', id: 'random', chance: 0.10 }],
+            thief:     [{ pickupType: 'powerup', id: 'random', chance: 0.10 }],
+            kamikaze:  [{ pickupType: 'powerup', id: 'random', chance: 0.10 }],
+            redVelvet: [{ pickupType: 'weapon',  slot: 'bass',     chance: 1.00 }],
+            beethoven: [{ pickupType: 'weapon',  slot: 'keyboard', chance: 1.00 }],
         },
         weaponSlots: { guitar: 0, drum: 1, bass: 2, keyboard: 3 },
         lockedWeapons: ['bass', 'keyboard'],

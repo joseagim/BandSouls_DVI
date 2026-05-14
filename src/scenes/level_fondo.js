@@ -24,8 +24,11 @@ export default class Level_Fondo extends Level {
      * Creación de los elementos de la escena principal de juego
      */
     create() {
-        //this.stars = 10;
-
+        // Fresh game start (no saved cross-state) — reset weapon unlocks so locked weapons
+        // don't carry over from a previous run
+        if (this.registry.get('savedWave') == null && this.registry.get('levelCrossState') == null) {
+            this.registry.remove('unlockedWeapons');
+        }
 
         var map = this.make.tilemap({ key: 'map' });
         var tiles = map.addTilesetImage('Modern_Exteriors_Complete_Tileset_32x32', 'city_tiles');
@@ -100,14 +103,15 @@ export default class Level_Fondo extends Level {
         this.shieldMachine.addCollider(this.player);
         this.shieldMachine.addCollider(this.spawner.PhysicsGroup());
 
-        // --- Portal al finalizar oleadas ---
-        this.portal = null;
-        this._portalIsNextLevel = false;
+        // --- Portales ---
+        this.portal = null;              // portal de tienda (temporal)
+        this.nextLevelPortal = null;     // portal permanente a level_2
         this.portalInteractionRange = 80;
         this._portalEnterTimer = null;
+        this._nextLevelPortalLocked = false;
+        this._nextLevelPortalTimer = null;
         this._portalBlinkTween = null;
 
-        // Crear la animación por si no estuviese creada en esta escena
         if (!this.anims.exists('portalAnim')) {
             this.anims.create({
                 key: 'portalAnim',
@@ -117,10 +121,21 @@ export default class Level_Fondo extends Level {
             });
         }
 
-        this.game.events.on('shopTime', () => this._spawnShopPortal());
-        this.game.events.on('nextLevelTime', () => this._spawnNextLevelPortal());
+        if (!this.anims.exists('portalLevelAnim')) {
+            this.anims.create({
+                key: 'portalLevelAnim',
+                frames: this.anims.generateFrameNumbers('portal_level', { start: 0, end: 7 }),
+                frameRate: 10,
+                repeat: -1
+            });
+        }
 
-        this.game.events.on('nextWave', () => {
+        const shopTimeHandler = () => this._spawnShopPortal();
+        const nextLevelTimeHandler = () => {
+            this._spawnNextLevelPortal();
+            this._spawnShopPortal();
+        };
+        const nextWaveHandler = () => {
             if (this.portal) {
                 this.portal.destroy();
                 this.portal = null;
@@ -130,6 +145,16 @@ export default class Level_Fondo extends Level {
                 this._portalEnterTimer = null;
             }
             this._stopPortalBlink();
+        };
+
+        this.game.events.on('shopTime', shopTimeHandler);
+        this.game.events.on('nextLevelTime', nextLevelTimeHandler);
+        this.game.events.on('nextWave', nextWaveHandler);
+
+        this.events.once('shutdown', () => {
+            this.game.events.off('shopTime', shopTimeHandler);
+            this.game.events.off('nextLevelTime', nextLevelTimeHandler);
+            this.game.events.off('nextWave', nextWaveHandler);
         });
     }
 
@@ -138,7 +163,7 @@ export default class Level_Fondo extends Level {
 
         this.shieldMachine.update(this.player);
 
-        // Control del portal si ya ha aparecido
+        // Portal de tienda (temporal)
         if (this.portal) {
             const distToPortal = Phaser.Math.Distance.Between(
                 this.player.x, this.player.y,
@@ -149,18 +174,27 @@ export default class Level_Fondo extends Level {
                 if (!this._portalEnterTimer) {
                     this._portalEnterTimer = this.time.delayedCall(3000, () => {
                         this._stopPortalBlink();
+                        this.registry.set('savedWave', this.waveManager.currentWave);
                         this.registry.set('ultiCooldown', {
                             [this.player.guitar.iconKey]: this.player.guitar._abilityTimer?.getRemaining() ?? 0,
                             [this.player.drum.iconKey]:   this.player.drum._abilityTimer?.getRemaining()   ?? 0,
                         });
+                        this.registry.set('playerState', {
+                            life: this.player.life,
+                            hasShield: this.player.hasShield,
+                            shieldHP: this.player.shieldHP,
+                            weapons: {
+                                guitar: this.player.guitar.iconKey,
+                                drum: this.player.drum.iconKey,
+                                bajo: this.player.bajo.iconKey,
+                                teclado: this.player.teclado.iconKey,
+                            },
+                            currentWeaponIndex: this.player.gunManager.currentIndex,
+                        });
+                        this.registry.set('spawnPosition', { x: this.portal.x, y: this.portal.y });
                         this.soundManager.stop('level1_music');
-                        if (this._portalIsNextLevel) {
-                            this.scene.start('level_2');
-                        } else {
-                            this.registry.set('savedWave', this.waveManager.currentWave);
-                            this.soundManager.play('shop_music');
-                            this.scene.start('shop', { from: this.scene.key });
-                        }
+                        this.soundManager.play('shop_music');
+                        this.scene.start('shop', { from: this.scene.key });
                     });
                     this._startPortalBlink();
                 }
@@ -172,12 +206,73 @@ export default class Level_Fondo extends Level {
                 }
             }
         }
+
+        // Portal permanente al nivel 2
+        if (this.nextLevelPortal && !this._nextLevelPortalLocked) {
+            const distToNext = Phaser.Math.Distance.Between(
+                this.player.x, this.player.y,
+                this.nextLevelPortal.x, this.nextLevelPortal.y
+            );
+
+            if (distToNext < this.portalInteractionRange) {
+                if (!this._nextLevelPortalTimer) {
+                    this._nextLevelPortalTimer = this.time.delayedCall(3000, () => {
+                        this._stopPortalBlink();
+                        this.registry.set('savedWave', this.waveManager.currentWave);
+                        this.registry.set('ultiCooldown', {
+                            [this.player.guitar.iconKey]: this.player.guitar._abilityTimer?.getRemaining() ?? 0,
+                            [this.player.drum.iconKey]:   this.player.drum._abilityTimer?.getRemaining()   ?? 0,
+                        });
+                        this.registry.set('playerState', {
+                            life: this.player.life,
+                            hasShield: this.player.hasShield,
+                            shieldHP: this.player.shieldHP,
+                            weapons: {
+                                guitar: this.player.guitar.iconKey,
+                                drum: this.player.drum.iconKey,
+                                bajo: this.player.bajo.iconKey,
+                                teclado: this.player.teclado.iconKey,
+                            },
+                            currentWeaponIndex: this.player.gunManager.currentIndex,
+                        });
+                        this.registry.set('spawnPosition', { x: 60, y: 60 });
+                        this.soundManager.stop('level1_music');
+                        this.scene.start('level_2');
+                    });
+                    this._startPortalBlink();
+                }
+            } else {
+                if (this._nextLevelPortalTimer) {
+                    this._nextLevelPortalTimer.remove();
+                    this._nextLevelPortalTimer = null;
+                    this._stopPortalBlink();
+                }
+            }
+        }
     }
 
     getStartingWave() {
         const saved = this.registry.get('savedWave');
         if (saved != null) {
             this.registry.remove('savedWave');
+            const nextLevelWaves = this.cache.json.get('data').nextLevelWaves ?? [];
+            if (nextLevelWaves.includes(saved)) {
+                // Volvemos de la tienda después de matar a Beethoven — restaurar estado sin iniciar nueva oleada
+                this.waveManager.currentWave = saved;
+                this.game.events.emit('nextWave', saved);
+                this.game.events.emit('enemyDead', 0);
+                // Cooldown de 20s si venimos de level_2 (levelCrossState presente)
+                if (this._pendingCrossState) {
+                    this._nextLevelPortalLocked = true;
+                    this.time.delayedCall(20000, () => { this._nextLevelPortalLocked = false; });
+                }
+                this.time.delayedCall(50, () => {
+                    this._spawnNextLevelPortal();
+                    this._spawnShopPortal();
+                    this.game.events.emit('nextLevelTime');
+                });
+                return null;
+            }
             return saved;
         }
         return 0;
@@ -191,19 +286,18 @@ export default class Level_Fondo extends Level {
         this.portal = this.physics.add.sprite(mapCenterX, mapCenterY, 'portal');
         this.portal.play('portalAnim');
         this.portal.setScale(2);
+        this.portal.setDepth(1);
     }
 
     _spawnNextLevelPortal() {
-        if (this.portal) {
-            this.portal.destroy();
-            this.portal = null;
-        }
-        this._portalIsNextLevel = true;
+        if (this.nextLevelPortal) return;
+        this.registry.set('level2Unlocked', true);
         const mapCenterX = 1280 / 2;
         const mapCenterY = 736 / 2 - 150;
-        this.portal = this.physics.add.sprite(mapCenterX, mapCenterY, 'portal');
-        this.portal.play('portalAnim');
-        this.portal.setScale(2);
+        this.nextLevelPortal = this.physics.add.sprite(130, 620, 'portal_level');
+        this.nextLevelPortal.play('portalLevelAnim');
+        this.nextLevelPortal.setScale(2);
+        this.nextLevelPortal.setDepth(1);
     }
 
     _startPortalBlink() {

@@ -38,6 +38,22 @@ export default class Shop extends Phaser.Scene {
             320,
             playerStats
         );
+        this.player.setDepth(2);
+
+        const savedPlayerState = this.registry.get('playerState');
+        if (savedPlayerState) {
+            if (savedPlayerState.weapons) {
+                this.player.restoreWeaponUpgrades(savedPlayerState.weapons);
+            }
+            if (savedPlayerState.hasShield && savedPlayerState.shieldHP > 0) {
+                this.player.activateShield();
+                this.player.shieldHP = savedPlayerState.shieldHP;
+            }
+            if (savedPlayerState.currentWeaponIndex != null) {
+                this.player.gunManager.currentIndex = savedPlayerState.currentWeaponIndex;
+                this.player.gunManager._updateUI();
+            }
+        }
 
 
 
@@ -49,6 +65,33 @@ export default class Shop extends Phaser.Scene {
         this.cameras.main.setBackgroundColor(0x000000);
 
         this.scene.launch('hud');
+        this._shopEnterTime = Date.now();
+
+        // Aplicar bloqueos de arma y mostrar cooldowns de ulti en el HUD
+        this.scene.get('hud').events.once('hud-ready', () => {
+            const pickupCfg = this.cache.json.get('data').pickupConfig;
+            if (pickupCfg) {
+                for (const slot of (pickupCfg.lockedWeapons ?? [])) {
+                    const idx = pickupCfg.weaponSlots[slot];
+                    if (idx !== undefined) this.player.gunManager.lockWeapon(idx);
+                }
+                const unlocked = this.registry.get('unlockedWeapons') || [];
+                for (const slot of unlocked) {
+                    const idx = pickupCfg.weaponSlots[slot];
+                    if (idx !== undefined) this.player.gunManager.unlockWeapon(idx);
+                }
+            }
+
+            // Mostrar cooldowns de ulti pendientes
+            const savedCooldown = this.registry.get('ultiCooldown') || {};
+            for (const [key, remaining] of Object.entries(savedCooldown)) {
+                if (remaining > 0) {
+                    this.game.events.emit('ultiStart', { weaponKey: key, cooldown: remaining });
+                } else {
+                    this.game.events.emit('ultiReady', { weaponKey: key });
+                }
+            }
+        });
 
         // --- Sistema de items en la tienda ---
         const tileSize = map.tileHeight; // 48
@@ -72,7 +115,7 @@ export default class Shop extends Phaser.Scene {
         this.pillarStates = this.shopItems.map((item, i) => {
             const position = this.pillarPositions[i];
             const sprite = this.add.sprite(position.x, position.y - tileSize / 2, item.image);
-            sprite.setOrigin(0.5, 1); // Anclar en la parte inferior-centro
+            sprite.setOrigin(0.5, 1).setDepth(3); // Anclar en la parte inferior-centro; encima del jugador (depth 2)
             return {
                 item: item,
                 purchased: false,
@@ -190,6 +233,14 @@ export default class Shop extends Phaser.Scene {
             if (!this._portalEnterTimer) {
                 this._portalEnterTimer = this.time.delayedCall(3000, () => {
                     this._stopPortalBlink();
+                    // Descontar el tiempo pasado en la tienda de los cooldowns de ulti
+                    const elapsed = Date.now() - this._shopEnterTime;
+                    const saved = this.registry.get('ultiCooldown') || {};
+                    const updated = {};
+                    for (const [key, rem] of Object.entries(saved)) {
+                        updated[key] = Math.max(0, rem - elapsed);
+                    }
+                    this.registry.set('ultiCooldown', updated);
                     this.soundManager.stop('shop_music');
                     this.scene.start(this.fromScene);
                 });

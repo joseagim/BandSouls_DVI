@@ -59,9 +59,8 @@ export default class HUD extends Phaser.Scene {
         pauseBtn.on('pointerdown',  () => pauseBtn.setTint(0x888888));
         pauseBtn.on('pointerup',    () => pauseBtn.setTint(0xaaaaaa));
         pauseBtn.on('pointerup', () => {
-            if (this.scene.isActive('pause_menu')) return;
             const active = GAMEPLAY_SCENES.find(k => this.scene.isActive(k));
-            if (active) this.scene.launch('pause_menu', { callerKey: active });
+            if (active) this._launchPause(active);
         });
 
         // Score — se posiciona en _createWeaponSelector
@@ -94,14 +93,21 @@ export default class HUD extends Phaser.Scene {
             strokeThickness: 4
         }).setOrigin(0.5, 0).setScrollFactor(0);
 
-        this.portalBanner = this.add.text(this.scale.width / 2, 140, '¡Ha aparecido un portal!', {
+        this.portalBanner = this.add.text(this.scale.width / 2, 140, '', {
             fontSize: '32px',
-            fill: '#ffe066',
+            fill: '#ffffff',
             fontFamily: 'Verdana',
             stroke: '#000000',
             strokeThickness: 5
-        }).setOrigin(0.5, 0).setScrollFactor(0);
-        this.portalBanner.visible = false;
+        }).setOrigin(0.5, 0).setScrollFactor(0).setVisible(false);
+
+        this.portalBannerSub = this.add.text(this.scale.width / 2, 184, '', {
+            fontSize: '22px',
+            fill: '#ffffff',
+            fontFamily: 'Verdana',
+            stroke: '#000000',
+            strokeThickness: 4
+        }).setOrigin(0.5, 0).setScrollFactor(0).setVisible(false);
 
         this.waitingNextWave = this.add.text(this.scale.width / 2, 185, 'La siguiente oleada comenzará en X', {
             fontSize: '32px',
@@ -234,7 +240,8 @@ export default class HUD extends Phaser.Scene {
         // evento: actualizar número de oleada
         registerGameEvent('nextWave', (waveNumber) => {
             this._showRound(waveNumber);
-            this.portalBanner.visible = false;
+            this.portalBanner.setVisible(false);
+            this.portalBannerSub.setVisible(false);
         });
 
         // evento: actualizar enemigos restantes
@@ -244,7 +251,13 @@ export default class HUD extends Phaser.Scene {
 
         // evento: portal de tienda aparecido
         registerGameEvent('shopTime', () => {
-            this.portalBanner.visible = true;
+            this.portalBanner.setText('¡Se ha abierto un portal!').setColor('#aa44ff').setVisible(true);
+            this.portalBannerSub.setVisible(false);
+        });
+
+        registerGameEvent('nextLevelTime', () => {
+            this.portalBanner.setText('¡Se ha abierto un portal!').setColor('#ff4800').setVisible(true);
+            this.portalBannerSub.setText('Ya puedes explorar la siguiente zona').setVisible(true);
         });
 
         // evento: mensaje de espera para la siguiente oleada
@@ -335,6 +348,7 @@ export default class HUD extends Phaser.Scene {
 
         // --- Weapon selector ---
         this._weaponSlots = [];
+        this._lockedPlayerIndices = new Set();
 
         const buildWeaponSelector = () => {
             const data = this.registry.get('weaponSelectorData');
@@ -344,6 +358,20 @@ export default class HUD extends Phaser.Scene {
         registerGameEvent('weaponSelectorInit', buildWeaponSelector);
         // Por si ya se emitió antes de que el HUD estuviera listo
         buildWeaponSelector();
+
+        registerGameEvent('weaponLocksChanged', (lockedIndices) => {
+            this._lockedPlayerIndices = new Set(lockedIndices);
+            const data = this.registry.get('weaponSelectorData');
+            const idx  = this._currentWeaponPlayerIndex ?? data?.currentIndex ?? 0;
+            if (data) this._createWeaponSelector(data.iconKeys, idx);
+        });
+
+        // --- Powerups activos (debajo de la barra de vida) ---
+        this._activePowerups = [];
+        registerGameEvent('pickupCollected', (cfg) => {
+            if (cfg.pickupType !== 'powerup' || !cfg.hudIcon || !cfg.duration) return;
+            this._addActivePowerup(cfg);
+        });
 
         registerGameEvent('weaponChanged', (index) => {
             this._currentWeaponPlayerIndex = index;
@@ -366,9 +394,8 @@ export default class HUD extends Phaser.Scene {
 
         // TAB key → pause menu
         this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TAB).on('down', () => {
-            if (this.scene.isActive('pause_menu')) return;
             const active = GAMEPLAY_SCENES.find(k => this.scene.isActive(k));
-            if (active) this.scene.launch('pause_menu', { callerKey: active });
+            if (active) this._launchPause(active);
         });
 
         this.events.emit('hud-ready');
@@ -387,14 +414,23 @@ export default class HUD extends Phaser.Scene {
         };
         // Orden fijo: guitarra, batería, bajo, teclado
         const weaponOrder = ['guitar-icon', 'drum-icon', 'bass-icon', 'keyboard-icon'];
-        const sortedKeys = [...iconKeys].sort((a, b) => {
-            const ai = weaponOrder.indexOf(iconBaseMap[a] ?? a);
-            const bi = weaponOrder.indexOf(iconBaseMap[b] ?? b);
+
+        // Filtrar armas bloqueadas: solo mostrar las desbloqueadas
+        const locked = this._lockedPlayerIndices ?? new Set();
+        const unlockedEntries = iconKeys
+            .map((key, pi) => ({ key, pi }))
+            .filter(({ pi }) => !locked.has(pi));
+
+        unlockedEntries.sort((a, b) => {
+            const ai = weaponOrder.indexOf(iconBaseMap[a.key] ?? a.key);
+            const bi = weaponOrder.indexOf(iconBaseMap[b.key] ?? b.key);
             return (ai < 0 ? 999 : ai) - (bi < 0 ? 999 : bi);
         });
 
+        const sortedKeys = unlockedEntries.map(e => e.key);
+
         this._playerToSortedIndex = {};
-        iconKeys.forEach((key, pi) => { this._playerToSortedIndex[pi] = sortedKeys.indexOf(key); });
+        unlockedEntries.forEach(({ pi }, si) => { this._playerToSortedIndex[pi] = si; });
         const sortedCurrentIndex = this._playerToSortedIndex[currentIndex] ?? 0;
         this._weaponIconKeys = sortedKeys;
 
@@ -532,13 +568,13 @@ export default class HUD extends Phaser.Scene {
 
         if (!trinkets || trinkets.length === 0) return;
 
+        // Debajo de la barra de vida (hpPadX=80, hpPadY=8, panel≈56px de alto)
         const maxPerRow = 7;
-        const iconSize  = 40;
-        const gap       = 5;
+        const iconSize  = 28;
+        const gap       = 4;
         const rowH      = iconSize + gap;
-        const totalRowW = maxPerRow * iconSize + (maxPerRow - 1) * gap;
-        const startX    = this.scale.width / 2 - totalRowW / 2;
-        const bottomY   = this.scale.height - 12; // casi pegados al borde inferior
+        const startX    = 90;
+        const startY    = 70; // justo debajo del panel de vida
 
         if (this._trinketExpanded === undefined) this._trinketExpanded = false;
 
@@ -547,25 +583,25 @@ export default class HUD extends Phaser.Scene {
         const visibleCount = Math.min(trinkets.length, visibleRows * maxPerRow);
         const hasMore = trinkets.length > maxPerRow;
 
-        // Filas crecen hacia arriba: fila 0 es la más baja
+        // Filas crecen hacia abajo
         trinkets.slice(0, visibleCount).forEach((t, i) => {
             if (!t.image) return;
             const col = i % maxPerRow;
             const row = Math.floor(i / maxPerRow);
             const icon = this.add.image(
                 startX + col * (iconSize + gap),
-                bottomY - row * rowH,
+                startY + row * rowH,
                 t.image
-            ).setOrigin(0, 1).setDisplaySize(iconSize, iconSize).setAlpha(0.35).setScrollFactor(0);
+            ).setOrigin(0, 0).setDisplaySize(iconSize, iconSize).setAlpha(0.85).setScrollFactor(0);
             this.trinketIcons.push(icon);
         });
 
         if (hasMore) {
-            const dotsY = bottomY - visibleRows * rowH - 4;
+            const dotsY = startY + visibleRows * rowH + 4;
             const dotsText = this.add.text(startX, dotsY, '...', {
-                fontSize: '20px', fill: '#ffffff', fontFamily: 'Verdana',
+                fontSize: '16px', fill: '#ffffff', fontFamily: 'Verdana',
                 stroke: '#000000', strokeThickness: 3
-            }).setOrigin(0, 1).setScrollFactor(0).setInteractive({ useHandCursor: true });
+            }).setOrigin(0, 0).setScrollFactor(0).setInteractive({ useHandCursor: true });
 
             dotsText.on('pointerdown', () => {
                 this._trinketExpanded = !this._trinketExpanded;
@@ -918,6 +954,97 @@ export default class HUD extends Phaser.Scene {
     _hideMachinePanel() {
         this._machinePanelElements.forEach(el => el.destroy());
         this._machinePanelElements = [];
+    }
+
+    _addActivePowerup(cfg) {
+        // Si el mismo powerup ya está activo, refrescarlo
+        const existingIdx = this._activePowerups.findIndex(p => p.id === cfg.id);
+        if (existingIdx !== -1) {
+            const old = this._activePowerups[existingIdx];
+            old.tween?.stop();
+            old.icon?.destroy();
+            old.bar?.destroy();
+            this._activePowerups.splice(existingIdx, 1);
+        }
+
+        this._activePowerups.push({ id: cfg.id, cfg, fill: { value: 1 }, duration: cfg.duration });
+        this._rebuildActivePowerups();
+    }
+
+    _rebuildActivePowerups() {
+        // Parar tweens y destruir visuales actuales
+        for (const entry of this._activePowerups) {
+            entry.tween?.stop();
+            entry.icon?.destroy();
+            entry.bar?.destroy();
+            entry.icon = null;
+            entry.bar = null;
+            entry.tween = null;
+        }
+
+        // Posición: debajo del panel de vida
+        // hpPadX=80, hpPadY=8, hpPanelH≈56 → powerups empiezan en y≈70
+        const iconGap = 10;
+        const barH    = 4;
+
+        // Calcular ancho real del primer icono para centrar (todos comparten el mismo spritesheet)
+        const sampleFrame = this.textures.getFrame(this._activePowerups[0]?.cfg.hudIcon);
+        const iconW = sampleFrame ? sampleFrame.realWidth : 32;
+
+        const totalW  = this._activePowerups.length * (iconW + iconGap) - iconGap;
+        const startX  = this.scale.width / 2 - totalW / 2;
+        const startY  = this.scale.height - 60;
+
+        for (let i = 0; i < this._activePowerups.length; i++) {
+            const entry = this._activePowerups[i];
+            const x = startX + i * (iconW + iconGap);
+
+            entry.icon = this.add.image(x, startY, entry.cfg.hudIcon)
+                .setScrollFactor(0).setDepth(200).setScale(1).setOrigin(0, 0);
+
+            const fw = this.textures.getFrame(entry.cfg.hudIcon)?.realWidth ?? iconW;
+            entry._bx = x;
+            entry._by = startY + fw + 4;
+            entry._bw = fw;
+            entry._bh = barH;
+
+            entry.bar = this.add.graphics().setScrollFactor(0).setDepth(200);
+            this._redrawPowerupBar(entry);
+
+            const remaining = entry.fill.value * entry.duration;
+            entry.tween = this.tweens.add({
+                targets: entry.fill,
+                value: 0,
+                duration: remaining,
+                ease: 'Linear',
+                onUpdate: () => this._redrawPowerupBar(entry),
+                onComplete: () => {
+                    entry.icon?.destroy();
+                    entry.bar?.destroy();
+                    this._activePowerups = this._activePowerups.filter(p => p !== entry);
+                    this._rebuildActivePowerups();
+                }
+            });
+        }
+    }
+
+    _redrawPowerupBar(entry) {
+        if (!entry.bar) return;
+        const { _bx: x, _by: y, _bw: w, _bh: h } = entry;
+        entry.bar.clear();
+        entry.bar.fillStyle(0x333333, 0.8);
+        entry.bar.fillRect(x, y, w, h);
+        entry.bar.fillStyle(0xffffff, 1);
+        entry.bar.fillRect(x, y, w * entry.fill.value, h);
+    }
+
+    _launchPause(callerKey) {
+        if (this.scene.isActive('pause_menu')) return;
+        this.tweens.pauseAll();
+        this.scene.launch('pause_menu', { callerKey });
+        this.scene.get('pause_menu').events.once('shutdown', () => {
+            this.tweens.resumeAll();
+        });
     }
 
     _showRound(number) {

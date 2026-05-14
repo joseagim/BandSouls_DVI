@@ -94,13 +94,18 @@ export default class Level2 extends Level {
         this.cameras.main.setBackgroundColor(0x000000);
 
 
-        // --- Portal al finalizar oleadas ---
+        // --- Portales ---
         this.portal = null;
         this.portalInteractionRange = 80;
         this._portalEnterTimer = null;
+        this._returnPortalTimer = null;
         this._portalBlinkTween = null;
+        // Cooldown de 20s al llegar desde level_fondo para no volver inmediatamente
+        this._returnPortalLocked = !!this._pendingPlayerState;
+        if (this._returnPortalLocked) {
+            this.time.delayedCall(20000, () => { this._returnPortalLocked = false; });
+        }
 
-        // Crear la animación por si no estuviese creada en esta escena
         if (!this.anims.exists('portalAnim')) {
             this.anims.create({
                 key: 'portalAnim',
@@ -110,9 +115,23 @@ export default class Level2 extends Level {
             });
         }
 
-        this.game.events.on('shopTime', () => this._spawnShopPortal());
+        if (!this.anims.exists('portalLevelAnim')) {
+            this.anims.create({
+                key: 'portalLevelAnim',
+                frames: this.anims.generateFrameNumbers('portal_level', { start: 0, end: 7 }),
+                frameRate: 10,
+                repeat: -1
+            });
+        }
 
-        this.game.events.on('nextWave', () => {
+        // Portal de retorno al nivel 1 — siempre visible
+        this.returnPortal = this.physics.add.sprite(60, 60, 'portal_level');
+        this.returnPortal.play('portalLevelAnim');
+        this.returnPortal.setScale(2);
+        this.returnPortal.setDepth(0);
+
+        const shopTimeHandler = () => this._spawnShopPortal();
+        const nextWaveHandler = () => {
             if (this.portal) {
                 this.portal.destroy();
                 this.portal = null;
@@ -122,6 +141,14 @@ export default class Level2 extends Level {
                 this._portalEnterTimer = null;
             }
             this._stopPortalBlink();
+        };
+
+        this.game.events.on('shopTime', shopTimeHandler);
+        this.game.events.on('nextWave', nextWaveHandler);
+
+        this.events.once('shutdown', () => {
+            this.game.events.off('shopTime', shopTimeHandler);
+            this.game.events.off('nextWave', nextWaveHandler);
         });
 
     }
@@ -130,7 +157,7 @@ export default class Level2 extends Level {
         if (this.easystar) this.easystar.calculate();
         if (this.jukeboxMachine) this.jukeboxMachine.update(this.player);
 
-        // Control del portal si ya ha aparecido
+        // Portal de tienda
         if (this.portal) {
             const distToPortal = Phaser.Math.Distance.Between(
                 this.player.x, this.player.y,
@@ -146,9 +173,21 @@ export default class Level2 extends Level {
                             [this.player.guitar.iconKey]: this.player.guitar._abilityTimer?.getRemaining() ?? 0,
                             [this.player.drum.iconKey]:   this.player.drum._abilityTimer?.getRemaining()   ?? 0,
                         });
+                        this.registry.set('playerState', {
+                            life: this.player.life,
+                            hasShield: this.player.hasShield,
+                            shieldHP: this.player.shieldHP,
+                            weapons: {
+                                guitar: this.player.guitar.iconKey,
+                                drum: this.player.drum.iconKey,
+                                bajo: this.player.bajo.iconKey,
+                                teclado: this.player.teclado.iconKey,
+                            },
+                            currentWeaponIndex: this.player.gunManager.currentIndex,
+                        });
+                        this.registry.set('spawnPosition', { x: this.portal.x, y: this.portal.y });
                         this.soundManager.stop('level1_music');
                         this.soundManager.play('shop_music');
-                        console.log('Entrando a la tienda, guardando estado: ');
                         this.scene.start('shop', { from: this.scene.key });
                     });
                     this._startPortalBlink();
@@ -157,6 +196,54 @@ export default class Level2 extends Level {
                 if (this._portalEnterTimer) {
                     this._portalEnterTimer.remove();
                     this._portalEnterTimer = null;
+                    this._stopPortalBlink();
+                }
+            }
+        }
+
+        // Portal de retorno al nivel 1
+        if (this.returnPortal && !this._returnPortalLocked) {
+            const distToReturn = Phaser.Math.Distance.Between(
+                this.player.x, this.player.y,
+                this.returnPortal.x, this.returnPortal.y
+            );
+
+            if (distToReturn < this.portalInteractionRange) {
+                if (!this._returnPortalTimer) {
+                    this._returnPortalTimer = this.time.delayedCall(3000, () => {
+                        this._stopPortalBlink();
+                        this.registry.set('savedWave', this.waveManager.currentWave - 1);
+                        this.registry.set('ultiCooldown', {
+                            [this.player.guitar.iconKey]: this.player.guitar._abilityTimer?.getRemaining() ?? 0,
+                            [this.player.drum.iconKey]:   this.player.drum._abilityTimer?.getRemaining()   ?? 0,
+                        });
+                        const remainingEnemies = {};
+                        for (const type of Object.keys(this.spawner.pool.active)) {
+                            remainingEnemies[type] = this.spawner.pool.active[type].length;
+                        }
+                        this.registry.set('levelCrossState', {
+                            life: this.player.life,
+                            hasShield: this.player.hasShield,
+                            shieldHP: this.player.shieldHP,
+                            weapons: {
+                                guitar: this.player.guitar.iconKey,
+                                drum: this.player.drum.iconKey,
+                                bajo: this.player.bajo.iconKey,
+                                teclado: this.player.teclado.iconKey,
+                            },
+                            currentWeaponIndex: this.player.gunManager.currentIndex,
+                            remainingEnemies,
+                        });
+                        this.registry.set('spawnPosition', { x: 130, y: 620 });
+                        this.soundManager.stop('level1_music');
+                        this.scene.start('level_fondo');
+                    });
+                    this._startPortalBlink();
+                }
+            } else {
+                if (this._returnPortalTimer) {
+                    this._returnPortalTimer.remove();
+                    this._returnPortalTimer = null;
                     this._stopPortalBlink();
                 }
             }
@@ -179,6 +266,7 @@ export default class Level2 extends Level {
         this.portal = this.physics.add.sprite(mapCenterX, mapCenterY, 'portal');
         this.portal.play('portalAnim');
         this.portal.setScale(2);
+        this.portal.setDepth(0);
     }
 
     _startPortalBlink() {

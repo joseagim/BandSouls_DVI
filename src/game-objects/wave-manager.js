@@ -12,7 +12,7 @@ export default class WaveManager {
         this.waveDelay = 3000;
     }
 
-    startNextWave() {
+    startNextWave(skipSpawn = false) {
         // si he llegado a la última oleada salgo
         if (this.currentWave >= this.wavesData.length) return;
 
@@ -20,13 +20,14 @@ export default class WaveManager {
 
         // pillo los datos de la wave 'currentWave'
         const wave = this.wavesData[this.currentWave];
-        // para cada enemigo del json lo spawneo
         const speedMult    = wave.speedMult    ?? 1;
         const cooldownMult = wave.cooldownMult ?? 1;
-        wave.enemies.forEach(enemyType => {
-            this.enemies += enemyType.count;
-            this.spawner.spawnMultiple(enemyType, speedMult, cooldownMult);
-        });
+        if (!skipSpawn) {
+            wave.enemies.forEach(enemyType => {
+                this.enemies += enemyType.count;
+                this.spawner.spawnMultiple(enemyType, speedMult, cooldownMult);
+            });
+        }
 
         this.scene.game.events.emit('enemyDead', this.enemies);
 
@@ -49,17 +50,19 @@ export default class WaveManager {
         this.scene.game.events.emit('enemyDead', this.enemies);
 
         if (this.enemies <= 0) {
-            this.scene.game.events.emit('finishWave', this.waveDelay);
-
             // Si era la última oleada
             if (this.currentWave >= this.wavesData.length) {
+                this.scene.game.events.emit('finishWave', this.waveDelay);
                 this.scene.game.events.emit('allWavesComplete');
             } else if (this.nextLevelWaves.includes(this.currentWave)) {
+                // Sin countdown: no hay siguiente oleada que esperar
                 this.scene.game.events.emit('nextLevelTime', this.currentWave);
             } else if (this.shopWaves.includes(this.currentWave)) {
+                this.scene.game.events.emit('finishWave', this.waveDelay);
                 this.scene.game.events.emit('shopTime', this.currentWave);
                 this.scene.time.delayedCall(this.waveDelay, () => this.startNextWave());
             } else {
+                this.scene.game.events.emit('finishWave', this.waveDelay);
                 this.scene.time.delayedCall(this.waveDelay, () => this.startNextWave());
             }
         }

@@ -16,9 +16,24 @@ export default class GunManager {
         this.weapons = weaponDefs.map(d => d.weapon);
         this.iconKeys = weaponDefs.map(d => d.iconKey);
         this.currentIndex = 0;
+        this.lockedWeapons = new Set();
 
         this._setupInput();
         this._setupUI();
+    }
+
+    lockWeapon(index) {
+        this.lockedWeapons.add(index);
+        this._updateUI();
+    }
+
+    unlockWeapon(index) {
+        this.lockedWeapons.delete(index);
+        this._updateUI();
+    }
+
+    isLocked(index) {
+        return this.lockedWeapons.has(index);
     }
 
     get currentWeapon() {
@@ -29,6 +44,7 @@ export default class GunManager {
         if (index < 0 || index >= this.weapons.length) return;
         if (index === this.currentIndex) return;
         if (this.player.isAttacking) return;
+        if (this.lockedWeapons.has(index)) return;
 
         const current = this.currentWeapon;
         if (current.isCharging) {
@@ -42,11 +58,23 @@ export default class GunManager {
     }
 
     switchNext() {
-        this.switchTo((this.currentIndex + 1) % this.weapons.length);
+        const len = this.weapons.length;
+        let next = (this.currentIndex + 1) % len;
+        for (let i = 0; i < len - 1; i++) {
+            if (!this.lockedWeapons.has(next)) break;
+            next = (next + 1) % len;
+        }
+        this.switchTo(next);
     }
 
     switchPrev() {
-        this.switchTo((this.currentIndex - 1 + this.weapons.length) % this.weapons.length);
+        const len = this.weapons.length;
+        let prev = (this.currentIndex - 1 + len) % len;
+        for (let i = 0; i < len - 1; i++) {
+            if (!this.lockedWeapons.has(prev)) break;
+            prev = (prev - 1 + len) % len;
+        }
+        this.switchTo(prev);
     }
 
     _setupInput() {
@@ -72,6 +100,7 @@ export default class GunManager {
     _updateUI() {
         this.scene.registry.set('weaponSelectorIndex', this.currentIndex);
         this.scene.game.events.emit('weaponChanged', this.currentIndex);
+        this.scene.game.events.emit('weaponLocksChanged', [...this.lockedWeapons]);
     }
 
     replaceWeapon(index, newWeapon, newIconKey) {

@@ -143,6 +143,9 @@ export default class Player extends actor {
             }
         });
 
+        // Multiplicador de puntuación (usado por powerups)
+        this.scoreMultiplier = 1;
+
         // Escudo
         this.hasShield = false;
         this.shieldHP = 0;
@@ -408,16 +411,16 @@ export default class Player extends actor {
         this._shieldSprite.setPosition(this.x, this.y);
         switch (this.lastDirection) {
             case 'down':
-                this._shieldSprite.setTexture('shield-front', frame).setFlipX(false).setDepth(1);
+                this._shieldSprite.setTexture('shield-front', frame).setFlipX(false).setDepth(this.depth - 1);
                 break;
             case 'up':
-                this._shieldSprite.setTexture('shield-back', frame).setFlipX(false).setDepth(3);
+                this._shieldSprite.setTexture('shield-back', frame).setFlipX(false).setDepth(this.depth + 1);
                 break;
             case 'right':
-                this._shieldSprite.setTexture('shield-side', frame).setFlipX(false).setDepth(1);
+                this._shieldSprite.setTexture('shield-side', frame).setFlipX(false).setDepth(this.depth - 1);
                 break;
             case 'left':
-                this._shieldSprite.setTexture('shield-side', frame).setFlipX(true).setDepth(1);
+                this._shieldSprite.setTexture('shield-side', frame).setFlipX(true).setDepth(this.depth - 1);
                 break;
         }
     }
@@ -475,6 +478,22 @@ export default class Player extends actor {
             this.gunManager.replaceWeapon(idx, upgraded, iconKey);
             this._playUpgradeFlash();
         }
+    }
+
+    restoreWeaponUpgrades(savedWeapons) {
+        const mk2Keys = ['guitarmk2-icon', 'drummk2-icon', 'bassmk2-icon', 'keyboardmk2-icon'];
+        const slotToIndex = { guitar: 0, drum: 1, bajo: 2, teclado: 3 };
+        const prevIndex = this.gunManager.currentIndex;
+
+        for (const [slot, iconKey] of Object.entries(savedWeapons)) {
+            if (mk2Keys.includes(iconKey) && slotToIndex[slot] !== undefined) {
+                this.gunManager.currentIndex = slotToIndex[slot];
+                this.upgradeCurrentWeapon();
+            }
+        }
+
+        this.gunManager.currentIndex = prevIndex;
+        this.gunManager._updateUI();
     }
 
     _playUpgradeFlash() {

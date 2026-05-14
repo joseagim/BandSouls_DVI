@@ -167,6 +167,7 @@ import tileset_grassland_props from '../../assets/map/tileset-grassland-props.pn
 import tileset_grassland_water from '../../assets/map/tileset-grassland-water.png';
 import level2JSON from '../../assets/map/level2.json';
 import bosque_level from '../../assets/map/bosque-map.json';
+import level_boss from '../../assets/map/level_boss.json';
 
 // machines
 import shieldhouseSprite from '../../assets/animations/machines/shieldhouse-sprite.png';
@@ -365,6 +366,7 @@ export default class Boot extends Phaser.Scene {
     this.load.spritesheet('spawn_portal', spawnPortalSpritesheet, { frameWidth: 48, frameHeight: 48 });
     this.load.tilemapTiledJSON('bosque_map', bosque_level);
     this.load.tilemapTiledJSON('map', city_json);
+    this.load.tilemapTiledJSON('level_boss', level_boss);
 
     // data
     this.cache.json.add('data', data);
@@ -458,7 +460,7 @@ export default class Boot extends Phaser.Scene {
     const confirmOption = () => {
       if (this.activeOption === this.startText) {
         this.soundManager.fadeOutMusic(500);
-        this.time.delayedCall(500, () => { this.scene.start('level_fondo'); });
+        this.time.delayedCall(500, () => { this.scene.start('level_boss'); });
       } else if (this.activeOption === this.optionsText) {
         this.scene.launch('options_menu');
       }

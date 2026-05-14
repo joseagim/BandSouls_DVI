@@ -6,6 +6,7 @@ import HUD from './scenes/hud.js';
 import Shop from './scenes/shop.js';
 import Level_Fondo from './scenes/level_fondo.js';
 import Level2 from './scenes/level2.js';
+import LevelBoss from './scenes/level_boss.js';
 import OptionsMenu from './scenes/options-menu.js';
 import PauseMenu from './scenes/pause-menu.js';
 import CursorScene from './scenes/cursor.js';
@@ -26,7 +27,7 @@ let config = {
         autoCenter: Phaser.Scale.CENTER_BOTH
     },
     pixelArt: true,
-    scene: [Boot, Level_Fondo, Level2, Shop, End, HUD, OptionsMenu, PauseMenu, CursorScene],
+    scene: [Boot, Level_Fondo, Level2, LevelBoss, Shop, End, HUD, OptionsMenu, PauseMenu, CursorScene],
     physics: {
         default: 'arcade',
         arcade: {

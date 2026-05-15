@@ -16,9 +16,9 @@ export default class BossProjectile {
      * @param {number}       damage    Daño que hace al jugador al contacto
      */
     constructor(scene, poolSize, damage) {
-        this.scene   = scene;
-        this.damage  = damage;
-        this.speed   = 600; // px/s, hacia la izquierda
+        this.scene = scene;
+        this.damage = damage;
+        this.speed = 600; // px/s, hacia la izquierda
 
         // Grupo de físicas que la escena usará para registrar overlaps con el jugador
         this.physicsGroup = scene.physics.add.group({ runChildUpdate: true });
@@ -29,9 +29,9 @@ export default class BossProjectile {
             const sprite = scene.add.sprite(0, 0, 'beethoven_attack');
             sprite.setActive(false);
             sprite.setVisible(false);
-            sprite.setScale(4);   // x4 para que sea visible
+            sprite.setScale(3.2); // x4 * 0.8 = x3.2
             scene.physics.add.existing(sprite);
-            sprite.body.enable       = false;
+            sprite.body.enable = false;
             sprite.body.allowGravity = false;
             // Hitbox en espacio de textura (Phaser lo multiplica por la escala):
             // 206×14 a escala 1 → 824×56 px en pantalla a escala 4.
@@ -66,27 +66,32 @@ export default class BossProjectile {
      * @param {number} laneY  Coordenada Y central del carril
      * @returns {boolean} true si se pudo disparar, false si el pool está agotado
      */
-    fire(laneY) {
+    fire(laneY, dir = 'right') {
         const sprite = this.pool.find(s => !s.active);
         if (!sprite) return false;
 
-        const cam     = this.scene.cameras.main;
-        const screenW = this.scene.scale.width;
+        const cam = this.scene.cameras.main;
+        const halfW = (sprite.width * sprite.scaleX) / 2;
 
-        // Ancho visual del proyectil a escala 4: 224 * 4 = 896 px
-        // El origen del sprite está en el centro (0.5), así que la mitad = 448 px.
-        // Ponemos el centro del sprite a 448 px a la derecha del borde de pantalla,
-        // de modo que el BORDE IZQUIERDO del sprite coincida exactamente con el borde
-        // derecho de la pantalla → entra suavemente desde fuera.
-        const halfW   = (sprite.width * sprite.scaleX) / 2;
-        const startX  = cam.scrollX + screenW + halfW;
-        const startY  = cam.scrollY + laneY;
+        let startX;
+        if (dir === 'left') {
+            startX = cam.worldView.left - halfW;  // entra desde la izquierda
+            sprite.body.setVelocity(this.speed, 0);
+            sprite.setFlipX(true);
+        } else {
+            startX = cam.worldView.right + halfW;  // entra desde la derecha
+            sprite.body.setVelocity(-this.speed, 0);
+            sprite.setFlipX(false);
+        }
+
+        const startY = cam.scrollY + laneY;
+
+        sprite._dir = dir; // guardar dirección para usarla en update()
 
         sprite.setPosition(startX, startY);
         sprite.setActive(true);
         sprite.setVisible(true);
         sprite.body.enable = true;
-        sprite.body.setVelocity(-this.speed, 0);
         sprite.play('beethoven_attack_anim', true);
 
         return true;
@@ -118,20 +123,27 @@ export default class BossProjectile {
      * Desactiva los proyectiles que han salido por el borde izquierdo.
      */
     update() {
-        const cam      = this.scene.cameras.main;
-        const leftEdge = cam.scrollX;  // borde izquierdo de la pantalla
+        const cam = this.scene.cameras.main;
+        const leftEdge = cam.worldView.left;
+        const rightEdgeScreen = cam.worldView.right;
 
         for (const sprite of this.pool) {
             if (!sprite.active) continue;
-            // El sprite tiene origen en el centro (0.5).
-            // Su borde DERECHO está en sprite.x + mitadAncho.
-            // Solo desactivamos cuando ese borde haya salido completamente
-            // por la izquierda, evitando el pop-out visual.
-            const halfW      = (sprite.width * sprite.scaleX) / 2;
-            const rightEdge  = sprite.x + halfW;
-            if (rightEdge < leftEdge) {
-                this._deactivate(sprite);
 
+            const halfW = (sprite.width * sprite.scaleX) / 2;
+
+            if (sprite._dir === 'left') {
+                // Va hacia la derecha. Desactivar cuando sale por el borde derecho
+                const leftEdgeSprite = sprite.x - halfW;
+                if (leftEdgeSprite > rightEdgeScreen) {
+                    this._deactivate(sprite);
+                }
+            } else {
+                // Va hacia la izquierda. Desactivar cuando sale por el borde izquierdo
+                const rightEdgeSprite = sprite.x + halfW;
+                if (rightEdgeSprite < leftEdge) {
+                    this._deactivate(sprite);
+                }
             }
         }
     }

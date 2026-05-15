@@ -1,382 +1,416 @@
 {
     "patterns": [
         {
-            "id": "single_2",
-            "description": "Solo libre posición 2",
+            "id": "olas_alternas_A",
+            "description": "2 intervalos (0 y 2000). Cruce de derecha a izquierda dejando huecos opuestos.",
             "attacks": [
                 {
                     "wait": 0,
                     "alert": 1000,
-                    "pos": 1
+                    "pos": 1,
+                    "dir": "right"
                 },
                 {
                     "wait": 0,
                     "alert": 1000,
-                    "pos": 3
+                    "pos": 3,
+                    "dir": "right"
                 },
                 {
                     "wait": 0,
                     "alert": 1000,
-                    "pos": 4
+                    "pos": 4,
+                    "dir": "right"
                 },
                 {
-                    "wait": 0,
+                    "wait": 2000,
                     "alert": 1000,
-                    "pos": 5
+                    "pos": 2,
+                    "dir": "left"
                 },
                 {
-                    "wait": 0,
+                    "wait": 2000,
                     "alert": 1000,
-                    "pos": 6
+                    "pos": 3,
+                    "dir": "left"
                 },
                 {
-                    "wait": 0,
+                    "wait": 2000,
                     "alert": 1000,
-                    "pos": 7
-                },
-                {
-                    "wait": 0,
-                    "alert": 1000,
-                    "pos": 8
+                    "pos": 5,
+                    "dir": "left"
                 }
             ]
         },
         {
-            "id": "single_7",
-            "description": "Solo libre posición 7",
+            "id": "olas_alternas_B",
+            "description": "2 intervalos (0 y 2000). Hueco central y luego huecos dobles.",
             "attacks": [
                 {
                     "wait": 0,
                     "alert": 1000,
-                    "pos": 1
+                    "pos": 1,
+                    "dir": "left"
                 },
                 {
                     "wait": 0,
                     "alert": 1000,
-                    "pos": 2
+                    "pos": 2,
+                    "dir": "left"
                 },
                 {
                     "wait": 0,
                     "alert": 1000,
-                    "pos": 3
+                    "pos": 4,
+                    "dir": "left"
                 },
                 {
                     "wait": 0,
                     "alert": 1000,
-                    "pos": 4
+                    "pos": 5,
+                    "dir": "left"
                 },
                 {
-                    "wait": 0,
+                    "wait": 2000,
                     "alert": 1000,
-                    "pos": 5
+                    "pos": 1,
+                    "dir": "right"
                 },
                 {
-                    "wait": 0,
+                    "wait": 2000,
                     "alert": 1000,
-                    "pos": 6
+                    "pos": 3,
+                    "dir": "right"
                 },
                 {
-                    "wait": 0,
+                    "wait": 2000,
                     "alert": 1000,
-                    "pos": 8
+                    "pos": 5,
+                    "dir": "right"
                 }
             ]
         },
         {
-            "id": "single_3",
-            "description": "Solo libre posición 3",
+            "id": "muro_cruzado",
+            "description": "2 intervalos (0 y 2000). Centro cerrado, bordes libres y viceversa.",
             "attacks": [
                 {
                     "wait": 0,
                     "alert": 1000,
-                    "pos": 1
+                    "pos": 2,
+                    "dir": "right"
                 },
                 {
                     "wait": 0,
                     "alert": 1000,
-                    "pos": 2
+                    "pos": 3,
+                    "dir": "right"
                 },
                 {
                     "wait": 0,
                     "alert": 1000,
-                    "pos": 4
+                    "pos": 4,
+                    "dir": "right"
                 },
                 {
-                    "wait": 0,
+                    "wait": 2000,
                     "alert": 1000,
-                    "pos": 5
+                    "pos": 1,
+                    "dir": "left"
                 },
                 {
-                    "wait": 0,
+                    "wait": 2000,
                     "alert": 1000,
-                    "pos": 6
+                    "pos": 3,
+                    "dir": "left"
                 },
                 {
-                    "wait": 0,
+                    "wait": 2000,
                     "alert": 1000,
-                    "pos": 7
-                },
-                {
-                    "wait": 0,
-                    "alert": 1000,
-                    "pos": 8
+                    "pos": 4,
+                    "dir": "left"
                 }
             ]
         },
         {
-            "id": "single_6",
-            "description": "Solo libre posición 6",
+            "id": "zig_zag_sencillo",
+            "description": "2 intervalos (0 y 2000). Misma dirección, distintos huecos.",
             "attacks": [
                 {
                     "wait": 0,
                     "alert": 1000,
-                    "pos": 1
+                    "pos": 1,
+                    "dir": "right"
                 },
                 {
                     "wait": 0,
                     "alert": 1000,
-                    "pos": 2
+                    "pos": 3,
+                    "dir": "right"
                 },
                 {
                     "wait": 0,
                     "alert": 1000,
-                    "pos": 3
+                    "pos": 5,
+                    "dir": "right"
                 },
                 {
-                    "wait": 0,
+                    "wait": 2000,
                     "alert": 1000,
-                    "pos": 4
+                    "pos": 2,
+                    "dir": "right"
                 },
                 {
-                    "wait": 0,
+                    "wait": 2000,
                     "alert": 1000,
-                    "pos": 5
+                    "pos": 3,
+                    "dir": "right"
                 },
                 {
-                    "wait": 0,
+                    "wait": 2000,
                     "alert": 1000,
-                    "pos": 7
-                },
-                {
-                    "wait": 0,
-                    "alert": 1000,
-                    "pos": 8
+                    "pos": 5,
+                    "dir": "right"
                 }
             ]
         },
         {
-            "id": "double_1_8",
-            "description": "Libres extremos 1 y 8",
+            "id": "inverso_rapido",
+            "description": "2 intervalos (0 y 2000). Todo desde la izquierda.",
             "attacks": [
                 {
                     "wait": 0,
                     "alert": 1000,
-                    "pos": 2
+                    "pos": 1,
+                    "dir": "left"
                 },
                 {
                     "wait": 0,
                     "alert": 1000,
-                    "pos": 3
+                    "pos": 2,
+                    "dir": "left"
                 },
                 {
                     "wait": 0,
                     "alert": 1000,
-                    "pos": 4
+                    "pos": 4,
+                    "dir": "left"
                 },
                 {
                     "wait": 0,
                     "alert": 1000,
-                    "pos": 5
+                    "pos": 5,
+                    "dir": "left"
                 },
                 {
-                    "wait": 0,
+                    "wait": 2000,
                     "alert": 1000,
-                    "pos": 6
+                    "pos": 1,
+                    "dir": "left"
                 },
                 {
-                    "wait": 0,
+                    "wait": 2000,
                     "alert": 1000,
-                    "pos": 7
+                    "pos": 3,
+                    "dir": "left"
+                },
+                {
+                    "wait": 2000,
+                    "alert": 1000,
+                    "pos": 4,
+                    "dir": "left"
                 }
             ]
         },
         {
-            "id": "double_2_7",
-            "description": "Libres 2 y 7",
+            "id": "espejo",
+            "description": "2 intervalos (0 y 2000). Cruce simétrico.",
             "attacks": [
                 {
                     "wait": 0,
                     "alert": 1000,
-                    "pos": 1
+                    "pos": 2,
+                    "dir": "left"
                 },
                 {
                     "wait": 0,
                     "alert": 1000,
-                    "pos": 3
+                    "pos": 3,
+                    "dir": "left"
                 },
                 {
                     "wait": 0,
                     "alert": 1000,
-                    "pos": 4
+                    "pos": 5,
+                    "dir": "left"
                 },
                 {
-                    "wait": 0,
+                    "wait": 2000,
                     "alert": 1000,
-                    "pos": 5
+                    "pos": 1,
+                    "dir": "right"
                 },
                 {
-                    "wait": 0,
+                    "wait": 2000,
                     "alert": 1000,
-                    "pos": 6
+                    "pos": 3,
+                    "dir": "right"
                 },
                 {
-                    "wait": 0,
+                    "wait": 2000,
                     "alert": 1000,
-                    "pos": 8
+                    "pos": 4,
+                    "dir": "right"
                 }
             ]
         },
         {
-            "id": "double_3_7",
-            "description": "Libres 3 y 7",
+            "id": "centro_bordes",
+            "description": "2 intervalos (0 y 2000). Alterna entre atacar bordes y centro.",
             "attacks": [
                 {
                     "wait": 0,
                     "alert": 1000,
-                    "pos": 1
+                    "pos": 2,
+                    "dir": "right"
                 },
                 {
                     "wait": 0,
                     "alert": 1000,
-                    "pos": 2
+                    "pos": 3,
+                    "dir": "right"
                 },
                 {
                     "wait": 0,
                     "alert": 1000,
-                    "pos": 4
+                    "pos": 4,
+                    "dir": "right"
                 },
                 {
-                    "wait": 0,
+                    "wait": 2000,
                     "alert": 1000,
-                    "pos": 5
+                    "pos": 1,
+                    "dir": "left"
                 },
                 {
-                    "wait": 0,
+                    "wait": 2000,
                     "alert": 1000,
-                    "pos": 6
+                    "pos": 2,
+                    "dir": "left"
                 },
                 {
-                    "wait": 0,
+                    "wait": 2000,
                     "alert": 1000,
-                    "pos": 8
+                    "pos": 4,
+                    "dir": "left"
+                },
+                {
+                    "wait": 2000,
+                    "alert": 1000,
+                    "pos": 5,
+                    "dir": "left"
                 }
             ]
         },
         {
-            "id": "double_2_6",
-            "description": "Libres 2 y 6",
+            "id": "bloqueo_doble",
+            "description": "2 intervalos (0 y 2000). Huecos que fuerzan cambiar de carril constante.",
             "attacks": [
                 {
                     "wait": 0,
                     "alert": 1000,
-                    "pos": 1
+                    "pos": 1,
+                    "dir": "left"
                 },
                 {
                     "wait": 0,
                     "alert": 1000,
-                    "pos": 3
+                    "pos": 3,
+                    "dir": "left"
                 },
                 {
                     "wait": 0,
                     "alert": 1000,
-                    "pos": 4
+                    "pos": 5,
+                    "dir": "left"
                 },
                 {
-                    "wait": 0,
+                    "wait": 2000,
                     "alert": 1000,
-                    "pos": 5
+                    "pos": 2,
+                    "dir": "left"
                 },
                 {
-                    "wait": 0,
+                    "wait": 2000,
                     "alert": 1000,
-                    "pos": 7
+                    "pos": 3,
+                    "dir": "left"
                 },
                 {
-                    "wait": 0,
+                    "wait": 2000,
                     "alert": 1000,
-                    "pos": 8
+                    "pos": 4,
+                    "dir": "left"
                 }
             ]
         },
         {
-            "id": "extra_4_8",
-            "description": "Libres 4 y 8",
+            "id": "escalera_bajada",
+            "description": "Patrón extra: escalera de arriba a abajo (1-4) con gap de 200ms",
             "attacks": [
                 {
                     "wait": 0,
                     "alert": 1000,
-                    "pos": 1
+                    "pos": 1,
+                    "dir": "right"
                 },
                 {
-                    "wait": 0,
+                    "wait": 200,
                     "alert": 1000,
-                    "pos": 2
+                    "pos": 2,
+                    "dir": "right"
                 },
                 {
-                    "wait": 0,
+                    "wait": 400,
                     "alert": 1000,
-                    "pos": 3
+                    "pos": 3,
+                    "dir": "right"
                 },
                 {
-                    "wait": 0,
+                    "wait": 600,
                     "alert": 1000,
-                    "pos": 5
-                },
-                {
-                    "wait": 0,
-                    "alert": 1000,
-                    "pos": 6
-                },
-                {
-                    "wait": 0,
-                    "alert": 1000,
-                    "pos": 7
+                    "pos": 4,
+                    "dir": "right"
                 }
             ]
         },
         {
-            "id": "extra_1_5",
-            "description": "Libres 1 y 5",
+            "id": "escalera_subida",
+            "description": "Patrón extra: escalera de abajo a arriba (5-2) con gap de 200ms",
             "attacks": [
                 {
                     "wait": 0,
                     "alert": 1000,
-                    "pos": 2
+                    "pos": 5,
+                    "dir": "left"
                 },
                 {
-                    "wait": 0,
+                    "wait": 200,
                     "alert": 1000,
-                    "pos": 3
+                    "pos": 4,
+                    "dir": "left"
                 },
                 {
-                    "wait": 0,
+                    "wait": 400,
                     "alert": 1000,
-                    "pos": 4
+                    "pos": 3,
+                    "dir": "left"
                 },
                 {
-                    "wait": 0,
+                    "wait": 600,
                     "alert": 1000,
-                    "pos": 6
-                },
-                {
-                    "wait": 0,
-                    "alert": 1000,
-                    "pos": 7
-                },
-                {
-                    "wait": 0,
-                    "alert": 1000,
-                    "pos": 8
+                    "pos": 2,
+                    "dir": "left"
                 }
             ]
         }

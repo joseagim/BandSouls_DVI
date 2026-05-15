@@ -140,22 +140,11 @@ export default class Level extends Phaser.Scene {
                 },
                 null, this
             );
-
-            this.tweens.add({
-                targets: this.cameras.main,
-                zoom: 1,
-                duration: 1500,
-                ease: 'Sine.easeInOut',
-            });
+            // No zoom animation: the boss scene handles camera setup independently
         };
 
         const bossDefeatedHandler = () => {
-            this.tweens.add({
-                targets: this.cameras.main,
-                zoom: 1.5,
-                duration: 1000,
-                ease: 'Sine.easeInOut',
-            });
+            // No zoom animation on boss defeat
         };
 
         this.game.events.on('beethovenSpawned', beethovenHandler);

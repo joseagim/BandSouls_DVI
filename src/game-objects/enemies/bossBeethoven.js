@@ -31,7 +31,7 @@ export default class EnemyBeethoven extends Enemy {
         this.is_knockback = false;
 
         // ── Visual ───────────────────────────────────────────────────────
-        this.setScale(4);
+        this.setScale(3.5);
 
         // ── Cuerpo físico ─────────────────────────────────────────────────
         // El boss NO se mueve ni recibe knockback.
@@ -64,7 +64,8 @@ export default class EnemyBeethoven extends Enemy {
             alert.setVisible(false);
             alert.setAlpha(0);
             alert.setDepth(10);
-            alert.setScale(3);
+            alert.setScale(2.4); // x3 * 0.8 = x2.4
+
             alert._inUse = false;   // flag explícito de disponibilidad del slot
             this._alerts.push(alert);
         }
@@ -142,6 +143,7 @@ export default class EnemyBeethoven extends Enemy {
 
     _scheduleAttack(attack) {
         const laneY = this._laneY(attack.pos);
+        const dir = attack.dir || 'right'; // 'right' por defecto (sale de la derecha, va hacia la izquierda)
 
         // Constantes de timing (alert nunca será < 100ms)
         const FADE_IN = 30;  // ms para aparecer
@@ -155,16 +157,24 @@ export default class EnemyBeethoven extends Enemy {
         if (alertSprite) {
             alertSprite._inUse = true;   // marcar como ocupado
             const cam = this.scene.cameras.main;
-            const screenW = this.scene.scale.width;
-            // Anchura visual del sprite (textura × escala)
             const alertW = alertSprite.width * alertSprite.scaleX;
-            const alertX = cam.scrollX + screenW - 20 - alertW / 2;
+
+            let alertX;
+            if (dir === 'left') {
+                // worldView.left es el borde izquierdo exacto
+                alertX = cam.worldView.left + 20 + alertW / 2;
+                alertSprite.setFlipX(true);
+            } else {
+                alertX = cam.worldView.right - 20 - alertW / 2;
+                alertSprite.setFlipX(false);
+            }
+
             const alertY = cam.scrollY + laneY;
 
             alertSprite.setPosition(alertX, alertY);
             alertSprite.setVisible(true);
             alertSprite.setAlpha(0);
-            console.log("[Atacar] Pos: " + attack.pos);
+            console.log("[Atacar] Pos: " + attack.pos + " Dir: " + dir);
 
             // Fase 1: fade in (30 ms)
             this.scene.tweens.add({
@@ -194,7 +204,7 @@ export default class EnemyBeethoven extends Enemy {
         // Secuencia: FADE_IN(30) + hold + FADE_OUT(30) + REST(20) = attack.alert
         const fireT = this.scene.time.delayedCall(attack.alert, () => {
             if (!this.active || this.isDead) return;
-            this.projectilePool.fire(laneY);
+            this.projectilePool.fire(laneY, dir);
         });
         this._activeTimers.push(fireT);
     }
@@ -203,8 +213,32 @@ export default class EnemyBeethoven extends Enemy {
     // HELPERS
     // ─────────────────────────────────────────────────────────────────────────
     _laneY(pos) {
-        // Pantalla dividida en 8 carriles: pos va de 1 a 8
-        return (this.scene.scale.height / 9) * pos;
+        // Área jugable: desde la pared superior (Y=64) hasta las vallas inferiores (Y=416)
+        const topWall = 48;
+        const bottomWall = 432;
+        const availableHeight = bottomWall - topWall; // 352 px
+
+        // La altura de la hitbox de cada proyectil es 14px * escala 3.2 = 44.8px
+        // Usamos esto como referencia para que no se superpongan letalmente y dejen huecos justos.
+        const projHeight = 44.8;
+        const numLanes = 5;
+
+        // Queremos que haya la misma separación (gap) en:
+        // 1. Margen superior (entre topWall y el primer proyectil)
+        // 2. Entre cada uno de los 6 proyectiles (5 huecos)
+        // 3. Margen inferior (entre el último proyectil y bottomWall)
+        // En total son 7 separaciones iguales.
+        const gap = (availableHeight - (projHeight * numLanes)) / (numLanes + 1); // ~11.88 px
+
+        const lanes = [];
+        let currentY = topWall + gap + (projHeight / 2);
+        for (let i = 0; i < numLanes; i++) {
+            lanes.push(Math.round(currentY) + 100);
+            currentY += projHeight + gap;
+        }
+
+        // Las posiciones generadas serán: [98, 155, 212, 268, 325, 382]
+        return lanes[(pos - 1)] ?? lanes[0];
     }
 
     _getInactiveAlert() {

@@ -52,8 +52,16 @@ export default class Spawner {
             this.scene.time.addEvent({
                 delay: config.spawnDelay * i,
                 callback: () => {
-                    const x = Phaser.Math.Between(50, 750);
-                    const y = Phaser.Math.Between(50, 550);
+                    let x, y;
+                    if (config.type === 'beethoven') {
+                        // El boss aparece siempre en el centro del mapa
+                        const b = this.scene.physics.world.bounds;
+                        x = b.width  / 2;
+                        y = b.height / 2;
+                    } else {
+                        x = Phaser.Math.Between(50, 750);
+                        y = Phaser.Math.Between(50, 550);
+                    }
                     this.spawn(x, y, config.type, speedMult, cooldownMult);
                 }
             });

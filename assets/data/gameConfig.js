@@ -184,7 +184,38 @@ const gameConfig = {
             speedMult: 0.75,
             cooldownMult: 1,
             enemies: [
-                { type: "shadow", count: 1, spawnDelay: 2000 },
+                { type: "shadow", count: 1, spawnDelay: 100 }
+            ],
+            delay: 1000,
+        },
+        {
+            waveNumber: 2,
+            speedMult: 0.75,
+            cooldownMult: 1,
+            enemies: [
+                { type: "beethoven", count: 1, spawnDelay: 0 }
+            ],
+            delay: 1000,
+        },
+        {
+            waveNumber: 3,
+            speedMult: 0.75,
+            cooldownMult: 0.8,
+            enemies: [
+                { type: "shadow", count: 10, spawnDelay: 2000 },
+                { type: "kamikaze", count: 2, spawnDelay: 5000 },
+                { type: "redVelvet", count: 1, spawnDelay: 7000 }
+            ],
+            delay: 20000,
+        }
+        /*
+        {
+            waveNumber: 1,
+            speedMult: 0.75,
+            cooldownMult: 1,
+            enemies: [
+                { type: "shadow", count: 1, spawnDelay: 2000 }
+                //{ type: "beethoven", count: 1, spawnDelay: 0 }
             ],
             delay: 3000,
         },
@@ -205,7 +236,7 @@ const gameConfig = {
             enemies: [
                 { type: "shadow", count: 10, spawnDelay: 2000 },
                 { type: "kamikaze", count: 2, spawnDelay: 5000 },
-                { type: "redVelvet", count: 1, spawnDelay: 7000}
+                { type: "redVelvet", count: 1, spawnDelay: 7000 }
             ],
             delay: 20000,
         },
@@ -217,9 +248,9 @@ const gameConfig = {
             enemies: [
                 { type: "shadow", count: 10, spawnDelay: 3000 },
                 { type: "kamikaze", count: 2, spawnDelay: 4000 },
-                { type: "thief", count: 4, spawnDelay: 4000},
+                { type: "thief", count: 4, spawnDelay: 4000 },
                 { type: "shadow", count: 10, spawnDelay: 6000 },
-                { type: "redVelvet", count: 1, spawnDelay: 7000}
+                { type: "redVelvet", count: 1, spawnDelay: 7000 }
             ],
             delay: 5000,
         },
@@ -239,30 +270,41 @@ const gameConfig = {
             enemies: [
                 { type: "shadow", count: 400, spawnDelay: 3000 },
                 { type: "kamikaze", count: 30, spawnDelay: 4000 },
-                { type: "thief", count: 100, spawnDelay: 4000},
+                { type: "thief", count: 100, spawnDelay: 4000 },
                 { type: "shadow", count: 200, spawnDelay: 6000 },
-                { type: "redVelvet", count: 3, spawnDelay: 7000}
+                { type: "redVelvet", count: 3, spawnDelay: 7000 }
             ],
             delay: 5000,
         }
-
+*/
     ],
 
     shopWaves: [3, 6, 9],
-    nextLevelWaves: [4],
+    // Cada entrada indica qué oleada (wave) dispara el portal al siguiente nivel
+    // y a qué escena de Phaser (nextScene) manda al jugador.
+    /*
+    nextLevelWaves: [
+        { wave: 4, nextScene: 'level_boss' },
+        { wave: 5, nextScene: 'level_2' },
+    ],
+    */
+    nextLevelWaves: [
+        { wave: 1, nextScene: 'level_boss' },
+        { wave: 2, nextScene: 'level_2' },
+    ],
 
     pickupConfig: {
         powerups: [
-            { id: 'insta_kill',  icon: 'pickup-damage',   hudIcon: 'hud-pickup-damage',   instant: false, stat: 'attackMod',       value: 9999, duration: 8000  },
-            { id: 'speed_boost', icon: 'pickup-speed',    hudIcon: 'hud-pickup-speed',    instant: false, stat: 'speed',           value: 80,   duration: 8000  },
-            { id: 'x2_points',   icon: 'pickup-x2points', hudIcon: 'hud-pickup-x2points', instant: false, stat: 'scoreMultiplier', value: 1,    duration: 10000 },
+            { id: 'insta_kill', icon: 'pickup-damage', hudIcon: 'hud-pickup-damage', instant: false, stat: 'attackMod', value: 9999, duration: 8000 },
+            { id: 'speed_boost', icon: 'pickup-speed', hudIcon: 'hud-pickup-speed', instant: false, stat: 'speed', value: 80, duration: 8000 },
+            { id: 'x2_points', icon: 'pickup-x2points', hudIcon: 'hud-pickup-x2points', instant: false, stat: 'scoreMultiplier', value: 1, duration: 10000 },
         ],
         dropTables: {
-            shadow:    [{ pickupType: 'powerup', id: 'random', chance: 0.10 }],
-            thief:     [{ pickupType: 'powerup', id: 'random', chance: 0.10 }],
-            kamikaze:  [{ pickupType: 'powerup', id: 'random', chance: 0.10 }],
-            redVelvet: [{ pickupType: 'weapon',  slot: 'bass',     chance: 1.00 }],
-            beethoven: [{ pickupType: 'weapon',  slot: 'keyboard', chance: 1.00 }],
+            shadow: [{ pickupType: 'powerup', id: 'random', chance: 0.10 }],
+            thief: [{ pickupType: 'powerup', id: 'random', chance: 0.10 }],
+            kamikaze: [{ pickupType: 'powerup', id: 'random', chance: 0.10 }],
+            redVelvet: [{ pickupType: 'weapon', slot: 'bass', chance: 1.00 }],
+            beethoven: [{ pickupType: 'weapon', slot: 'keyboard', chance: 1.00 }],
         },
         weaponSlots: { guitar: 0, drum: 1, bass: 2, keyboard: 3 },
         lockedWeapons: ['bass', 'keyboard'],

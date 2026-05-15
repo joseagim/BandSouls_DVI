@@ -54,9 +54,10 @@ export default class WaveManager {
             if (this.currentWave >= this.wavesData.length) {
                 this.scene.game.events.emit('finishWave', this.waveDelay);
                 this.scene.game.events.emit('allWavesComplete');
-            } else if (this.nextLevelWaves.includes(this.currentWave)) {
-                // Sin countdown: no hay siguiente oleada que esperar
-                this.scene.game.events.emit('nextLevelTime', this.currentWave);
+            } else if (this.nextLevelWaves.some(e => e.wave === this.currentWave)) {
+                // Sin countdown: emitimos el objeto completo para que la escena sepa a dónde ir
+                const entry = this.nextLevelWaves.find(e => e.wave === this.currentWave);
+                this.scene.game.events.emit('nextLevelTime', entry);
             } else if (this.shopWaves.includes(this.currentWave)) {
                 this.scene.game.events.emit('finishWave', this.waveDelay);
                 this.scene.game.events.emit('shopTime', this.currentWave);

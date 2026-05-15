@@ -131,7 +131,8 @@ export default class Level_Fondo extends Level {
         }
 
         const shopTimeHandler = () => this._spawnShopPortal();
-        const nextLevelTimeHandler = () => {
+        const nextLevelTimeHandler = ({ nextScene } = {}) => {
+            this._nextScene = nextScene;  // guardamos el destino para usarlo en el portal
             this._spawnNextLevelPortal();
             this._spawnShopPortal();
         };
@@ -235,9 +236,11 @@ export default class Level_Fondo extends Level {
                             },
                             currentWeaponIndex: this.player.gunManager.currentIndex,
                         });
-                        this.registry.set('spawnPosition', { x: 60, y: 60 });
+                        // Posición de entrada al boss: 1/4 del ancho, mitad del alto del mapa boss (850×450)
+                        this.registry.set('spawnPosition', { x: 850 / 4, y: 450 / 2 });
+
                         this.soundManager.stop('level1_music');
-                        this.scene.start('level_2');
+                        this.scene.start(this._nextScene || 'level_2');
                     });
                     this._startPortalBlink();
                 }
@@ -256,7 +259,7 @@ export default class Level_Fondo extends Level {
         if (saved != null) {
             this.registry.remove('savedWave');
             const nextLevelWaves = this.cache.json.get('data').nextLevelWaves ?? [];
-            if (nextLevelWaves.includes(saved)) {
+            if (nextLevelWaves.some(e => e.wave === saved)) {
                 // Volvemos de la tienda después de matar a Beethoven — restaurar estado sin iniciar nueva oleada
                 this.waveManager.currentWave = saved;
                 this.game.events.emit('nextWave', saved);
@@ -269,7 +272,7 @@ export default class Level_Fondo extends Level {
                 this.time.delayedCall(50, () => {
                     this._spawnNextLevelPortal();
                     this._spawnShopPortal();
-                    this.game.events.emit('nextLevelTime');
+                    this.game.events.emit('nextLevelTime', { nextScene: this._nextScene });
                 });
                 return null;
             }

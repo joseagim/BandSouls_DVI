@@ -1,9 +1,9 @@
 import Phaser from 'phaser'
 
 // pointers
-import cursorArrow  from '../../assets/sprites/pointers/arrow.png'
-import cursorHand   from '../../assets/sprites/pointers/hand.png'
-import cursorDrag   from '../../assets/sprites/pointers/drag.png'
+import cursorArrow from '../../assets/sprites/pointers/arrow.png'
+import cursorHand from '../../assets/sprites/pointers/hand.png'
+import cursorDrag from '../../assets/sprites/pointers/drag.png'
 import cursorSniper from '../../assets/sprites/pointers/sniper.png'
 
 // title screen
@@ -18,20 +18,20 @@ import optionsHoverJSON from '../../assets/sprites/title-screen/options-hover-at
 import selectionPick from '../../assets/sprites/title-screen/selection-pick.png'
 
 // options menu
-import optionsWindowPng  from '../../assets/sprites/options-menu/options-window.png'
-import pauseWindowPng   from '../../assets/sprites/options-menu/pause-window.png'
-import xButtonPng        from '../../assets/sprites/options-menu/x-button.png'
-import scrollBarPng      from '../../assets/sprites/options-menu/scroll-bar.png'
-import scrollBarFillPng  from '../../assets/sprites/options-menu/scroll-bar-fill.png'
+import optionsWindowPng from '../../assets/sprites/options-menu/options-window.png'
+import pauseWindowPng from '../../assets/sprites/options-menu/pause-window.png'
+import xButtonPng from '../../assets/sprites/options-menu/x-button.png'
+import scrollBarPng from '../../assets/sprites/options-menu/scroll-bar.png'
+import scrollBarFillPng from '../../assets/sprites/options-menu/scroll-bar-fill.png'
 import scrollBarIndexPng from '../../assets/sprites/options-menu/scroll-bar-index.png'
-import checkOffPng       from '../../assets/sprites/options-menu/check-button.png'
-import checkOnPng        from '../../assets/sprites/options-menu/check-button-1.png'
-import soundButtonPng    from '../../assets/sprites/options-menu/sound-button.png'
-import soundMutePng      from '../../assets/sprites/options-menu/sound-button-mute.png'
-import sfxTextPng        from '../../assets/sprites/options-menu/SFX-text.png'
-import musicTextPng      from '../../assets/sprites/options-menu/MUSIC-text.png'
+import checkOffPng from '../../assets/sprites/options-menu/check-button.png'
+import checkOnPng from '../../assets/sprites/options-menu/check-button-1.png'
+import soundButtonPng from '../../assets/sprites/options-menu/sound-button.png'
+import soundMutePng from '../../assets/sprites/options-menu/sound-button-mute.png'
+import sfxTextPng from '../../assets/sprites/options-menu/SFX-text.png'
+import musicTextPng from '../../assets/sprites/options-menu/MUSIC-text.png'
 import fullscreenTextPng from '../../assets/sprites/options-menu/FULLSCREEN-text.png'
-import returnToMenuPng   from '../../assets/sprites/options-menu/return-to-menu-button.png'
+import returnToMenuPng from '../../assets/sprites/options-menu/return-to-menu-button.png'
 
 // player (laude)
 import laudeSpritesheet from '../../assets/animations/laude/sprite.png'
@@ -80,18 +80,18 @@ import keyboardUltiProjectileAtlas from '../../assets/sprites/weapons/keyboard/k
 import weaponSelected from '../../assets/sprites/weapons/selected-frame.png'
 import weaponUnselected from '../../assets/sprites/weapons/unselected-frame.png'
 // weapon pickups (sprites del mundo)
-import drumPickup     from '../../assets/sprites/weapons/drum/drum-pickup.png'
-import bassPickup     from '../../assets/sprites/weapons/bass/bass-pickup.png'
+import drumPickup from '../../assets/sprites/weapons/drum/drum-pickup.png'
+import bassPickup from '../../assets/sprites/weapons/bass/bass-pickup.png'
 import keyboardPickup from '../../assets/sprites/weapons/keyboard/keyboard-pickup.png'
 
 // power-ups (sprites del mundo)
-import pickupDamageSprite   from '../../assets/animations/power-ups/more-damage-sprite.png'
-import pickupSpeedSprite    from '../../assets/animations/power-ups/more-speed-sprite.png'
+import pickupDamageSprite from '../../assets/animations/power-ups/more-damage-sprite.png'
+import pickupSpeedSprite from '../../assets/animations/power-ups/more-speed-sprite.png'
 import pickupX2PointsSprite from '../../assets/animations/power-ups/x2points-sprite.png'
-import pickupBase           from '../../assets/animations/power-ups/power-up-base.png'
+import pickupBase from '../../assets/animations/power-ups/power-up-base.png'
 // power-ups (iconos HUD)
-import hudPickupDamage   from '../../assets/sprites/hud/power-ups/power-up-more-damage.png'
-import hudPickupSpeed    from '../../assets/sprites/hud/power-ups/power-up-more-speed.png'
+import hudPickupDamage from '../../assets/sprites/hud/power-ups/power-up-more-damage.png'
+import hudPickupSpeed from '../../assets/sprites/hud/power-ups/power-up-more-speed.png'
 import hudPickupX2Points from '../../assets/sprites/hud/power-ups/power-up-x2points.png'
 
 // weapons MK2
@@ -189,8 +189,8 @@ import level_boss from '../../assets/map/level_boss.json';
 import shieldhouseSprite from '../../assets/animations/machines/shieldhouse-sprite.png';
 import shieldhouseAtlas from '../../assets/animations/machines/shieldhouse-sprite.json';
 import shieldFront from '../../assets/animations/shield/shield-front.png';
-import shieldBack  from '../../assets/animations/shield/shield-back.png';
-import shieldSide  from '../../assets/animations/shield/shield-side.png';
+import shieldBack from '../../assets/animations/shield/shield-back.png';
+import shieldSide from '../../assets/animations/shield/shield-side.png';
 
 // data
 import data from '../../assets/data/gameConfig';
@@ -254,20 +254,20 @@ export default class Boot extends Phaser.Scene {
     this.load.image('selectionPick', selectionPick);
 
     // options menu
-    this.load.image('opt_window',      optionsWindowPng);
-    this.load.image('pause_window',    pauseWindowPng);
-    this.load.image('opt_x',           xButtonPng);
-    this.load.image('opt_scrollbar',   scrollBarPng);
-    this.load.image('opt_scrollfill',  scrollBarFillPng);
+    this.load.image('opt_window', optionsWindowPng);
+    this.load.image('pause_window', pauseWindowPng);
+    this.load.image('opt_x', xButtonPng);
+    this.load.image('opt_scrollbar', scrollBarPng);
+    this.load.image('opt_scrollfill', scrollBarFillPng);
     this.load.image('opt_scrollindex', scrollBarIndexPng);
-    this.load.image('opt_check_off',   checkOffPng);
-    this.load.image('opt_check_on',    checkOnPng);
-    this.load.image('opt_sound',       soundButtonPng);
-    this.load.image('opt_sound_mute',  soundMutePng);
-    this.load.image('opt_text_sfx',        sfxTextPng);
-    this.load.image('opt_text_music',      musicTextPng);
+    this.load.image('opt_check_off', checkOffPng);
+    this.load.image('opt_check_on', checkOnPng);
+    this.load.image('opt_sound', soundButtonPng);
+    this.load.image('opt_sound_mute', soundMutePng);
+    this.load.image('opt_text_sfx', sfxTextPng);
+    this.load.image('opt_text_music', musicTextPng);
     this.load.image('opt_text_fullscreen', fullscreenTextPng);
-    this.load.image('opt_return_to_menu',  returnToMenuPng);
+    this.load.image('opt_return_to_menu', returnToMenuPng);
 
     // player (laude)
     this.load.atlas('laude', laudeSpritesheet, laudeAtlas);
@@ -304,17 +304,17 @@ export default class Boot extends Phaser.Scene {
     this.load.image('weapon-selected', weaponSelected);
     this.load.image('weapon-unselected', weaponUnselected);
     // weapon pickups
-    this.load.image('drum-pickup',     drumPickup);
-    this.load.image('bass-pickup',     bassPickup);
+    this.load.image('drum-pickup', drumPickup);
+    this.load.image('bass-pickup', bassPickup);
     this.load.image('keyboard-pickup', keyboardPickup);
     // power-ups: sprites del mundo (pickup en el suelo)
-    this.load.image('pickup-damage',   pickupDamageSprite);
-    this.load.image('pickup-speed',    pickupSpeedSprite);
+    this.load.image('pickup-damage', pickupDamageSprite);
+    this.load.image('pickup-speed', pickupSpeedSprite);
     this.load.image('pickup-x2points', pickupX2PointsSprite);
-    this.load.image('pickup-base',     pickupBase);
+    this.load.image('pickup-base', pickupBase);
     // power-ups: iconos HUD (activo en pantalla)
-    this.load.image('hud-pickup-damage',   hudPickupDamage);
-    this.load.image('hud-pickup-speed',    hudPickupSpeed);
+    this.load.image('hud-pickup-damage', hudPickupDamage);
+    this.load.image('hud-pickup-speed', hudPickupSpeed);
     this.load.image('hud-pickup-x2points', hudPickupX2Points);
     // weapons MK2
     this.load.image('guitarmk2-sprite', guitarmk2Sprite);
@@ -359,9 +359,9 @@ export default class Boot extends Phaser.Scene {
     this.cache.json.add('bossPatterns', bossPatterns);
 
     // pointers
-    this.load.image('cursor_arrow',  cursorArrow);
-    this.load.image('cursor_hand',   cursorHand);
-    this.load.image('cursor_drag',   cursorDrag);
+    this.load.image('cursor_arrow', cursorArrow);
+    this.load.image('cursor_hand', cursorHand);
+    this.load.image('cursor_drag', cursorDrag);
     this.load.image('cursor_sniper', cursorSniper);
 
     // hud
@@ -384,8 +384,8 @@ export default class Boot extends Phaser.Scene {
     // machines
     this.load.atlas('shieldhouse', shieldhouseSprite, shieldhouseAtlas);
     this.load.spritesheet('shield-front', shieldFront, { frameWidth: 32, frameHeight: 32 });
-    this.load.spritesheet('shield-back',  shieldBack,  { frameWidth: 32, frameHeight: 32 });
-    this.load.spritesheet('shield-side',  shieldSide,  { frameWidth: 32, frameHeight: 32 });
+    this.load.spritesheet('shield-back', shieldBack, { frameWidth: 32, frameHeight: 32 });
+    this.load.spritesheet('shield-side', shieldSide, { frameWidth: 32, frameHeight: 32 });
 
     // mapas
     this.load.image('city_tiles', city_tileset);
@@ -490,7 +490,7 @@ export default class Boot extends Phaser.Scene {
     const confirmOption = () => {
       if (this.activeOption === this.startText) {
         this.soundManager.fadeOutMusic(500);
-        this.time.delayedCall(500, () => { this.scene.start('level_boss'); });
+        this.time.delayedCall(500, () => { this.scene.start('level_fondo'); });
       } else if (this.activeOption === this.optionsText) {
         this.scene.launch('options_menu');
       }

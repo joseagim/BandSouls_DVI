@@ -135,7 +135,7 @@ export default class HUD extends Phaser.Scene {
 
         const barW   = 280;  // ancho total de la barra
         const barH   = 18;
-        const barX   = this.scale.width  - barW - 20;  // borde derecho con margen
+        const barX   = (this.scale.width - barW) / 2;  // centrada horizontalmente
         const barY   = this.scale.height - 60;          // mismo nivel que la barra del jugador
 
         // Fondo semitransparente detrás de toda la sección
